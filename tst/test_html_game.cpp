@@ -3,13 +3,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-extern "C" {
+
 #include "html_game.h"
 #include "tile_pool.h"
 #include "evaluator.h"
+
 evaluator_t * create_simple_evaluator_r();
 void set_cheapest_tile(tile_t tile);
-}
+
 #include "mocks.h"
 
 const int buffer_size = 1024;

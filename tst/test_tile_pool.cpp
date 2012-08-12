@@ -3,9 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-extern "C" {
 #include "tile_pool.h"
-}
 
 TEST_BASE(base_tile_pool) {
 	tile_pool_t * game;

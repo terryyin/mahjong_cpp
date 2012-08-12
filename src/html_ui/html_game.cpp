@@ -7,9 +7,11 @@
 #include "agent.h"
 #include "ui_agent.h"
 
-static int ui_adaptor_pool_add_ui_adaptor(agent_t * ui);
-static agent_t * ui_adaptor_pool_get_ui_adaptor_by_id(int id);
+static int ui_adaptor_pool_add_ui_adaptor(UIAgent * ui);
+static UIAgent * ui_adaptor_pool_get_ui_adaptor_by_id(int id);
 static void ui_adaptor_pool_remove(int id);
+
+void (*shutdown_server)(void) = NULL;
 
 const char * html_frame =
 		"<html>\n"
@@ -25,10 +27,10 @@ const char * html_frame =
 
 int start_new_player(char * buffer, int buffer_size)
 {
-	agent_t * ui = game_builder_join_new_game_with_one_ai_player(NULL);
+	UIAgent * ui = game_builder_join_new_game_with_one_ai_player(NULL);
 	int player_id = ui_adaptor_pool_add_ui_adaptor(ui);
 	if (player_id == 0)
-		ui->destroy(ui);
+		delete ui;
 
 	snprintf(buffer, buffer_size, html_frame, player_id);
 
@@ -42,30 +44,30 @@ void do_user_do_not_exist_error(char * buffer, int buffer_size)
 
 void script_to_update_all_holdings(int player_id, char * buffer, int buffer_size)
 {
-	agent_t * agent = ui_adaptor_pool_get_ui_adaptor_by_id(player_id);
+	UIAgent * agent = ui_adaptor_pool_get_ui_adaptor_by_id(player_id);
 	if (!agent) {
 		do_user_do_not_exist_error(buffer, buffer_size);
 		return;
 	}
 	char tmp[1024]="";
-	ui_agent_get_tiles_array_string(agent, tmp, 1024);
+	agent->get_tiles_array_string(tmp, 1024);
 	snprintf(buffer, buffer_size, "App.UpdateHolding(%s);", tmp);
 
 }
 
 void generate_ui_event_script(int player_id, char * buffer, int buffer_size)
 {
-	agent_t * agent = ui_adaptor_pool_get_ui_adaptor_by_id(player_id);
-	if (!agent) {
+	UIAgent * ui_agent = ui_adaptor_pool_get_ui_adaptor_by_id(player_id);
+	if (!ui_agent) {
 		do_user_do_not_exist_error(buffer, buffer_size);
 		return;
 	}
 
-	ui_agent_update_game(agent);
+	ui_agent->update_game();
 	script_to_update_all_holdings(player_id, buffer, buffer_size);
 	ui_event_t event;
 	char tmp[1024];
-	while (ui_agent_pop_event(agent, &event)) {
+	while (ui_agent->pop_event(&event)) {
 		switch (event.event) {
 		case UI_EVENT_DISCARD:
 			sprintf(tmp, "App.Throw(%d, %d);", event.tiles[0], event.player_distance_to_me_clockwise);
@@ -107,13 +109,13 @@ void generate_ui_event_script(int player_id, char * buffer, int buffer_size)
 
 void html_game_do_action(int player_id, char * buffer, int buffer_size, action_t action, tile_t tile)
 {
-	agent_t * agent = ui_adaptor_pool_get_ui_adaptor_by_id(player_id);
-	if (!agent) {
+	UIAgent * ui_agent = ui_adaptor_pool_get_ui_adaptor_by_id(player_id);
+	if (!ui_agent) {
 		do_user_do_not_exist_error(buffer, buffer_size);
 		return;
 	}
-	ui_agent_update_game(agent);
-	agent->set_action(agent, action, tile);
+	ui_agent->update_game();
+	ui_agent->set_action(action, tile);
 }
 
 void script_to_bye(int player_id, char * buffer, int buffer_size, action_t action, tile_t tile)
@@ -190,7 +192,7 @@ int execute_game_command(const char * command, const char *parameters, char * bu
 #define UI_ADAPTOR_POOL_SIZE  100
 
 typedef struct {
-	agent_t * ui;
+	UIAgent * ui;
 	int id;
 } ui_pool_item_t;
 
@@ -206,7 +208,7 @@ static ui_pool_item_t * ui_adaptor_pool_get_item_by_id(int id)
 	return NULL;
 }
 
-static int ui_adaptor_pool_add_ui_adaptor(agent_t * ui)
+static int ui_adaptor_pool_add_ui_adaptor(UIAgent * ui)
 {
 	ui_pool_item_t * item = ui_adaptor_pool_get_item_by_id(0);
 
@@ -217,7 +219,7 @@ static int ui_adaptor_pool_add_ui_adaptor(agent_t * ui)
 	return item->id;
 }
 
-static agent_t * ui_adaptor_pool_get_ui_adaptor_by_id(int id)
+static UIAgent * ui_adaptor_pool_get_ui_adaptor_by_id(int id)
 {
 	ui_pool_item_t * item = ui_adaptor_pool_get_item_by_id(id);
 
@@ -231,6 +233,6 @@ static void ui_adaptor_pool_remove(int id)
 
 	if (item != NULL){
 		item->id = 0;
-		item->ui->destroy(item->ui);
+		delete item->ui;
 	}
 }

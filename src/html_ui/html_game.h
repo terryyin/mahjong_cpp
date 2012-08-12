@@ -9,6 +9,6 @@
 #define HTML_GAME_H_
 
 int execute_game_command(const char * command, const char *parameters, char * buffer, int buffer_size);
-void (*shutdown_server)(void);
+extern void (*shutdown_server)(void);
 
 #endif /* HTML_GAME_H_ */

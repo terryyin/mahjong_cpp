@@ -14,16 +14,17 @@ typedef enum {
 	ACTION_RESTART
 }action_t;
 
-typedef struct agent_t {
-	void (*destroy)(struct agent_t * self);
-	void (*deal)(struct agent_t * self, tile_t tiles[], int n, int distance);
-	void (*pick)(struct agent_t * self, tile_t tile, int distance);
-	void (*pong)(struct agent_t * self, tile_t tile, int distance);
-	int (*chow)(struct agent_t * self, tile_t tile, tile_t with, int distance);
-	void (*win)(struct agent_t * self, int score, int distance);
-	action_t (*get_action)(struct agent_t * self, tile_t* tile);
-	void (*set_action)(struct agent_t * self, action_t action, tile_t tile);
-	void (*discard_tile)(struct agent_t *self, tile_t tile, int distance);
-} agent_t;
+class Agent {
+public:
+	virtual ~Agent(){}
+	virtual void deal(tile_t tiles[], int n, int distance)=0;
+	virtual void pick(tile_t tile, int distance)=0;
+	virtual void pong(tile_t tile, int distance)=0;
+	virtual int chow(tile_t tile, tile_t with, int distance)=0;
+	virtual void win(int score, int distance)=0;
+	virtual action_t get_action(tile_t* tile)=0;
+	virtual void set_action(action_t action, tile_t tile)=0;
+	virtual void discard_tile(tile_t tile, int distance)=0;
+};
 
 #endif /* AGEND_H_ */

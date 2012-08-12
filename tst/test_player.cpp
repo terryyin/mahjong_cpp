@@ -3,11 +3,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-extern "C" {
 #include "tiles.h"
 #include "player.h"
 #include "mj_table.h"
-}
 #include "mocks.h"
 
 TEST_GROUP(common_player) {

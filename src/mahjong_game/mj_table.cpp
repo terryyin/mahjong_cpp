@@ -8,15 +8,15 @@
 static void _mj_table_destroy(mj_table_t * self) {
 	int i = 0;
 	for (; i < self->player_count; i++)
-		self->players[i]->destroy(self->players[i]);
+		delete self->players[i];
 }
 
-static agent_t * get_player_of_distance(mj_table_t * self, int i) {
+static Agent * get_player_of_distance(mj_table_t * self, int i) {
 	return self->players[(self->current_player + i)%self->player_count];
 }
 
 void mj_table_add_player(mj_table_t * self,
-		agent_t * player) {
+		Agent * player) {
 	self->players[self->player_count++] = player;
 }
 static int _mj_table_get_player_count(mj_table_t * self) {
@@ -25,8 +25,8 @@ static int _mj_table_get_player_count(mj_table_t * self) {
 static void _mj_table_pick(struct mj_table_t * self, tile_t tile) {
 	int i = 0;
 	for (i = 0; i < self->player_count ; i++) {
-		agent_t * agent = get_player_of_distance(self, i);
-		agent->pick(agent, tile, i);
+		Agent * agent = get_player_of_distance(self, i);
+		agent->pick(tile, i);
 	}
 }
 static void _change_host(mj_table_t * self) {
@@ -39,8 +39,8 @@ static void _change_current_player(mj_table_t * self, int distance) {
 static void _mj_table_win(struct mj_table_t * self, int score) {
 	int i = 0;
 	for (i = 0; i < self->player_count ; i++) {
-		agent_t * agent = get_player_of_distance(self, i);
-		agent->win(agent, score, i);
+		Agent * agent = get_player_of_distance(self, i);
+		agent->win(score, i);
 	}
 	_change_host(self);
 }
@@ -48,8 +48,8 @@ static void _mj_table_win(struct mj_table_t * self, int score) {
 static void _mj_table_deal(struct mj_table_t * self, tile_t tiles[], int n) {
 	int i = 0;
 	for (i = 0; i < self->player_count ; i++) {
-		agent_t * agent = get_player_of_distance(self, i);
-		agent->deal(agent, tiles, n, i);
+		Agent * agent = get_player_of_distance(self, i);
+		agent->deal(tiles, n, i);
 	}
 	_change_current_player(self, 1);
 }
@@ -57,8 +57,8 @@ static void _mj_table_deal(struct mj_table_t * self, tile_t tiles[], int n) {
 static void _mj_table_throw_tile(struct mj_table_t * self, tile_t tile){
 	int i = 0;
 	for (i = 0; i < self->player_count ; i++) {
-		agent_t * agent = get_player_of_distance(self, i);
-		agent->discard_tile(agent, tile, i);
+		Agent * agent = get_player_of_distance(self, i);
+		agent->discard_tile(tile, i);
 	}
 	self->last_tile = tile;
 	_change_current_player(self, 1);
@@ -66,18 +66,18 @@ static void _mj_table_throw_tile(struct mj_table_t * self, tile_t tile){
 static void _mj_table_pong(struct mj_table_t * self){
 	int i = 0;
 	for (i = 0; i < self->player_count ; i++) {
-		agent_t * agent = get_player_of_distance(self, i);
-		agent->pong(agent, self->last_tile, i);
+		Agent * agent = get_player_of_distance(self, i);
+		agent->pong(self->last_tile, i);
 	}
 }
 static int _mj_table_chow(struct mj_table_t * self, tile_t with){
 	int i = 0;
-	agent_t * agent = get_player_of_distance(self, 0);
-	if (!agent->chow(agent, self->last_tile, with, 0))
+	Agent * agent = get_player_of_distance(self, 0);
+	if (!agent->chow(self->last_tile, with, 0))
 		return 0;
 	for (i = 1; i < self->player_count ; i++) {
 		agent = get_player_of_distance(self, i);
-		agent->chow(agent, self->last_tile, with, i);
+		agent->chow(self->last_tile, with, i);
 	}
 	return 1;
 }
@@ -93,7 +93,14 @@ mj_table_t * create_mj_table(tile_pool_ptr_t pool)
 
 	return gf;
 }
+void mj_table_remove_agent(mj_table_t * self, Agent * agent)
+{
+	int i = 0;
+	for (; i < self->player_count; i++)
+		if (self->players[i] == agent)
+			self->players[i] = NULL;
 
+}
 void mj_table_destroy(mj_table_t * self)
 {
 	tile_pool_destroy(self->tile_pool);
@@ -110,8 +117,8 @@ void mj_table_update_state(mj_table_t * self)
 {
 	int i;
 	tile_t action_tile;
-	agent_t * agent = get_player_of_distance(self, 0);
-	action_t player_action = agent->get_action(agent, &action_tile);
+	Agent * agent = get_player_of_distance(self, 0);
+	action_t player_action = agent->get_action(&action_tile);
 
 	/**********
 	 * get current player.
@@ -119,8 +126,8 @@ void mj_table_update_state(mj_table_t * self)
 	if (player_action == ACTION_RESTART) {
 		int i = 1;
 		for (; i < self->player_count; i++) {
-			agent_t * agent = get_player_of_distance(self, i);
-			if(ACTION_RESTART != agent->get_action(agent, NULL)){
+			Agent * agent = get_player_of_distance(self, i);
+			if(ACTION_RESTART != agent->get_action(NULL)){
 				player_action = NO_ACTION;
 				break;
 			}

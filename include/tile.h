@@ -1,6 +1,10 @@
 #ifndef TILE_H_
 #define TILE_H_
 
+#ifndef NULL
+#define NULL 0
+#endif
+
 #define MAX_NUMBER_OF_PLAYER 4
 
 #define	NO_TILE  0

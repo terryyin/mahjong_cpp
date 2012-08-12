@@ -3,9 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-extern "C" {
 #include "exercise_3.h"
-}
 
 //static int g_score[2];
 //#define INVALID_SCORE -1

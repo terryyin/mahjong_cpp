@@ -2,7 +2,7 @@ PRODUCT := mahjong
 CPPUTEST_HOME := cpputest
 EVALUATOR = mahjong_evaluator
 EVALUATOR_LIB = $(EVALUATOR)/lib/lib$(EVALUATOR).a
-CPPUTEST_WARNINGFLAGS =  -Wall -Wextra -Wshadow -Wswitch-default -Wswitch-enum -Wconversion
+CPPUTEST_WARNINGFLAGS =  -Wall
 #Set this to @ to keep the makefile quiet
 ifndef SILENCE
 	SILENCE = @

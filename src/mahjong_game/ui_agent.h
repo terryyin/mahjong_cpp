@@ -30,10 +30,44 @@ typedef struct {
 
 struct mj_table_t;
 
-agent_t * create_ui_agent(void);
-int ui_agent_pop_event(agent_t * self, ui_event_t * output_event);
-const char * ui_agent_get_tiles_array_string(agent_t * self, char buffer[], int buffer_size);
-void ui_agent_set_game_flow(agent_t * self, struct mj_table_t * game_flow);
-void ui_agent_update_game(agent_t * self);
+#define UI_EVENT_QUEUE_SIZE 10
+
+struct player_t;
+class UIAgent: public Agent {
+public:
+	UIAgent();
+	virtual ~UIAgent();
+	virtual void deal(tile_t tiles[], int n, int distance);
+	virtual void pick(tile_t tile, int distance);
+	virtual void pong(tile_t tile, int distance);
+	virtual int chow(tile_t tile, tile_t with, int distance);
+	virtual void win(int score, int distance);
+	virtual action_t get_action(tile_t* tile);
+	virtual void set_action(action_t action, tile_t tile);
+	virtual void discard_tile(tile_t tile, int distance);
+
+	int pop_event(ui_event_t * output_event);
+	const char * get_tiles_array_string(char buffer[], int buffer_size);
+	void set_game_flow(struct mj_table_t * game_flow);
+	void update_game();
+private:
+	void add_event(ui_event_name_t event_name,
+			tile_t tiles[], int n, int score, int distance, const char * msg);
+	void react_after_pick(int distance);
+	void react_others_throw(tile_t tile, int distance);
+
+	ui_event_t event_queue[UI_EVENT_QUEUE_SIZE];
+	int event_queue_head;
+	int event_queue_tail;
+	action_t action;
+	tile_t last_tile;
+	tile_t action_tile;
+	player_t * players[MAX_NUMBER_OF_PLAYER];
+	mj_table_t * game_flow;
+	void _remove_players();
+
+
+};
+UIAgent * create_ui_agent(void);
 
 #endif /* UI_AGENT_H_ */

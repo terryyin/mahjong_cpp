@@ -15,11 +15,11 @@ extern "C"
 {
 #endif
 
-typedef struct Evaluator * evaluator_ptr_t;
+class Evaluator;
 
-evaluator_ptr_t LIB_create_evaluator(void);
-void LIB_evaluator_destroy(evaluator_ptr_t);
-int LIB_evaluator_evaluate_array(evaluator_ptr_t self, tile_t tiles[], int array_size);
+Evaluator* LIB_create_evaluator(void);
+void LIB_evaluator_destroy(Evaluator*);
+int LIB_evaluator_evaluate_array(Evaluator* self, tile_t tiles[], int array_size);
 
 #ifdef __cplusplus
 }

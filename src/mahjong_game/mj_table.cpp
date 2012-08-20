@@ -22,7 +22,7 @@ void mj_table_add_player(mj_table_t * self,
 static int _mj_table_get_player_count(mj_table_t * self) {
 	return self->player_count;
 }
-static void _mj_table_pick(struct mj_table_t * self, tile_t tile) {
+static void _mj_table_pick(mj_table_t * self, tile_t tile) {
 	int i = 0;
 	for (i = 0; i < self->player_count ; i++) {
 		Agent * agent = get_player_of_distance(self, i);
@@ -36,7 +36,7 @@ static void _change_host(mj_table_t * self) {
 static void _change_current_player(mj_table_t * self, int distance) {
 	self->current_player = (self->current_player + distance) % self->player_count;
 }
-static void _mj_table_win(struct mj_table_t * self, int score) {
+static void _mj_table_win(mj_table_t * self, int score) {
 	int i = 0;
 	for (i = 0; i < self->player_count ; i++) {
 		Agent * agent = get_player_of_distance(self, i);
@@ -45,7 +45,7 @@ static void _mj_table_win(struct mj_table_t * self, int score) {
 	_change_host(self);
 }
 
-static void _mj_table_deal(struct mj_table_t * self, tile_t tiles[], int n) {
+static void _mj_table_deal(mj_table_t * self, tile_t tiles[], int n) {
 	int i = 0;
 	for (i = 0; i < self->player_count ; i++) {
 		Agent * agent = get_player_of_distance(self, i);
@@ -54,7 +54,7 @@ static void _mj_table_deal(struct mj_table_t * self, tile_t tiles[], int n) {
 	_change_current_player(self, 1);
 }
 
-static void _mj_table_throw_tile(struct mj_table_t * self, tile_t tile){
+static void _mj_table_throw_tile(mj_table_t * self, tile_t tile){
 	int i = 0;
 	for (i = 0; i < self->player_count ; i++) {
 		Agent * agent = get_player_of_distance(self, i);
@@ -63,14 +63,14 @@ static void _mj_table_throw_tile(struct mj_table_t * self, tile_t tile){
 	self->last_tile = tile;
 	_change_current_player(self, 1);
 }
-static void _mj_table_pong(struct mj_table_t * self){
+static void _mj_table_pong(mj_table_t * self){
 	int i = 0;
 	for (i = 0; i < self->player_count ; i++) {
 		Agent * agent = get_player_of_distance(self, i);
 		agent->pong(self->last_tile, i);
 	}
 }
-static int _mj_table_chow(struct mj_table_t * self, tile_t with){
+static int _mj_table_chow(mj_table_t * self, tile_t with){
 	int i = 0;
 	Agent * agent = get_player_of_distance(self, 0);
 	if (!agent->chow(self->last_tile, with, 0))

@@ -209,7 +209,7 @@ void UIAgent::discard_tile(tile_t tile, int distance) {
 	react_others_throw(tile, distance);
 }
 
-void UIAgent::set_game_flow(struct mj_table_t * game_flow) {
+void UIAgent::set_game_flow(mj_table_t * game_flow) {
 	this->game_flow = game_flow;
 }
 void UIAgent::update_game() {

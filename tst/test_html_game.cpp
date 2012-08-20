@@ -8,7 +8,7 @@
 #include "tile_pool.h"
 #include "evaluator.h"
 
-evaluator_t * create_simple_evaluator_r();
+Evaluator * create_simple_evaluator_r();
 void set_cheapest_tile(tile_t tile);
 
 #include "mocks.h"

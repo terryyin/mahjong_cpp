@@ -9,7 +9,7 @@
 #include "mocks.h"
 
 #include "../mahjong_evaluator/include/mj_evaluator.h"
-
+#include "evaluator.h"
 /*
  * This a bad example of mocking 3rd-party code.
  * LIB_xxx are 3rd-party functions.
@@ -17,17 +17,31 @@
  * The better solution is to write an adaptor for LIB_xxx functions
  * and then mock the adaptor.
  */
-int LIB_evaluator_evaluate_array(evaluator_ptr_t self, tile_t tiles[],
+int LIB_evaluator_evaluate_array(Evaluator* self, tile_t tiles[],
 		int array_size) {
-	return mock().actualCall("evaluator_evaluate_array").withParameter("tiles",
+	return mock().actualCall("LIB_evaluator_evaluate_array").withParameter("tiles",
 			tiles).withParameter("array_size", array_size).returnValue().getIntValue();
-
 }
-evaluator_ptr_t LIB_create_evaluator(void) {
+Evaluator* LIB_create_evaluator(void) {
 	return NULL;
 }
-void LIB_evaluator_destroy(evaluator_ptr_t) {
+void LIB_evaluator_destroy(Evaluator*) {
 }
+
+class MockEvaluator: public Evaluator{
+public:
+	MockEvaluator() {}
+	virtual ~MockEvaluator(){}
+	virtual int evaluate_array(tile_t tiles[], int array_size){
+		return mock().actualCall("evaluate_array").onObject(this).withParameter("tiles",
+				tiles).withParameter("array_size", array_size).returnValue().getIntValue();
+	}
+};
+Evaluator * createMockEvaluator(void)
+{
+	return new MockEvaluator();
+}
+
 
 static void tile_pool_shuffle_mock(tile_pool_t * game) {
 	mock().actualCall("tile_pool_shuffle");

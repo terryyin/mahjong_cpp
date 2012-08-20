@@ -8,9 +8,12 @@
 
 TEST_GROUP(ai_agent)
 {
-	Agent * agent;
+	AIAgent * agent;
+	Evaluator * evaluator;
 	void setup() {
+		evaluator = createMockEvaluator();
 		agent = create_ai_agent();
+		agent->setEvaluator(evaluator);
 		tile_t holdings[] = { C(1) };
 		agent->deal(holdings, 1, 0);
 	}
@@ -39,7 +42,10 @@ TEST(ai_agent, player_react_when_winning)
 
 TEST(ai_agent, player_pick)
 {
-	mock()	.expectNCalls(2, "evaluator_evaluate_array")
+	// ai player will call the evaluator to evaluate the array
+	// twice, because there are two tiles after pick.
+	mock()	.expectNCalls(2, "evaluate_array")
+			.onObject(evaluator)
 			.ignoreOtherParameters()
 			.andReturnValue(1);
 	agent->pick(C(3), 0);

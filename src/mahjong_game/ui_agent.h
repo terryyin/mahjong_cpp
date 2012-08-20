@@ -28,7 +28,7 @@ typedef struct {
 	char message[UI_EVENT_MSG_LEN+1];
 } ui_event_t;
 
-struct mj_table_t;
+class mj_table_t;
 
 #define UI_EVENT_QUEUE_SIZE 10
 
@@ -48,7 +48,7 @@ public:
 
 	int pop_event(ui_event_t * output_event);
 	const char * get_tiles_array_string(char buffer[], int buffer_size);
-	void set_game_flow(struct mj_table_t * game_flow);
+	void set_game_flow(mj_table_t * game_flow);
 	void update_game();
 private:
 	void add_event(ui_event_name_t event_name,

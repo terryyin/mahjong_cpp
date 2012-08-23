@@ -28,11 +28,12 @@ typedef struct {
 	char message[UI_EVENT_MSG_LEN+1];
 } ui_event_t;
 
-class mj_table_t;
+class MahjongTable;
 
 #define UI_EVENT_QUEUE_SIZE 10
 
-struct player_t;
+class PlayerData;
+class Game;
 class UIAgent: public Agent {
 public:
 	UIAgent();
@@ -48,8 +49,10 @@ public:
 
 	int pop_event(ui_event_t * output_event);
 	const char * get_tiles_array_string(char buffer[], int buffer_size);
-	void set_game_flow(mj_table_t * game_flow);
+	void set_game_flow(MahjongTable * game_flow);
+	void set_game(Game * game);
 	void update_game();
+	MahjongTable * getTable();
 private:
 	void add_event(ui_event_name_t event_name,
 			tile_t tiles[], int n, int score, int distance, const char * msg);
@@ -62,8 +65,9 @@ private:
 	action_t action;
 	tile_t last_tile;
 	tile_t action_tile;
-	player_t * players[MAX_NUMBER_OF_PLAYER];
-	mj_table_t * game_flow;
+	PlayerData * players[MAX_NUMBER_OF_PLAYER];
+	MahjongTable * game_flow;
+	Game * game;
 	void _remove_players();
 
 

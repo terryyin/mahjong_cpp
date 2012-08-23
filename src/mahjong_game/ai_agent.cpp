@@ -13,14 +13,14 @@ AIAgent::AIAgent() {
 }
 AIAgent::~AIAgent() {
 	if (player)
-		player_destroy(player);
+		delete player;
 	delete evaluator;
 }
 
 void AIAgent::deal(tile_t tiles[], int n, int distance) {
 	if (distance == 0) {
-		player_t * player_data = create_player_data();
-		player_deal(player_data, tiles, n);
+		PlayerData * player_data = create_player_data();
+		player_data->deal(tiles, n);
 		player = player_data;
 	}
 }
@@ -31,11 +31,11 @@ tile_t AIAgent::ai_which_to_discard() {
 	int index_to_throw = 0;
 	tile_t holdings[MAX_HOLDING_COUNT + 1];
 	tile_t tiles[MAX_HOLDING_COUNT + 1];
-	int tile_count = player_get_holdings(player, holdings, MAX_HOLDING_COUNT);
-	holdings[tile_count] = player_get_current(player);
+	int tile_count = player->get_holdings(holdings, MAX_HOLDING_COUNT);
+	holdings[tile_count] = player->get_current();
 	for (i = 0; i < tile_count + 1; i++) {
-		player_get_holdings(player, tiles, MAX_HOLDING_COUNT);
-		tiles[i] = player_get_current(player);
+		player->get_holdings(tiles, MAX_HOLDING_COUNT);
+		tiles[i] = player->get_current();
 		int score = evaluator->evaluate_array(tiles, tile_count);
 		if (score > max) {
 			max = score;
@@ -47,8 +47,8 @@ tile_t AIAgent::ai_which_to_discard() {
 }
 void AIAgent::pick(tile_t tile, int distance) {
 	if (distance == 0) {
-		player_pick(player, tile);
-		if (player_is_able_to_win(player, NO_TILE))
+		player->pick(tile);
+		if (player->is_able_to_win(NO_TILE))
 			action = ACTION_WIN;
 		else {
 			action = ACTION_DISCARD;
@@ -64,7 +64,7 @@ int AIAgent::chow(tile_t tile, tile_t with, int distance) {
 }
 void AIAgent::win(int score, int distance) {
 	action = ACTION_RESTART;
-	player_destroy(player);
+	delete player;
 	player = NULL;
 }
 
@@ -82,9 +82,9 @@ void AIAgent::set_action(action_t action, tile_t tile) {
 
 void AIAgent::discard_tile(tile_t tile, int distance) {
 	if (distance == 0)
-		player_discard_tile(player, tile);
+		player->discard_tile(tile);
 	else {
-		if (player_is_able_to_win(player, tile))
+		if (player->is_able_to_win(tile))
 			action = ACTION_WIN;
 		else
 			action = ACTION_PICK;

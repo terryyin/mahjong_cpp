@@ -5,11 +5,13 @@
 #include "player.h"
 #include "assert.h"
 #include "mj_table.h"
+#include "game_builder.h"
 
 UIAgent::UIAgent() {
 	action = NO_ACTION;
 	event_queue_head = event_queue_tail = 0;
 	game_flow = NULL;
+	game = NULL;
 	last_tile = NO_TILE;
 	action_tile = NO_TILE;
 	int i = 0;
@@ -21,18 +23,16 @@ void UIAgent::_remove_players() {
 	int i;
 	for (i = 0; i < MAX_NUMBER_OF_PLAYER; i++) {
 		if (NULL != this->players[i])
-			player_destroy(this->players[i]);
+			delete this->players[i];
 		this->players[i] = NULL;
 	}
 }
 UIAgent::~UIAgent() {
-	if (this->game_flow) {
-		mj_table_t * flow = this->game_flow;
-		this->game_flow = NULL;
-		mj_table_remove_agent(flow, this);
-		mj_table_destroy(flow);
-	}
+	if (this->game_flow)
+		this->game_flow->remove_agent(this);
 	_remove_players();
+	if (game)
+		delete game;
 }
 
 #define _QUEUE_NEXT_INDEX(i) (i) = (((i)+1)%(UI_EVENT_QUEUE_SIZE))
@@ -48,8 +48,8 @@ int UIAgent::pop_event(ui_event_t * output_event) {
 }
 
 void UIAgent::deal(tile_t tiles[], int n, int distance) {
-	player_t * player_data = create_player_data();
-	player_deal(player_data, tiles, n);
+	PlayerData * player_data = create_player_data();
+	player_data->deal(tiles, n);
 	assert(MAX_NUMBER_OF_PLAYER > distance && this->players[distance]== NULL);
 	this->players[distance] = player_data;
 }
@@ -73,32 +73,32 @@ void UIAgent::add_event(ui_event_name_t event_name, tile_t tiles[], int n,
 void UIAgent::react_after_pick(int distance) {
 	this->last_tile = NO_TILE;
 	if (distance == 0) {
-		player_t * player = this->players[0];
-		if (player_is_able_to_win(player, NO_TILE))
+		PlayerData * player = this->players[0];
+		if (player->is_able_to_win(NO_TILE))
 			add_event(UI_EVENT_WIN_ABLE, NULL, 0, 0, 0, NULL);
 	}
 }
 void UIAgent::pick(tile_t tile, int distance) {
-	player_t * player_data = this->players[distance];
+	PlayerData * player_data = this->players[distance];
 	assert(player_data);
-	player_pick(player_data, tile);
+	player_data->pick(tile);
 
 	add_event(UI_EVENT_PICK, &tile, 1, 0, distance, NULL);
 
 	react_after_pick(distance);
 }
 void UIAgent::pong(tile_t tile, int distance) {
-	player_t * player_data = this->players[distance];
+	PlayerData * player_data = this->players[distance];
 	assert(player_data);
-	player_pong(player_data, tile);
+	player_data->pong(tile);
 	this->action = NO_ACTION;
 	react_after_pick(distance);
 }
 
 int UIAgent::chow(tile_t tile, tile_t with, int distance) {
-	player_t * player_data = this->players[distance];
+	PlayerData * player_data = this->players[distance];
 	assert(player_data);
-	if (!player_chow(player_data, tile, with))
+	if (!player_data->chow(tile, with))
 		return 0;
 	this->action = NO_ACTION;
 	react_after_pick(distance);
@@ -115,19 +115,19 @@ action_t UIAgent::get_action(tile_t* tile) {
 }
 
 void UIAgent::set_action(action_t action, tile_t tile) {
-	player_t *player = this->players[0];
+	PlayerData *player = this->players[0];
 	if (action == ACTION_WIN) {
-		if (!player_is_able_to_win(player, this->last_tile)) {
+		if (!player->is_able_to_win(this->last_tile)) {
 			add_event(UI_EVENT_MESSAGE, NULL, 0, 0, 0, "Are you kidding?");
 			return;
 		}
 	} else if (action == ACTION_PONG) {
-		if (!player_is_able_to_pong(player, this->last_tile)) {
+		if (!player->is_able_to_pong(this->last_tile)) {
 			add_event(UI_EVENT_MESSAGE, NULL, 0, 0, 0, "Are you kidding?");
 			return;
 		}
 	} else if (action == ACTION_CHOW) {
-		if (!player_is_able_to_chew(player, this->last_tile)) {
+		if (!player->is_able_to_chew(this->last_tile)) {
 			add_event(UI_EVENT_MESSAGE, NULL, 0, 0, 0, "Are you kidding?");
 			return;
 		}
@@ -155,15 +155,15 @@ void cat_eaten_to_string(char buffer[], const eaten_t * eaten, int n) {
 	}
 }
 
-void player_tiles_to_string(player_t * player, char buffer[], int buffer_size) {
+void player_tiles_to_string(PlayerData * player, char buffer[], int buffer_size) {
 	strcat(buffer, "[");
 	tile_t tiles[MAX_HOLDING_COUNT];
 	eaten_t eaten[MAX_EATEN_COUNT];
-	int n = player_get_holdings(player, tiles, MAX_HOLDING_COUNT);
+	int n = player->get_holdings(tiles, MAX_HOLDING_COUNT);
 	cat_tiles_to_string(buffer, tiles, n);
-	tiles[0] = player_get_current(player);
+	tiles[0] = player->get_current();
 	cat_tiles_to_string(buffer, tiles, 1);
-	n = player_get_eaten(player, eaten, MAX_EATEN_COUNT);
+	n = player->get_eaten(eaten, MAX_EATEN_COUNT);
 	cat_eaten_to_string(buffer, eaten, n);
 	int len = strlen(buffer);
 	if (buffer[len - 1] == ',') {
@@ -187,33 +187,44 @@ const char * UIAgent::get_tiles_array_string(char buffer[], int buffer_size) {
 
 void UIAgent::react_others_throw(tile_t tile, int distance) {
 	if (distance != 0) {
-		player_t * player = this->players[0];
-		if (player_is_able_to_win(player, tile))
+		PlayerData * player = this->players[0];
+		if (player->is_able_to_win(tile))
 			add_event(UI_EVENT_WIN_ABLE, NULL, 0, 0, 0, NULL);
-		if (player_is_able_to_pong(player, tile))
+		if (player->is_able_to_pong(tile))
 			add_event(UI_EVENT_PONG_ABLE, NULL, 0, 0, 0, NULL);
 		if (distance == 1) {
-			if (player_is_able_to_chew(player, tile))
+			if (player->is_able_to_chew(tile))
 				add_event(UI_EVENT_CHOW_ABLE, NULL, 0, 0, 0, NULL);
 		}
 	}
 }
 void UIAgent::discard_tile(tile_t tile, int distance) {
 	this->last_tile = tile;
-	player_t * player_data = this->players[distance];
+	PlayerData * player_data = this->players[distance];
 	if (player_data != NULL)
-		player_discard_tile(player_data, tile);
+		player_data->discard_tile(tile);
 
 	add_event(UI_EVENT_DISCARD, &tile, 1, 0, distance, NULL);
 
 	react_others_throw(tile, distance);
 }
 
-void UIAgent::set_game_flow(mj_table_t * game_flow) {
+void UIAgent::set_game_flow(MahjongTable * game_flow) {
 	this->game_flow = game_flow;
 }
+
+MahjongTable * UIAgent::getTable()
+{
+	return this->game_flow;
+}
+
+
+void UIAgent::set_game(Game * game) {
+	this->game = game;
+}
+
 void UIAgent::update_game() {
-	mj_table_update_state(this->game_flow);
+	this->game_flow->update_state();
 }
 
 UIAgent * create_ui_agent(void) {

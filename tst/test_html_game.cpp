@@ -43,28 +43,38 @@ TEST(html_game_new_player, mulitple_games)
 	LONGS_EQUAL(id + 1, execute_game_command("/bye", itoa((id+1)*1000), buffer, buffer_size));
 }
 
-static tile_t g_current_tile;
-static tile_t tile_pool_pop_a_tile_stub(tile_pool_t * self) {
-	return g_current_tile++;
-}
-static int g_tile_pool_end;
-static int tile_pool_is_end_stub(tile_pool_t * game) {
-	return g_tile_pool_end;
-}
+class EverIncreasingTilePool:public tile_pool_t{
+public:
+	EverIncreasingTilePool(){current_tile=1;}
+	~EverIncreasingTilePool(){}
+	tile_t pop_a_tile() {
+		return current_tile++;
+	}
+	int is_end() {
+		return tile_pool_end;
+	}
+	void empty() {
+		tile_pool_end = 1;
+	}
+	void setCurrentTile(int t) {
+		current_tile = t;
+	}
+private:
+	tile_t current_tile;
+	int tile_pool_end;
+};
+
 
 #define HAS_STRING(expect, actual) HAS_STRING_LOCATION(expect, actual, __FILE__, __LINE__)
 TEST_GROUP(html_game)
 {
 	char buffer[buffer_size];
 	int player_id;
+	EverIncreasingTilePool tilePool;
 	void setup() {
-		g_current_tile = 1;
-		g_tile_pool_end = 0;
-		UT_PTR_SET(tile_pool_pop_a_tile, tile_pool_pop_a_tile_stub);
-		UT_PTR_SET(tile_pool_is_end, tile_pool_is_end_stub);
 		UT_PTR_SET(create_evaluator_r, create_simple_evaluator_r);
 		player_id = execute_game_command("/game", "", buffer, buffer_size);
-
+		setPool(player_id, &tilePool);
 	}
 	void teardown() {
 		execute_cmd("/bye", 0);
@@ -124,7 +134,7 @@ TEST(html_game, a_game)
 			"App.Throw(28, 1);"
 			"App.StopUpdate();"
 			, buffer);
-	g_current_tile = 27;
+	tilePool.setCurrentTile(27);
 	execute_cmd("/pick", 0);
 	STRCMP_EQUAL("App.UpdateHolding("
 			"[[2,3,4,5,6,7,8,9,10,11,12,13,27,27],"
@@ -144,7 +154,7 @@ TEST(html_game, a_game)
 			"[[2,3,4,5,6,7,8,9,10,11,12,13,27,27],"
 			"[14,15,16,17,18,19,20,21,22,23,24,25,26,0]]);"
 			, buffer);
-	g_current_tile = 1;
+	tilePool.setCurrentTile(1);
 	set_cheapest_tile(27);
 	execute_cmd("/start", 0);
 	STRCMP_EQUAL("App.UpdateHolding("
@@ -158,7 +168,7 @@ TEST(html_game, a_game)
 TEST(html_game, no_tile_any_more)
 {
 	execute_cmd("/start", 0);
-	g_tile_pool_end = 1;
+	tilePool.empty();
 	execute_cmd("/throw", 1);
 	execute_cmd("/update", 0);
 	STRCMP_EQUAL("App.UpdateHolding("
@@ -175,7 +185,7 @@ TEST(html_game, no_tile_any_more)
 			"App.ResumeUpdate();"
 			, buffer);
 	execute_cmd("/update", 0);
-	g_tile_pool_end = 1;
+	tilePool.empty();
 	execute_cmd("/pick", 0);
 	STRCMP_EQUAL("App.UpdateHolding("
 			"[[41,42,43,44,45,46,47,48,49,50,51,52,53,0],"
@@ -212,7 +222,7 @@ TEST(html_game, _WIN)
 			, buffer);
 	execute_cmd("/pick", 0);
 	execute_cmd("/throw", 29);
-	g_current_tile = 27;
+	tilePool.setCurrentTile(27);
 	set_cheapest_tile(27);
 	execute_cmd("/update", 0);
 	execute_cmd("/update", 0);
@@ -227,7 +237,7 @@ TEST(html_game, ai_WIN)
 	execute_cmd("/throw", 1);
 	STRCMP_EQUAL("App.UpdateHolding([[2,3,4,5,6,7,8,9,10,11,12,13,27,0],[14,15,16,17,18,19,20,21,22,23,24,25,26,0]]);App.Throw(1, 0);App.ResumeUpdate();"
 			, buffer);
-	g_current_tile = 14;
+	tilePool.setCurrentTile(14);
 	execute_cmd("/update", 0);
 	execute_cmd("/update", 0);
 	STRCMP_EQUAL("App.UpdateHolding([[2,3,4,5,6,7,8,9,10,11,12,13,27,0],[14,15,16,17,18,19,20,21,22,23,24,25,26,14]]);App.Pick(1, 14);App.ResumeUpdate();"
@@ -238,7 +248,7 @@ TEST(html_game, ai_WIN)
 	execute_cmd("/start", 0);
 	execute_cmd("/update", 0);
 	execute_cmd("/update", 0);
-	g_current_tile = 41;
+	tilePool.setCurrentTile(41);
 	execute_cmd("/pick", 0);
 	execute_cmd("/throw", 41);
 	execute_cmd("/update", 0);
@@ -257,10 +267,10 @@ IGNORE_TEST(html_game, pong)
 	execute_cmd("/pong", 0);
 	STRCMP_EQUAL("App.UpdateHolding([[2,3,4,5,6,7,8,9,10,11,12,13,27,0],[15,16,17,18,19,20,21,22,23,24,25,26,28,0]]);alert(\"Are you kidding?\");"
 			, buffer);
-	g_current_tile = 2;
+	tilePool.setCurrentTile(2);
 	execute_cmd("/pick", 0);
 	execute_cmd("/throw", 3);
-	g_current_tile = 2;
+	tilePool.setCurrentTile(2);
 	set_cheapest_tile(2);
 	execute_cmd("/update", 0);
 	execute_cmd("/update", 0);

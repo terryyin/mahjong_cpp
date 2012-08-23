@@ -17,7 +17,7 @@ TEST_GROUP(system1) {
  * but actually checks nothing.
  */
 TEST(system1, create_system) {
-	UIAgent * ui = game_builder_join_new_game_with_one_ai_player(NULL);
+	UIAgent * ui = Game::join_new_game_with_one_ai_player(NULL);
 	delete ui;
 }
 

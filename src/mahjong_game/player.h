@@ -5,24 +5,34 @@
 
 #include "tiles.h"
 
-typedef struct player_t player_t;
+class PlayerData {
+public:
+	PlayerData();
+	~PlayerData();
+	int get_holdings(tile_t * tiles_buffer, int buffer_size);
+	int get_eaten(eaten_t * tiles_buffer, int buffer_size);
+	tile_t get_current();
 
-player_t * create_player_data(void);
-void player_destroy(player_t *self);
+	void pick(tile_t);
+	void pong(tile_t);
+	int chow(tile_t tile, tile_t with);
+	tile_t discard_tile(tile_t tile);
+	void deal(tile_t tiles[], int tiles_count);
 
-int player_get_holdings(player_t *self, tile_t * tiles_buffer, int buffer_size);
-int player_get_eaten(player_t *self, eaten_t * tiles_buffer, int buffer_size);
-tile_t player_get_current(player_t *self);
+	int is_able_to_pong(tile_t tile);
+	int is_able_to_chew(tile_t tile);
+	int is_able_to_win(tile_t tile);
+private:
+	void sort();
+	void rearrange_after_eat(eaten_t eaten);
+	int is_able_to_chow(tile_t tile, tile_t smallest);
+	void _chow(tile_t tile, tile_t smallest);
+private:
+	tile_t holdings[MAX_HOLDING_COUNT];
+	eaten_t eaten[MAX_EATEN_COUNT];
+	tile_t current;
+};
 
-void player_pick(player_t *self, tile_t);
-void player_pong(player_t *self, tile_t);
-int player_chow(struct player_t *self, tile_t tile, tile_t with);
-tile_t player_discard_tile(player_t *self, tile_t tile);
-void player_deal(player_t *self, tile_t tiles[], int tiles_count);
-
-int player_is_able_to_pong(player_t *self, tile_t tile);
-int player_is_able_to_chew(player_t *self, tile_t tile);
-int player_is_able_to_win(player_t *self, tile_t tile);
-
+PlayerData * create_player_data(void);
 
 #endif /* PLAYER_H_ */

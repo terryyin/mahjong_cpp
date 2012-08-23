@@ -5,119 +5,119 @@
 #include "mj_table.h"
 #include "assert.h"
 
-static void _mj_table_destroy(mj_table_t * self) {
+MahjongTable::~MahjongTable() {
 	int i = 0;
-	for (; i < self->player_count; i++)
-		delete self->players[i];
+	for (; i < this->player_count; i++)
+		delete this->players[i];
 }
 
-static Agent * get_player_of_distance(mj_table_t * self, int i) {
-	return self->players[(self->current_player + i)%self->player_count];
+Agent * MahjongTable::get_player_of_distance( int i) {
+	return this->players[(this->current_player + i)%this->player_count];
 }
 
-void mj_table_add_player(mj_table_t * self,
+void MahjongTable::add_player(
 		Agent * player) {
-	self->players[self->player_count++] = player;
+	this->players[this->player_count++] = player;
 }
-static int _mj_table_get_player_count(mj_table_t * self) {
-	return self->player_count;
+int MahjongTable::get_player_count() {
+	return this->player_count;
 }
-static void _mj_table_pick(mj_table_t * self, tile_t tile) {
+void MahjongTable::pick( tile_t tile) {
 	int i = 0;
-	for (i = 0; i < self->player_count ; i++) {
-		Agent * agent = get_player_of_distance(self, i);
+	for (i = 0; i < this->player_count ; i++) {
+		Agent * agent = get_player_of_distance(i);
 		agent->pick(tile, i);
 	}
 }
-static void _change_host(mj_table_t * self) {
-	self->host = (self->host + 1) % self->player_count;
-	self->current_player = self->host;
+void MahjongTable::change_host() {
+	this->host = (this->host + 1) % this->player_count;
+	this->current_player = this->host;
 }
-static void _change_current_player(mj_table_t * self, int distance) {
-	self->current_player = (self->current_player + distance) % self->player_count;
+void MahjongTable::change_current_player( int distance) {
+	this->current_player = (this->current_player + distance) % this->player_count;
 }
-static void _mj_table_win(mj_table_t * self, int score) {
+void MahjongTable::win( int score) {
 	int i = 0;
-	for (i = 0; i < self->player_count ; i++) {
-		Agent * agent = get_player_of_distance(self, i);
+	for (i = 0; i < this->player_count ; i++) {
+		Agent * agent = get_player_of_distance(i);
 		agent->win(score, i);
 	}
-	_change_host(self);
+	change_host();
 }
 
-static void _mj_table_deal(mj_table_t * self, tile_t tiles[], int n) {
+void MahjongTable::deal( tile_t tiles[], int n) {
 	int i = 0;
-	for (i = 0; i < self->player_count ; i++) {
-		Agent * agent = get_player_of_distance(self, i);
+	for (i = 0; i < this->player_count ; i++) {
+		Agent * agent = get_player_of_distance(i);
 		agent->deal(tiles, n, i);
 	}
-	_change_current_player(self, 1);
+	change_current_player(1);
 }
 
-static void _mj_table_throw_tile(mj_table_t * self, tile_t tile){
+void MahjongTable::throw_tile( tile_t tile){
 	int i = 0;
-	for (i = 0; i < self->player_count ; i++) {
-		Agent * agent = get_player_of_distance(self, i);
+	for (i = 0; i < this->player_count ; i++) {
+		Agent * agent = get_player_of_distance(i);
 		agent->discard_tile(tile, i);
 	}
-	self->last_tile = tile;
-	_change_current_player(self, 1);
+	this->last_tile = tile;
+	change_current_player(1);
 }
-static void _mj_table_pong(mj_table_t * self){
+void MahjongTable::pong(){
 	int i = 0;
-	for (i = 0; i < self->player_count ; i++) {
-		Agent * agent = get_player_of_distance(self, i);
-		agent->pong(self->last_tile, i);
+	for (i = 0; i < this->player_count ; i++) {
+		Agent * agent = get_player_of_distance(i);
+		agent->pong(this->last_tile, i);
 	}
 }
-static int _mj_table_chow(mj_table_t * self, tile_t with){
+int MahjongTable::chow( tile_t with){
 	int i = 0;
-	Agent * agent = get_player_of_distance(self, 0);
-	if (!agent->chow(self->last_tile, with, 0))
+	Agent * agent = get_player_of_distance(0);
+	if (!agent->chow(this->last_tile, with, 0))
 		return 0;
-	for (i = 1; i < self->player_count ; i++) {
-		agent = get_player_of_distance(self, i);
-		agent->chow(self->last_tile, with, i);
+	for (i = 1; i < this->player_count ; i++) {
+		agent = get_player_of_distance(i);
+		agent->chow(this->last_tile, with, i);
 	}
 	return 1;
 }
 
-mj_table_t * create_mj_table(tile_pool_ptr_t pool)
+MahjongTable * create_mj_table(tile_pool_t *pool)
 {
-	mj_table_t * gf = (mj_table_t *) malloc(sizeof(mj_table_t));
-	gf->tile_pool = pool;
-	gf->state = GAME_END;
-	gf->player_count = 0;
-	gf->current_player = 0;
-	gf->host = 0;
-
-	return gf;
+	return new MahjongTable(pool);
 }
-void mj_table_remove_agent(mj_table_t * self, Agent * agent)
+MahjongTable::MahjongTable(tile_pool_t *pool)
+{
+	this->tile_pool = pool;
+	this->state = GAME_END;
+	this->player_count = 0;
+	this->current_player = 0;
+	this->host = 0;
+}
+
+void MahjongTable::setPool(tile_pool_t * pool)
+{
+	tile_pool = pool;
+}
+void MahjongTable::remove_agent( Agent * agent)
 {
 	int i = 0;
-	for (; i < self->player_count; i++)
-		if (self->players[i] == agent)
-			self->players[i] = NULL;
+	for (; i < this->player_count; i++)
+		if (this->players[i] == agent)
+			this->players[i] = NULL;
 
 }
-void mj_table_destroy(mj_table_t * self)
+
+game_state_t MahjongTable::get_state()
 {
-	tile_pool_destroy(self->tile_pool);
-	_mj_table_destroy(self);
-	free(self);
+	return this->state;
 }
 
-game_state_t mj_table_get_state(mj_table_t * mj_table)
-{
-	return mj_table->state;
-}
-
-void mj_table_update_state(mj_table_t * self)
+void MahjongTable::update_state()
 {
 	int i;
 	tile_t action_tile;
-	Agent * agent = get_player_of_distance(self, 0);
+	Agent * agent = get_player_of_distance(0);
 	action_t player_action = agent->get_action(&action_tile);
 
 	/**********
@@ -125,8 +125,8 @@ void mj_table_update_state(mj_table_t * self)
 	 * *******************/
 	if (player_action == ACTION_RESTART) {
 		int i = 1;
-		for (; i < self->player_count; i++) {
-			Agent * agent = get_player_of_distance(self, i);
+		for (; i < this->player_count; i++) {
+			Agent * agent = get_player_of_distance(i);
 			if(ACTION_RESTART != agent->get_action(NULL)){
 				player_action = NO_ACTION;
 				break;
@@ -134,60 +134,60 @@ void mj_table_update_state(mj_table_t * self)
 		}
 	}
 
-	if(self->state == GAME_END) {
+	if(this->state == GAME_END) {
 		if (ACTION_RESTART == player_action){
-			tile_pool_shuffle(self->tile_pool);
+			tile_pool->shuffle();
 			tile_t tiles[MAX_HOLDING_COUNT];
 
-			int cnt = _mj_table_get_player_count(self);
+			int cnt = get_player_count();
 			for (; cnt >0; cnt --) {
 				for (i = 0; i < MAX_HOLDING_COUNT; i++) {
-					tiles[i] = tile_pool_pop_a_tile(self->tile_pool);
+					tiles[i] = tile_pool->pop_a_tile();
 				}
-				_mj_table_deal(self, tiles, MAX_HOLDING_COUNT);
+				deal(tiles, MAX_HOLDING_COUNT);
 			}
 
-			_mj_table_pick(self, tile_pool_pop_a_tile(self->tile_pool));
+			pick(tile_pool->pop_a_tile());
 
-			self->state = GAME_PICKED;
+			this->state = GAME_PICKED;
 		}
 	}
-	else if (self->state == GAME_WAITING) {
-		if (tile_pool_is_end(self->tile_pool)) {
-			_mj_table_win(self, 0);
-			self->state = GAME_END;
+	else if (this->state == GAME_WAITING) {
+		if (tile_pool->is_end()) {
+			win(0);
+			this->state = GAME_END;
 		}
 		else {
-			self->state = GAME_PICKING;
+			this->state = GAME_PICKING;
 		}
 	}
-	else if (self->state == GAME_PICKED) {
+	else if (this->state == GAME_PICKED) {
 		if (NO_ACTION == player_action){
 		}
 		else if (ACTION_DISCARD == player_action) {
-			_mj_table_throw_tile(self, action_tile);
-			self->state = GAME_WAITING;
+			throw_tile(action_tile);
+			this->state = GAME_WAITING;
 		} else if (ACTION_WIN == player_action) {
-			_mj_table_win(self, 1);
-			self->state = GAME_END;
+			win(1);
+			this->state = GAME_END;
 		}
 	}
-	else if (self->state ==GAME_PICKING) {
+	else if (this->state ==GAME_PICKING) {
 		if (ACTION_PICK == player_action) {
-			_mj_table_pick(self, tile_pool_pop_a_tile(self->tile_pool));
-			self->state = GAME_PICKED;
+			pick(tile_pool->pop_a_tile());
+			this->state = GAME_PICKED;
 		}
 		else if (ACTION_WIN == player_action) {
-			_mj_table_win(self, 1);
-			self->state = GAME_END;
+			win(1);
+			this->state = GAME_END;
 		}
 		else if (ACTION_PONG == player_action) {
-			_mj_table_pong(self);
-			self->state = GAME_PICKED;
+			pong();
+			this->state = GAME_PICKED;
 		}
 		else if (ACTION_CHOW == player_action) {
-			if(_mj_table_chow(self, action_tile))
-				self->state = GAME_PICKED;
+			if(chow(action_tile))
+				this->state = GAME_PICKED;
 		}
 	}
 }

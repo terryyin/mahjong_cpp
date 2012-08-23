@@ -2,7 +2,7 @@
 #define AI_AGENT_H_
 
 #include "agent.h"
-struct player_t;
+class PlayerData;
 class Evaluator;
 class AIAgent: public Agent{
 public:
@@ -21,7 +21,7 @@ private:
 	tile_t ai_which_to_discard();
 	action_t action;
 	tile_t tile;
-	player_t * player;
+	PlayerData * player;
 	Evaluator * evaluator;
 
 };

@@ -5,15 +5,27 @@
 #include "ui_agent.h"
 #include "ai_agent.h"
 
-UIAgent * game_builder_join_new_game_with_one_ai_player(struct user_info_t * user)
-{
-	tile_pool_t * pool = create_tile_pool();
-	mj_table_t * table = create_mj_table(pool);
-	Agent * ai_agent = create_ai_agent();
-	UIAgent * agent = create_ui_agent();
+Game::Game() {
+	pool = create_tile_pool();
+	table = create_mj_table(pool);
+	ai_agent = create_ai_agent();
+	agent = create_ui_agent();
 	agent->set_game_flow(table);
-	mj_table_add_player(table, agent);
-	mj_table_add_player(table, ai_agent);
+	agent->set_game(this);
+	table->add_player(agent);
+	table->add_player(ai_agent);
+}
+Game::~Game() {
+	delete pool;
+	delete table;
+}
 
-	return agent;
+void Game::setTilePool(tile_pool_t* pool){
+	this->pool = pool;
+}
+
+UIAgent * Game::join_new_game_with_one_ai_player(struct user_info_t * user)
+{
+	Game *game = new Game();
+	return game->agent;
 }

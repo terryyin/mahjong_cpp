@@ -42,29 +42,26 @@ Evaluator * createMockEvaluator(void)
 	return new MockEvaluator();
 }
 
+class MockTilePool:public tile_pool_t{
+public:
+	MockTilePool(){}
+	~MockTilePool(){}
+	void shuffle() {
+		mock().actualCall("tile_pool_shuffle").onObject(this);
+	}
 
-static void tile_pool_shuffle_mock(tile_pool_t * game) {
-	mock().actualCall("tile_pool_shuffle");
-}
+	int is_end() {
+		return mock().actualCall("tile_pool_is_end").onObject(this).returnValue().getIntValue();
+	}
 
-static int tile_pool_is_end_mock(tile_pool_t * game) {
-	return mock().actualCall("tile_pool_is_end").onObject((game)).returnValue().getIntValue();
-}
+	tile_t pop_a_tile() {
+		return (tile_t) mock().actualCall("tile_pool_pop_a_tile").onObject(this).returnValue().getIntValue();
+	}
+};
 
-static tile_t tile_pool_pop_a_tile_mock(tile_pool_t * self) {
-	return (tile_t) mock().actualCall("tile_pool_pop_a_tile").onObject(self).returnValue().getIntValue();
-}
 
-/*
- * tile_pool is an ADT (Abstract DataType).
- * It doesn't support polymorphism (function pointers stored in data structure).
- * All the methods of tile_pool are global function pointers.
- * To mock an ADT object, we simply redirect the methods to our mock functions.
- */
-void setup_tile_pool_mocks() {
-	UT_PTR_SET(tile_pool_shuffle, tile_pool_shuffle_mock);
-	UT_PTR_SET(tile_pool_is_end, tile_pool_is_end_mock);
-	UT_PTR_SET(tile_pool_pop_a_tile, tile_pool_pop_a_tile_mock);
+tile_pool_t * create_tile_pool_mocks() {
+	return new MockTilePool();
 }
 
 #include "agent.h"

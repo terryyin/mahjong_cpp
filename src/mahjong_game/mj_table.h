@@ -3,8 +3,8 @@
 
 #include "tile.h"
 
-typedef struct tile_pool_t * tile_pool_ptr_t;
-struct player_t;
+class tile_pool_t;
+class PlayerData;
 class Agent;
 
 typedef enum {
@@ -15,9 +15,27 @@ typedef enum {
 } game_state_t;
 
 struct dispatcher_t;
-class mj_table_t{
+class MahjongTable{
 public:
-	tile_pool_ptr_t tile_pool;
+	MahjongTable(tile_pool_t *pool);
+	~MahjongTable();
+	void remove_agent(Agent * agent);
+	game_state_t get_state();
+	void update_state();
+	void add_player(Agent * player);
+	void setPool(tile_pool_t * pool);
+private:
+	Agent * get_player_of_distance( int i);
+	int get_player_count();
+	void pick( tile_t tile);
+	void change_host();
+	void change_current_player( int distance);
+	void win( int score);
+	void deal( tile_t tiles[], int n);
+	void throw_tile( tile_t tile);
+	void pong();
+	int chow( tile_t with);
+	tile_pool_t *tile_pool;
 	game_state_t state;
 	Agent * players[MAX_NUMBER_OF_PLAYER];
 	int player_count;
@@ -27,12 +45,6 @@ public:
 	int more_useless_stuff;
 };
 
-mj_table_t * create_mj_table(tile_pool_ptr_t game);
-void mj_table_remove_agent(mj_table_t * self, Agent * agent);
-void mj_table_destroy(mj_table_t * self);
-game_state_t mj_table_get_state(mj_table_t * self);
-void mj_table_update_state(mj_table_t * self);
-void mj_table_add_player(mj_table_t * self,
-		Agent * player);
+MahjongTable * create_mj_table(tile_pool_t *game);
 
 #endif /* GAME_FLOW_H_ */

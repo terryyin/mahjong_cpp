@@ -6,6 +6,7 @@
 #include "html_game.h"
 #include "agent.h"
 #include "ui_agent.h"
+#include "mj_table.h"
 
 static int ui_adaptor_pool_add_ui_adaptor(UIAgent * ui);
 static UIAgent * ui_adaptor_pool_get_ui_adaptor_by_id(int id);
@@ -27,7 +28,7 @@ const char * html_frame =
 
 int start_new_player(char * buffer, int buffer_size)
 {
-	UIAgent * ui = game_builder_join_new_game_with_one_ai_player(NULL);
+	UIAgent * ui = Game::join_new_game_with_one_ai_player(NULL);
 	int player_id = ui_adaptor_pool_add_ui_adaptor(ui);
 	if (player_id == 0)
 		delete ui;
@@ -235,4 +236,10 @@ static void ui_adaptor_pool_remove(int id)
 		item->id = 0;
 		delete item->ui;
 	}
+}
+
+void setPool(int playerID, tile_pool_t * pool)
+{
+	UIAgent * ui = ui_adaptor_pool_get_ui_adaptor_by_id(playerID);
+	ui->getTable()->setPool(pool);
 }

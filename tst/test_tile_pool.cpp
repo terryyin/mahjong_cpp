@@ -11,7 +11,7 @@ TEST_BASE(base_tile_pool) {
 		game = create_tile_pool();
 	}
 	void teardown() {
-		tile_pool_destroy(game);
+		delete game;
 	}
 };
 
@@ -20,18 +20,18 @@ TEST_GROUP_BASE(tile_pool, base_tile_pool)
 
 TEST(tile_pool, not_end)
 {
-	LONGS_EQUAL(0, tile_pool_is_end(game));
+	LONGS_EQUAL(0, game->is_end());
 }
 
 TEST(tile_pool, end)
 {
 	for (int i = 0; i < MAX_PICKS-1; i++) {
-		tile_pool_pop_a_tile(game);
-		LONGS_EQUAL(0, tile_pool_is_end(game));
+		game->pop_a_tile();
+		LONGS_EQUAL(0, game->is_end());
 	}
 
-	tile_pool_pop_a_tile(game);
-	LONGS_EQUAL(1, tile_pool_is_end(game));
+	game->pop_a_tile();
+	LONGS_EQUAL(1, game->is_end());
 }
 
 TEST_GROUP_BASE(tile_pool_shuffle, base_tile_pool)
@@ -44,8 +44,8 @@ TEST_GROUP_BASE(tile_pool_shuffle, base_tile_pool)
 	void shuffle_and_get_all_tiles (){
 		srand(100);
 		int cnt = 0;
-		tile_pool_shuffle(game);
-		while (ALL_COUNT > cnt) all[cnt++] = tile_pool_pop_a_tile(game);
+		game->shuffle();
+		while (ALL_COUNT > cnt) all[cnt++] = game->pop_a_tile();
 	}
 	double average_of_array(tile_t tiles[], int from, int count) {
 		double sum = 0;

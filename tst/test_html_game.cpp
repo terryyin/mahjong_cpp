@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "html_game.h"
+#include "HTMLMahjongGameServer.h"
 #include "tile_pool.h"
 #include "evaluator.h"
 
@@ -17,6 +17,7 @@ const int buffer_size = 1024;
 TEST_GROUP(html_game_new_player)
 {
 	char buffer[buffer_size];
+	HTMLMahjongGameServer server;
 	void setup() {
 	}
 	char * itoa(int id) {
@@ -28,19 +29,19 @@ TEST_GROUP(html_game_new_player)
 
 TEST(html_game_new_player, new_player)
 {
-	int id = execute_game_command("/game", "", buffer, buffer_size);
+	int id = server.execute_game_command("/game", "", buffer, buffer_size);
 	CHECK(id);
-	LONGS_EQUAL(id, execute_game_command("/bye", itoa(id*1000), buffer, buffer_size));
+	LONGS_EQUAL(id, server.execute_game_command("/bye", itoa(id*1000), buffer, buffer_size));
 }
 
 TEST(html_game_new_player, mulitple_games)
 {
-	int id = execute_game_command("/game", "", buffer, buffer_size);
-	CHECK(id);
-	LONGS_EQUAL(id + 1, execute_game_command("/game", "", buffer, buffer_size));
+	int id = server.execute_game_command("/game", "", buffer, buffer_size);
+	LONGS_EQUAL(1, id);
+	LONGS_EQUAL(id + 1, server.execute_game_command("/game", "", buffer, buffer_size));
 
-	LONGS_EQUAL(id, execute_game_command("/bye", itoa(id*1000), buffer, buffer_size));
-	LONGS_EQUAL(id + 1, execute_game_command("/bye", itoa((id+1)*1000), buffer, buffer_size));
+	LONGS_EQUAL(id, server.execute_game_command("/bye", itoa(id*1000), buffer, buffer_size));
+	LONGS_EQUAL(id + 1, server.execute_game_command("/bye", itoa((id+1)*1000), buffer, buffer_size));
 }
 
 class EverIncreasingTilePool:public tile_pool_t{
@@ -70,11 +71,12 @@ TEST_GROUP(html_game)
 {
 	char buffer[buffer_size];
 	int player_id;
+	HTMLMahjongGameServer server;
 	EverIncreasingTilePool tilePool;
 	void setup() {
 		UT_PTR_SET(create_evaluator_r, create_simple_evaluator_r);
-		player_id = execute_game_command("/game", "", buffer, buffer_size);
-		setPool(player_id, &tilePool);
+		player_id = server.execute_game_command("/game", "", buffer, buffer_size);
+		server.setPool(player_id, &tilePool);
 	}
 	void teardown() {
 		execute_cmd("/bye", 0);
@@ -85,7 +87,7 @@ TEST_GROUP(html_game)
 		return temp;
 	}
 	void execute_cmd(const char * cmd, int tile) {
-		execute_game_command(cmd, idtoa(player_id, tile), buffer, buffer_size);
+		server.execute_game_command(cmd, idtoa(player_id, tile), buffer, buffer_size);
 	}
 	void HAS_STRING_LOCATION(const char * expect, const char * actual, const char * filename, int line) {
 		if (strstr(actual, expect) == NULL) {

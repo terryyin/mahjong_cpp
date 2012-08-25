@@ -8,42 +8,28 @@
 #include "ui_agent.h"
 #include "mj_table.h"
 #include "GameIDMap.h"
+#include "MahjongCommand.h"
+#include "HTMLCommandParser.h"
+#include "HTMLMahjongGameRespond.h"
 
-const char * html_frame =
-		"<html>\n"
-				"<head>\n"
-				"<title>Mahjong Game - For Writing Effective Unit Test Training</title> "
-				"<script>game_id=%d;</script>\n"
-				"<LINK REL=StyleSheet HREF=\"mj.css\" TYPE=\"text/css\">\n"
-				"<script src=\"mj.js\" type=\"text/javascript\"></script>\n"
-				"</head>\n"
-				"<body>\n"
-				"</body>\n"
-				"</html>\n";
-
-HTMLMahjongGameServer::HTMLMahjongGameServer() :
-		shutdownCallback_(NULL) {
-	gamePool = new GameIDMap();
-
+HTMLMahjongGameServer::HTMLMahjongGameServer(
+		FpShutdownCallback shutdownCallback, HTMLCommandParser *parser) :
+		shutdownCallback_(shutdownCallback), lastGameID_(0) {
+	gamePool_ = new GameIDMap();
+	commandParser_ = parser;
+	if (commandParser_ == NULL)
+		commandParser_ = new HTMLCommandParser(this);
 }
 
 HTMLMahjongGameServer::~HTMLMahjongGameServer() {
-	delete gamePool;
+	delete gamePool_;
+	delete commandParser_;
 }
 
-void HTMLMahjongGameServer::setShutdownCallback(FpShutdownCallback callback) {
-	shutdownCallback_ = callback;
-}
-
-int HTMLMahjongGameServer::start_new_player(char * buffer, int buffer_size) {
-	UIAgent * ui = Game::join_new_game_with_one_ai_player(NULL);
-	int player_id = gamePool->addGameAndGetID(ui);
-	if (player_id == 0)
-		delete ui;
-
-	snprintf(buffer, buffer_size, html_frame, player_id);
-
-	return player_id;
+GameID HTMLMahjongGameServer::startNewGame() {
+	Game * game = new Game;
+	lastGameID_ = gamePool_->addGameAndGetID(game);
+	return lastGameID_;
 }
 
 static void do_user_do_not_exist_error(char * buffer, int buffer_size) {
@@ -53,30 +39,30 @@ static void do_user_do_not_exist_error(char * buffer, int buffer_size) {
 
 void HTMLMahjongGameServer::script_to_update_all_holdings(int player_id,
 		char * buffer, int buffer_size) {
-	UIAgent * agent = gamePool->getGameByID(player_id);
-	if (!agent) {
+	Game * game = gamePool_->getGameByID(player_id);
+	if (!game) {
 		do_user_do_not_exist_error(buffer, buffer_size);
 		return;
 	}
 	char tmp[1024] = "";
-	agent->get_tiles_array_string(tmp, 1024);
+	game->getUIAgent()->get_tiles_array_string(tmp, 1024);
 	snprintf(buffer, buffer_size, "App.UpdateHolding(%s);", tmp);
 
 }
 
 void HTMLMahjongGameServer::generate_ui_event_script(int player_id,
 		char * buffer, int buffer_size) {
-	UIAgent * ui_agent = gamePool->getGameByID(player_id);
-	if (!ui_agent) {
+	Game * game = gamePool_->getGameByID(player_id);
+	if (!game) {
 		do_user_do_not_exist_error(buffer, buffer_size);
 		return;
 	}
 
-	ui_agent->update_game();
+	game->getUIAgent()->update_game();
 	script_to_update_all_holdings(player_id, buffer, buffer_size);
 	ui_event_t event;
 	char tmp[1024];
-	while (ui_agent->pop_event(&event)) {
+	while (game->getUIAgent()->pop_event(&event)) {
 		switch (event.event) {
 		case UI_EVENT_DISCARD:
 			sprintf(tmp, "App.Throw(%d, %d);", event.tiles[0],
@@ -119,21 +105,8 @@ void HTMLMahjongGameServer::generate_ui_event_script(int player_id,
 	}
 }
 
-void HTMLMahjongGameServer::do_action(int player_id, char * buffer,
-		int buffer_size, action_t action, tile_t tile) {
-	UIAgent * ui_agent = gamePool->getGameByID(player_id);
-	if (!ui_agent) {
-		do_user_do_not_exist_error(buffer, buffer_size);
-		return;
-	}
-	ui_agent->update_game();
-	ui_agent->set_action(action, tile);
-}
-
-void HTMLMahjongGameServer::script_to_bye(int player_id, char * buffer,
-		int buffer_size, action_t action, tile_t tile) {
-	gamePool->removeAndDeleteGame(player_id);
-	buffer[0] = 0;
+void HTMLMahjongGameServer::killGame(GameID gameID) {
+	gamePool_->removeAndDeleteGame(gameID);
 }
 
 void HTMLMahjongGameServer::show_byebye(char * buffer, int buffer_size) {
@@ -142,55 +115,29 @@ void HTMLMahjongGameServer::show_byebye(char * buffer, int buffer_size) {
 
 }
 
-int HTMLMahjongGameServer::execute_game_command(const char * command,
+void HTMLMahjongGameServer::executeGameCommand(const char * command,
 		const char *parameters, char * buffer, int buffer_size) {
-	int player_id = 0;
-	tile_t tile = NO_TILE;
-	const char * cmd = strchr(command, '/');
-//	printf("cmd:%s, with:%s\n", command, parameters);
+	HTMLMahjongGameRespond respond;
 
-	buffer[0] = '\0';
-	if (parameters != NULL && parameters[0] >= '0' && parameters[0] <= '9') {
-		int param = atoi(parameters);
-		player_id = param / 1000;
-		tile = param % 1000;
-	}
-	if (strcmp(cmd, "/game") == 0) {
-		player_id = start_new_player(buffer, buffer_size);
-	} else if (strcmp(cmd, "/bye") == 0) {
-		script_to_bye(player_id, buffer, buffer_size, ACTION_WIN, NO_TILE);
-	} else if (strcmp(cmd, "/shutdown") == 0) {
-		show_byebye(buffer, buffer_size);
-	} else {
-		if (strcmp(cmd, "/start") == 0) {
-			char temp[1024];
-			do_action(player_id, temp, 1024, ACTION_RESTART, NO_TILE);
-		} else if (strcmp(cmd, "/update") == 0) {
-		} else if (strcmp(cmd, "/pick") == 0) {
-			do_action(player_id, buffer, buffer_size, ACTION_PICK, NO_TILE);
-		} else if (strcmp(cmd, "/throw") == 0) {
-			do_action(player_id, buffer, buffer_size, ACTION_DISCARD, tile);
-		} else if (strcmp(cmd, "/chow") == 0) {
-			do_action(player_id, buffer, buffer_size, ACTION_CHOW, tile);
-		} else if (strcmp(cmd, "/pong") == 0) {
-			do_action(player_id, buffer, buffer_size, ACTION_PONG, NO_TILE);
-		} else if (strcmp(cmd, "/kong") == 0) {
-			do_action(player_id, buffer, buffer_size, ACTION_KONG, tile);
-		} else if (strcmp(cmd, "/win") == 0) {
-			do_action(player_id, buffer, buffer_size, ACTION_WIN, NO_TILE);
-		} else
-			return 0;
-		generate_ui_event_script(player_id, buffer, buffer_size);
-	}
-//	printf("%s\n", buffer);
-	return player_id;
+	MahjongCommandBase * mjCommand = commandParser_->parse(command, parameters);
+	mjCommand->execute(&respond);
+	strncpy(buffer, respond.getString(), buffer_size);
+	delete mjCommand;
 }
 
-void HTMLMahjongGameServer::setPool(int playerID, tile_pool_t * pool) {
-	UIAgent * ui = gamePool->getGameByID(playerID);
-	ui->getTable()->setPool(pool);
+void HTMLMahjongGameServer::setPool(GameID playerID, tile_pool_t * pool) {
+	Game * game = gamePool_->getGameByID(playerID);
+	game->getUIAgent()->getTable()->setPool(pool);
 }
 void HTMLMahjongGameServer::shutdown() {
 	if (shutdownCallback_ != NULL)
 		shutdownCallback_();
+}
+
+GameID HTMLMahjongGameServer::getLastGameID() {
+	return lastGameID_;
+}
+
+Game * HTMLMahjongGameServer::getGameByID(GameID gameID) {
+	return gamePool_->getGameByID(gameID);
 }

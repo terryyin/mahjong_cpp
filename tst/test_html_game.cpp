@@ -29,19 +29,10 @@ TEST_GROUP(html_game_new_player)
 
 TEST(html_game_new_player, new_player)
 {
-	int id = server.execute_game_command("/game", "", buffer, buffer_size);
+	server.executeGameCommand("/game", "", buffer, buffer_size);
+	int id = server.getLastGameID();
 	CHECK(id);
-	LONGS_EQUAL(id, server.execute_game_command("/bye", itoa(id*1000), buffer, buffer_size));
-}
-
-TEST(html_game_new_player, mulitple_games)
-{
-	int id = server.execute_game_command("/game", "", buffer, buffer_size);
-	LONGS_EQUAL(1, id);
-	LONGS_EQUAL(id + 1, server.execute_game_command("/game", "", buffer, buffer_size));
-
-	LONGS_EQUAL(id, server.execute_game_command("/bye", itoa(id*1000), buffer, buffer_size));
-	LONGS_EQUAL(id + 1, server.execute_game_command("/bye", itoa((id+1)*1000), buffer, buffer_size));
+	server.executeGameCommand("/bye", itoa(id*1000), buffer, buffer_size);
 }
 
 class EverIncreasingTilePool:public tile_pool_t{
@@ -75,7 +66,8 @@ TEST_GROUP(html_game)
 	EverIncreasingTilePool tilePool;
 	void setup() {
 		UT_PTR_SET(create_evaluator_r, create_simple_evaluator_r);
-		player_id = server.execute_game_command("/game", "", buffer, buffer_size);
+		server.executeGameCommand("/game", "", buffer, buffer_size);
+		player_id = server.getLastGameID();
 		server.setPool(player_id, &tilePool);
 	}
 	void teardown() {
@@ -87,7 +79,7 @@ TEST_GROUP(html_game)
 		return temp;
 	}
 	void execute_cmd(const char * cmd, int tile) {
-		server.execute_game_command(cmd, idtoa(player_id, tile), buffer, buffer_size);
+		server.executeGameCommand(cmd, idtoa(player_id, tile), buffer, buffer_size);
 	}
 	void HAS_STRING_LOCATION(const char * expect, const char * actual, const char * filename, int line) {
 		if (strstr(actual, expect) == NULL) {

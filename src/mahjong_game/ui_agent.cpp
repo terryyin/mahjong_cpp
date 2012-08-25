@@ -5,7 +5,7 @@
 #include "player.h"
 #include "assert.h"
 #include "mj_table.h"
-#include "game_builder.h"
+#include "game.h"
 
 UIAgent::UIAgent() {
 	action = NO_ACTION;
@@ -31,8 +31,6 @@ UIAgent::~UIAgent() {
 	if (this->game_flow)
 		this->game_flow->remove_agent(this);
 	_remove_players();
-	if (game)
-		delete game;
 }
 
 #define _QUEUE_NEXT_INDEX(i) (i) = (((i)+1)%(UI_EVENT_QUEUE_SIZE))

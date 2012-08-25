@@ -1,4 +1,4 @@
-#include "game_builder.h"
+#include "game.h"
 #include "tile_pool.h"
 #include "mj_table.h"
 #include "player.h"
@@ -24,8 +24,14 @@ void Game::setTilePool(tile_pool_t* pool){
 	this->pool = pool;
 }
 
-UIAgent * Game::join_new_game_with_one_ai_player(struct user_info_t * user)
-{
-	Game *game = new Game();
-	return game->agent;
+UIAgent *Game::getUIAgent() {
+	return agent;
+}
+
+void Game::update(){
+	table->update_state();
+}
+
+void Game::set_action(action_t action, tile_t tile) {
+	agent->set_action(action, tile);
 }

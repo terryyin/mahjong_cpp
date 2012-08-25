@@ -1,17 +1,19 @@
 #ifndef SYSTEM_H_
 #define SYSTEM_H_
 
-struct user_info_t;
-class Agent;
+
+#include "agent.h"
 class UIAgent;
 class tile_pool_t;
 class MahjongTable;
 class Game {
 public:
 	Game();
-	~Game();
+	virtual ~Game();
 	void setTilePool(tile_pool_t* pool);
-	static UIAgent * join_new_game_with_one_ai_player(struct user_info_t * user);
+	UIAgent *getUIAgent();
+	virtual void update();
+	virtual void set_action(action_t action, tile_t tile);
 
 private:
 	tile_pool_t * pool;

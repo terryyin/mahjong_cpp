@@ -3,6 +3,6 @@
 
 #include "tile.h"
 #include "ui_agent.h"
-#include "game_builder.h"
+#include "game.h"
 
 #endif /* MAHJONG_GAME_H_ */

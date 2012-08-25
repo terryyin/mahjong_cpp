@@ -6,6 +6,7 @@
 class tile_pool_t;
 class GameIDMap;
 class HTMLCommandParser;
+class HTMLMahjongGameRespond;
 
 typedef void (*FpShutdownCallback)(void);
 
@@ -16,8 +17,7 @@ public:
 
 	virtual ~HTMLMahjongGameServer();
 
-	void executeGameCommand(const char * command, const char *parameters,
-			char * buffer, int buffer_size);
+	void executeGameCommand(const char * command, const char *parameters, HTMLMahjongGameRespond *respond);
 
 	virtual GameID startNewGame();
 

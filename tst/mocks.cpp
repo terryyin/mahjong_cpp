@@ -2,7 +2,7 @@
 #include "CppUTestExt/MockSupport.h"
 
 #include "tile_pool.h"
-#include "player.h"
+#include "PlayerTiles.h"
 #include "Perspective.h"
 
 #include "stdio.h"

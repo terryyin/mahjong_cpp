@@ -3,9 +3,11 @@
 #include "HTMLMahjongGameRespond.h"
 #include "mocks.h"
 #include "HTMLUIEvent.h"
+#include "PlayerTiles.h"
 
 TEST_GROUP(HTMLMahjongGameRespond) {
 	HTMLMahjongGameRespond respond;
+	MockUserView view;
 };
 
 TEST(HTMLMahjongGameRespond, new_game){
@@ -32,7 +34,6 @@ TEST(HTMLMahjongGameRespond, game_does_not_exist){
 }
 
 TEST(HTMLMahjongGameRespond, updateUIEvent_when_no_event){
-	MockUserView view;
 	mock().expectOneCall("popEvent").onObject(&view).andReturnValue((void*)NULL);
 	respond.updateUIEvent(&view);
 	STRCMP_EQUAL("", respond.getString());
@@ -46,7 +47,6 @@ public:
 };
 
 TEST(HTMLMahjongGameRespond, updateUIEvent_when_one_event){
-	MockUserView view;
 	UIEvent * event = new MockUIEvent;
 	mock().expectOneCall("popEvent").onObject(&view).andReturnValue(event);
 	mock().expectOneCall("toString").onObject(event).andReturnValue("EVENT");
@@ -54,3 +54,26 @@ TEST(HTMLMahjongGameRespond, updateUIEvent_when_one_event){
 	respond.updateUIEvent(&view);
 	STRCMP_EQUAL("EVENT", respond.getString());
 }
+
+TEST(HTMLMahjongGameRespond, before_distribution)
+{
+	mock().expectOneCall("getNumberOfPlayer").onObject(&view).andReturnValue(0);
+	respond.updateAllHoldings(&view);
+	STRCMP_EQUAL("App.UpdateHolding([]);", respond.getString());
+}
+
+TEST(HTMLMahjongGameRespond, event_deal)
+{
+	tile_t tiles1[] = { 1 };
+	tile_t tiles2[] = { 2, 3 };
+	PlayerTiles playerData1, playerData2;
+	playerData1.deal(tiles1, 1);
+	playerData2.deal(tiles2, 2);
+
+	mock().expectOneCall("getNumberOfPlayer").onObject(&view).andReturnValue(2);
+	mock().expectOneCall("getPlayerData").onObject(&view).andReturnValue(&playerData1);
+	mock().expectOneCall("getPlayerData").onObject(&view).andReturnValue(&playerData2);;
+	respond.updateAllHoldings(&view);
+	STRCMP_EQUAL("App.UpdateHolding([[1,0],[2,3,0]]);", respond.getString());
+}
+

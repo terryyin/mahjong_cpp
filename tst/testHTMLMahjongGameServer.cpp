@@ -24,10 +24,8 @@ public:
 class MockMahjongCommand: MahjongCommand {
 public:
 	virtual void execute(MahjongGameRespond *respond) {
-		if (mock().hasData("string passing to respond"))
-			respond->setString(
-					mock().getData("string passing to respond").getStringValue());
-		mock().actualCall("execute").onObject(this);
+		mock().actualCall("execute").onObject(this).withParameter("respond",
+				respond);
 	}
 };
 
@@ -49,15 +47,14 @@ TEST(HTMLMahjongGameServer, callback_should_be_call_when_shutdown) {
 }
 
 TEST(HTMLMahjongGameServer, execute_command) {
-	const int buffer_size = 1000;
-	char buffer[buffer_size];
 	MockMahjongCommand *command = new MockMahjongCommand;
+	MockHTMLMahjongGameRespond respond;
 
 	mock().expectOneCall("parse").onObject(parser).withParameter("command",
 			"command").withParameter("parameters", "parameters").andReturnValue(
 			(void*) command);
-	mock().expectOneCall("execute").onObject(command);
-	mock().setData("string passing to respond", "responding_string");
-	server->executeGameCommand("command", "parameters", buffer, buffer_size);
-	STRCMP_EQUAL("responding_string", buffer);
+	mock().expectOneCall("execute").onObject(command).withParameter("respond",
+			&respond);
+
+	server->executeGameCommand("command", "parameters", &respond);
 }

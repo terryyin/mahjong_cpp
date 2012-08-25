@@ -12,7 +12,7 @@ TEST_GROUP(ai_agent)
 	Evaluator * evaluator;
 	void setup() {
 		evaluator = createMockEvaluator();
-		agent = create_ai_agent();
+		agent = new AIPerspective();
 		agent->setEvaluator(evaluator);
 		tile_t holdings[] = { C(1) };
 		agent->deal(holdings, 1, 0);

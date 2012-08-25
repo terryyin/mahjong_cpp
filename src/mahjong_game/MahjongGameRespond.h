@@ -9,7 +9,6 @@ class MahjongGameRespond{
 public:
 	virtual ~MahjongGameRespond(){}
 	virtual void newGame(GameID gameID) = 0;
-	virtual void setString(const char *) = 0;
 	virtual void bye() = 0;
 	virtual void shutdown() = 0;
 	virtual void updateAllHoldings(UserView * view) = 0;

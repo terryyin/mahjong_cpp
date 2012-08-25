@@ -33,12 +33,9 @@ void HTMLMahjongGameServer::killGame(GameID gameID) {
 }
 
 void HTMLMahjongGameServer::executeGameCommand(const char * command,
-		const char *parameters, char * buffer, int buffer_size) {
-	HTMLMahjongGameRespond respond;
-
+		const char *parameters, HTMLMahjongGameRespond *respond) {
 	MahjongCommand * mjCommand = commandParser_->parse(command, parameters);
-	mjCommand->execute(&respond);
-	strncpy(buffer, respond.getString(), buffer_size);
+	mjCommand->execute(respond);
 	delete mjCommand;
 }
 

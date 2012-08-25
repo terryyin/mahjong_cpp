@@ -20,6 +20,6 @@ private:
 	int picks_count;
 };
 
-tile_pool_t * create_tile_pool(void);
+extern tile_pool_t * (*create_tile_pool)(void);
 
 #endif

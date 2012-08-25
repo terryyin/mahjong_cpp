@@ -11,7 +11,7 @@ TEST_GROUP(UserPerspective)
 	tile_t tile;
 	char buffer[1000];
 	void setup() {
-		agent = createUserPerspective();
+		agent = new UserPerspective();
 	}
 	void teardown() {
 		delete agent;
@@ -24,7 +24,7 @@ TEST(UserPerspective, pop_nothing_when_empty)
 }
 TEST(UserPerspective, before_distribution)
 {
-	STRCMP_EQUAL("[]", agent->get_tiles_array_string(buffer, 1000));
+	CHECK_EQUAL(0, agent->getNumberOfPlayer());
 }
 
 TEST(UserPerspective, event_deal)
@@ -33,7 +33,7 @@ TEST(UserPerspective, event_deal)
 
 	agent->deal(tiles, 1, 0);
 	CHECK_EQUAL(NULL, agent->popEvent());
-	STRCMP_EQUAL("[[117,0]]", agent->get_tiles_array_string(buffer, 1000));
+	CHECK_EQUAL(1, agent->getNumberOfPlayer());
 }
 
 TEST(UserPerspective, event_pick)

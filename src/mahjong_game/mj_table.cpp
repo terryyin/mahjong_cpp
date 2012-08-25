@@ -6,16 +6,13 @@
 #include "assert.h"
 
 MahjongTable::~MahjongTable() {
-	int i = 0;
-	for (; i < this->player_count; i++)
-		delete this->players[i];
 }
 
 Perspective * MahjongTable::get_player_of_distance( int i) {
 	return this->players[(this->current_player + i)%this->player_count];
 }
 
-void MahjongTable::add_player(
+void MahjongTable::addPlayer(
 		Perspective * player) {
 	this->players[this->player_count++] = player;
 }
@@ -82,10 +79,6 @@ int MahjongTable::chow( tile_t with){
 	return 1;
 }
 
-MahjongTable * create_mj_table(tile_pool_t *pool)
-{
-	return new MahjongTable(pool);
-}
 MahjongTable::MahjongTable(tile_pool_t *pool)
 {
 	this->tile_pool = pool;
@@ -95,25 +88,7 @@ MahjongTable::MahjongTable(tile_pool_t *pool)
 	this->host = 0;
 }
 
-void MahjongTable::setPool(tile_pool_t * pool)
-{
-	tile_pool = pool;
-}
-void MahjongTable::remove_agent( Perspective * agent)
-{
-	int i = 0;
-	for (; i < this->player_count; i++)
-		if (this->players[i] == agent)
-			this->players[i] = NULL;
-
-}
-
-game_state_t MahjongTable::get_state()
-{
-	return this->state;
-}
-
-void MahjongTable::update_state()
+void MahjongTable::nextMove()
 {
 	int i;
 	tile_t action_tile;

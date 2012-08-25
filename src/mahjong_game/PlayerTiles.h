@@ -5,10 +5,10 @@
 
 #include "tiles.h"
 
-class PlayerData {
+class PlayerTiles {
 public:
-	PlayerData();
-	~PlayerData();
+	PlayerTiles();
+	~PlayerTiles();
 	int get_holdings(tile_t * tiles_buffer, int buffer_size);
 	int get_eaten(eaten_t * tiles_buffer, int buffer_size);
 	tile_t get_current();
@@ -33,6 +33,6 @@ private:
 	tile_t current;
 };
 
-PlayerData * create_player_data(void);
+PlayerTiles * create_player_data(void);
 
 #endif /* PLAYER_H_ */

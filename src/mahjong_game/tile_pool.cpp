@@ -12,9 +12,11 @@ static const tile_t all_types[] = {R(1), R(2), R(3), R(4), R(5), R(6), R(7), R(8
 */
 #define TILE_TYPES sizeof(all_types)/sizeof(all_types[0])
 
-tile_pool_t * create_tile_pool() {
+static tile_pool_t * create_tile_pool_impl() {
 	return new tile_pool_t;
 }
+
+tile_pool_t * (*create_tile_pool)() = create_tile_pool_impl;
 
 tile_pool_t::tile_pool_t() {
 	_init();

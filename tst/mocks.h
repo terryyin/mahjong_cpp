@@ -8,7 +8,7 @@ Perspective * createMockPerspective(void);
 Evaluator * createMockEvaluator(void);
 
 #include "HTMLMahjongGameRespond.h"
-class MockHTMLMahjongGameRespond: public MahjongGameRespond {
+class MockHTMLMahjongGameRespond: public HTMLMahjongGameRespond {
 public:
 	void newGame(int gameID) {
 		mock().actualCall("newHTMLFrame").onObject(this).withParameter("gameID",
@@ -35,8 +35,6 @@ public:
 		mock().actualCall("updateAllHoldings").onObject(this).withParameter("view", view);
 	}
 
-	void setString(const char * string) {
-	}
 };
 
 class MockHTMLMahjongGameServer: public HTMLMahjongGameServer {
@@ -64,11 +62,11 @@ public:
 #include "game.h"
 class MockGame : public Game {
 public:
-	virtual void update() {
+	virtual void nextMove() {
 		mock().actualCall("update").onObject(this);
 	}
 
-	virtual void set_action(action_t action, tile_t tile) {
+	virtual void setAction(action_t action, tile_t tile) {
 		mock().actualCall("set_action").onObject(this);
 	}
 
@@ -84,9 +82,20 @@ public:
 	UIEvent * popEvent() {
 		return (UIEvent *)mock().actualCall("popEvent").onObject(this).returnValue().getObjectPointer();
 	}
+
 	const char * get_tiles_array_string(char buffer[], int buffer_size) {
 		return "<tile list>";
 	}
+
+	int getNumberOfPlayer() {
+		return mock().actualCall("getNumberOfPlayer").onObject(this).returnValue().getIntValue();
+	}
+
+	PlayerTiles *getPlayerData(int distance) {
+		return (PlayerTiles *)mock().actualCall("getPlayerData").onObject(this).returnValue().getObjectPointer();
+	}
+
+
 };
 
 #endif /* MOCKS_H_ */

@@ -8,9 +8,13 @@ typedef int GameID;
 class GameIDMap {
 public:
 	GameIDMap();
+
 	~GameIDMap();
+
 	GameID addGameAndGetID(Game * ui);
+
 	Game * getGameByID(GameID id);
+
 	void removeAndDeleteGame(GameID id);
 
 private:

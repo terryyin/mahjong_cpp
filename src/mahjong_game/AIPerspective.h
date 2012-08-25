@@ -2,7 +2,7 @@
 #define AI_AGENT_H_
 
 #include "Perspective.h"
-class PlayerData;
+class PlayerTiles;
 class Evaluator;
 class AIPerspective: public Perspective{
 public:
@@ -21,11 +21,9 @@ private:
 	tile_t ai_which_to_discard();
 	action_t action;
 	tile_t tile;
-	PlayerData * player;
+	PlayerTiles * player;
 	Evaluator * evaluator;
 
 };
-
-AIPerspective * create_ai_agent(void);
 
 #endif /* AI_AGENT_H_ */

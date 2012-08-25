@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "AIPerspective.h"
-#include "player.h"
+#include "PlayerTiles.h"
 #include "evaluator.h"
 #include "assert.h"
 
@@ -19,7 +19,7 @@ AIPerspective::~AIPerspective() {
 
 void AIPerspective::deal(tile_t tiles[], int n, int distance) {
 	if (distance == 0) {
-		PlayerData * player_data = create_player_data();
+		PlayerTiles * player_data = create_player_data();
 		player_data->deal(tiles, n);
 		player = player_data;
 	}
@@ -95,9 +95,5 @@ void AIPerspective::setEvaluator(Evaluator * evaluator){
 	if (this->evaluator != NULL)
 		delete this->evaluator;
 	this->evaluator = evaluator;
-}
-
-AIPerspective * create_ai_agent() {
-	return new AIPerspective();
 }
 

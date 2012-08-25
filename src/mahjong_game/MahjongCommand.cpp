@@ -48,8 +48,8 @@ MJCommandAction::~MJCommandAction() {
 }
 
 void MJCommandAction::execute(MahjongGameRespond *respond) {
-	game_->set_action(action_, tile_);
-	game_->update();
+	game_->setAction(action_, tile_);
+	game_->nextMove();
 	UserView * view = game_->getUserView();
 	respond->updateAllHoldings(view);
 	respond->updateUIEvent(view);
@@ -66,22 +66,22 @@ void MJCommandDoesNotExist::execute(MahjongGameRespond *respond) {
 }
 
 void MJCommandUpdate::execute(MahjongGameRespond *respond) {
-	game_->update();
+	game_->nextMove();
 	UserView * view = game_->getUserView();
 	respond->updateAllHoldings(view);
 	respond->updateUIEvent(view);
 }
 
 void MJCommandPick::execute(MahjongGameRespond *respond) {
-	game_->set_action(action_, tile_);
-	game_->update();
-	game_->update();
+	game_->setAction(action_, tile_);
+	game_->nextMove();
+	game_->nextMove();
 	respond->updateUIEvent(game_->getUserView());
 }
 
 void MJCommandWin::execute(MahjongGameRespond *respond) {
-	game_->set_action(action_, tile_);
-	game_->update();
+	game_->setAction(action_, tile_);
+	game_->nextMove();
 	respond->updateUIEvent(game_->getUserView());
 }
 

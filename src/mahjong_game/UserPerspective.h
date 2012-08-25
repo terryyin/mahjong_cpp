@@ -8,14 +8,15 @@
 
 class MahjongTable;
 
-class PlayerData;
+class PlayerTiles;
 class Game;
 
 class UserView {
 public:
 	virtual ~UserView(){};
 	virtual UIEvent * popEvent() = 0;
-	virtual const char * get_tiles_array_string(char buffer[], int buffer_size) = 0;
+	virtual int getNumberOfPlayer() = 0;
+	virtual PlayerTiles *getPlayerData(int distance) = 0;
 };
 
 class UserPerspective: public Perspective, public UserView {
@@ -31,8 +32,9 @@ public:
 	virtual void set_action(action_t action, tile_t tile);
 	virtual void discard_tile(tile_t tile, int distance);
 
-	UIEvent * popEvent();
-	const char * get_tiles_array_string(char buffer[], int buffer_size);
+	virtual UIEvent * popEvent();
+	virtual int getNumberOfPlayer();
+	virtual PlayerTiles *getPlayerData(int distance);
 	void set_game_flow(MahjongTable * game_flow);
 	void set_game(Game * game);
 	void update_game();
@@ -46,12 +48,11 @@ private:
 	action_t action;
 	tile_t last_tile;
 	tile_t action_tile;
-	PlayerData * players[MAX_NUMBER_OF_PLAYER];
+	PlayerTiles * players[MAX_NUMBER_OF_PLAYER];
 	MahjongTable * game_flow;
 	Game * game;
 	HTMLEventFactory eventFactory_;
 	void _remove_players();
 };
-UserPerspective * createUserPerspective(void);
 
 #endif /* UI_AGENT_H_ */

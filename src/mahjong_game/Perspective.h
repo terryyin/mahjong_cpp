@@ -14,9 +14,9 @@ typedef enum {
 	ACTION_RESTART
 }action_t;
 
-class Agent {
+class Perspective {
 public:
-	virtual ~Agent(){}
+	virtual ~Perspective(){}
 	virtual void deal(tile_t tiles[], int n, int distance)=0;
 	virtual void pick(tile_t tile, int distance)=0;
 	virtual void pong(tile_t tile, int distance)=0;
@@ -25,6 +25,7 @@ public:
 	virtual action_t get_action(tile_t* tile)=0;
 	virtual void set_action(action_t action, tile_t tile)=0;
 	virtual void discard_tile(tile_t tile, int distance)=0;
+
 };
 
 #endif /* AGEND_H_ */

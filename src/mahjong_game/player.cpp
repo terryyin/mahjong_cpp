@@ -1,7 +1,7 @@
 #include "player.h"
 #include "memory.h"
 #include <stdlib.h>
-#include "agent.h"
+#include "Perspective.h"
 
 PlayerData::~PlayerData() {
 }

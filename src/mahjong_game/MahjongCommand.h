@@ -4,14 +4,14 @@
 #include "HTMLMahjongGameServer.h"
 class MahjongGameRespond;
 
-class MahjongCommandBase {
+class MahjongCommand {
 public:
-	virtual ~MahjongCommandBase() {
+	virtual ~MahjongCommand() {
 	}
 	virtual void execute(MahjongGameRespond *respond) =0;
 };
 
-class MJCommandStartNew: public MahjongCommandBase {
+class MJCommandStartNew: public MahjongCommand {
 public:
 	MJCommandStartNew(HTMLMahjongGameServer* server);
 	virtual ~MJCommandStartNew();
@@ -20,7 +20,7 @@ private:
 	HTMLMahjongGameServer* server_;
 };
 
-class MJCommandQuitGame: public MahjongCommandBase {
+class MJCommandQuitGame: public MahjongCommand {
 public:
 	MJCommandQuitGame(HTMLMahjongGameServer* server, GameID gameID);
 	virtual ~MJCommandQuitGame();
@@ -30,7 +30,7 @@ private:
 	GameID gameID_;
 };
 
-class MJCommandShutdownServer: public MahjongCommandBase {
+class MJCommandShutdownServer: public MahjongCommand {
 public:
 	MJCommandShutdownServer(HTMLMahjongGameServer* server);
 	virtual ~MJCommandShutdownServer();
@@ -39,20 +39,19 @@ private:
 	HTMLMahjongGameServer* server_;
 };
 
-class MJCommandDoesNotExist: public MahjongCommandBase {
+class MJCommandDoesNotExist: public MahjongCommand {
 public:
 	MJCommandDoesNotExist();
 	virtual ~MJCommandDoesNotExist();
 	virtual void execute(MahjongGameRespond *respond);
 };
 
-class MJCommandAction: public MahjongCommandBase {
+class MJCommandAction: public MahjongCommand {
 public:
-	MJCommandAction(HTMLMahjongGameServer* server, Game *game, GameID gameID, action_t action, tile_t tile);
+	MJCommandAction(Game *game, action_t action, tile_t tile);
 	virtual ~MJCommandAction();
 	virtual void execute(MahjongGameRespond *respond);
 protected:
-	HTMLMahjongGameServer* server_;
 	GameID gameID_;
 	Game *game_;
 	action_t action_;
@@ -61,45 +60,47 @@ protected:
 
 class MJCommandRestart: public MJCommandAction {
 public:
-	MJCommandRestart(HTMLMahjongGameServer* server, Game *game, GameID gameID):
-		MJCommandAction(server, game, gameID, ACTION_RESTART, NO_TILE){};
+	MJCommandRestart(Game *game):
+		MJCommandAction(game, ACTION_RESTART, NO_TILE){};
 };
 
 class MJCommandUpdate : public MJCommandAction {
 public:
-	MJCommandUpdate(HTMLMahjongGameServer* server, Game *game, GameID gameID):
-		MJCommandAction(server, game, gameID, NO_ACTION, NO_TILE){};
+	MJCommandUpdate(Game *game):
+		MJCommandAction(game, NO_ACTION, NO_TILE){};
 	virtual void execute(MahjongGameRespond *respond);
 };
 class MJCommandPick: public MJCommandAction {
 public:
-	MJCommandPick(HTMLMahjongGameServer* server, Game *game, GameID gameID):
-		MJCommandAction(server, game, gameID, ACTION_PICK, NO_TILE){};
+	MJCommandPick(Game *game):
+		MJCommandAction(game, ACTION_PICK, NO_TILE){};
+	virtual void execute(MahjongGameRespond *respond);
 };
 class MJCommandDiscard: public MJCommandAction {
 public:
-	MJCommandDiscard(HTMLMahjongGameServer* server, Game *game, GameID gameID, tile_t tile):
-		MJCommandAction(server, game, gameID, ACTION_DISCARD, tile){};
+	MJCommandDiscard(Game *game, tile_t tile):
+		MJCommandAction(game, ACTION_DISCARD, tile){};
 };
 class MJCommandChow: public MJCommandAction {
 public:
-	MJCommandChow(HTMLMahjongGameServer* server, Game *game, GameID gameID, tile_t tile):
-		MJCommandAction(server, game, gameID, ACTION_CHOW, tile){};
+	MJCommandChow(Game *game, tile_t tile):
+		MJCommandAction(game, ACTION_CHOW, tile){};
 };
 class MJCommandPong: public MJCommandAction {
 public:
-	MJCommandPong(HTMLMahjongGameServer* server, Game *game, GameID gameID):
-		MJCommandAction(server, game, gameID, ACTION_PONG, NO_TILE){};
+	MJCommandPong(Game *game):
+		MJCommandAction(game, ACTION_PONG, NO_TILE){};
 };
 class MJCommandKong: public MJCommandAction {
 public:
-	MJCommandKong(HTMLMahjongGameServer* server, Game *game, GameID gameID, tile_t tile):
-		MJCommandAction(server, game, gameID, ACTION_KONG, tile){};
+	MJCommandKong(Game *game, tile_t tile):
+		MJCommandAction(game, ACTION_KONG, tile){};
 };
 class MJCommandWin: public MJCommandAction {
 public:
-	MJCommandWin(HTMLMahjongGameServer* server, Game *game, GameID gameID):
-		MJCommandAction(server, game, gameID, ACTION_WIN, NO_TILE){};
+	MJCommandWin(Game *game):
+		MJCommandAction(game, ACTION_WIN, NO_TILE){};
+	virtual void execute(MahjongGameRespond *respond);
 };
 
 #endif /* MAHJONGCOMMAND_H_ */

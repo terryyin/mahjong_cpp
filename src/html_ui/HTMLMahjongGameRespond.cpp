@@ -1,4 +1,6 @@
 #include "HTMLMahjongGameRespond.h"
+#include "game.h"
+#include "UserPerspective.h"
 
 HTMLMahjongGameRespond::HTMLMahjongGameRespond() {
 }
@@ -40,13 +42,26 @@ void HTMLMahjongGameRespond::shutdown() {
 	content_ = "<HTML><BODY>shutdown!</BODY></HTML>";
 }
 
-void HTMLMahjongGameRespond::update(HTMLMahjongGameServer* server, GameID gameID) {
-	const int buffer_size = 1000;
-	char buffer[buffer_size];
-	server->generate_ui_event_script(gameID, buffer, buffer_size);
-	content_ = buffer;
-}
-
 void HTMLMahjongGameRespond::gameDoesNotExist() {
 	content_ = "alert('Game does not exist. Restart, please.');";
+}
+
+void HTMLMahjongGameRespond::updateAllHoldings(UserView * view) {
+	const int buffer_size = 1000;
+	char buffer[buffer_size];
+	char tmp[buffer_size] = "";
+	view->get_tiles_array_string(tmp, buffer_size);
+	snprintf(buffer, buffer_size, "App.UpdateHolding(%s);", tmp);
+	content_+= buffer;
+}
+
+void HTMLMahjongGameRespond::updateUIEvent(UserView * view) {
+	UIEvent *event;
+	while (true) {
+		event = view->popEvent();
+		if (event == NULL)
+			break;
+		content_+= event->toString();
+		delete event;
+	}
 }

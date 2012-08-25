@@ -1,0 +1,58 @@
+#include "CppUTest/TestHarness.h"
+#include "CppUTestExt/MockSupport.h"
+#include "mocks.h"
+#include "HTMLUIEvent.h"
+
+TEST_GROUP(HTMLUIEvent) {
+	HTMLEventFactory factory;
+	UIEvent *event;
+	void teardown() {
+		delete event;
+	}
+};
+
+TEST(HTMLUIEvent, HTMLPickEvent) {
+	event = factory.createPickEvent(1, 2);
+	STRCMP_EQUAL("App.Pick(2, 1);App.ResumeUpdate();",
+			event->toString().c_str());
+}
+
+TEST(HTMLUIEvent, HTMLPickEvent_by_self) {
+	event = factory.createPickEvent(1, 0);
+	STRCMP_EQUAL("App.Pick(0, 1);App.StopUpdate();", event->toString().c_str());
+}
+
+TEST(HTMLUIEvent, DiscardEvent) {
+	event = factory.createDiscardEvent(1, 2);
+	STRCMP_EQUAL("App.Throw(1, 2);App.ResumeUpdate();", event->toString().c_str());
+}
+
+TEST(HTMLUIEvent, DiscardEvent_by_previous_player) {
+	event = factory.createDiscardEvent(1, 1);
+	STRCMP_EQUAL("App.Throw(1, 1);App.StopUpdate();", event->toString().c_str());
+}
+
+TEST(HTMLUIEvent, EnableWinEvent) {
+	event = factory.createEnableWinEvent();
+	STRCMP_EQUAL("App.LightButton('win');", event->toString().c_str());
+}
+
+TEST(HTMLUIEvent, WinEvent) {
+	event = factory.createWinEvent(3, 1);
+	STRCMP_EQUAL("App.WinAck(3, 1);", event->toString().c_str());
+}
+
+TEST(HTMLUIEvent, MessageEvent) {
+	event = factory.createMessageEvent("hello");
+	STRCMP_EQUAL("alert(\"hello\");", event->toString().c_str());
+}
+
+TEST(HTMLUIEvent, EnablePongEvent) {
+	event = factory.createEnablePongEvent();
+	STRCMP_EQUAL("App.LightButton('pong');", event->toString().c_str());
+}
+
+TEST(HTMLUIEvent, EnableChewEvent) {
+	event = factory.createEnableChewEvent();
+	STRCMP_EQUAL("App.LightButton('chew');", event->toString().c_str());
+}

@@ -61,14 +61,14 @@ private:
 TEST_GROUP(html_game)
 {
 	char buffer[buffer_size];
-	int player_id;
+	int gameID;
 	HTMLMahjongGameServer server;
 	EverIncreasingTilePool tilePool;
 	void setup() {
 		UT_PTR_SET(create_evaluator_r, create_simple_evaluator_r);
 		server.executeGameCommand("/game", "", buffer, buffer_size);
-		player_id = server.getLastGameID();
-		server.setPool(player_id, &tilePool);
+		gameID = server.getLastGameID();
+		server.getGameByID(gameID)->setTilePool(&tilePool);
 	}
 	void teardown() {
 		execute_cmd("/bye", 0);
@@ -79,7 +79,7 @@ TEST_GROUP(html_game)
 		return temp;
 	}
 	void execute_cmd(const char * cmd, int tile) {
-		server.executeGameCommand(cmd, idtoa(player_id, tile), buffer, buffer_size);
+		server.executeGameCommand(cmd, idtoa(gameID, tile), buffer, buffer_size);
 	}
 	void HAS_STRING_LOCATION(const char * expect, const char * actual, const char * filename, int line) {
 		if (strstr(actual, expect) == NULL) {
@@ -130,18 +130,13 @@ TEST(html_game, a_game)
 			, buffer);
 	tilePool.setCurrentTile(27);
 	execute_cmd("/pick", 0);
-	STRCMP_EQUAL("App.UpdateHolding("
-			"[[2,3,4,5,6,7,8,9,10,11,12,13,27,27],"
-			"[14,15,16,17,18,19,20,21,22,23,24,25,26,0]]);"
+	STRCMP_EQUAL(
 			"App.Pick(0, 27);"
 			"App.StopUpdate();"
 			"App.LightButton('win');"
 			, buffer);
 	execute_cmd("/win", 0);
-	STRCMP_EQUAL("App.UpdateHolding("
-			"[[2,3,4,5,6,7,8,9,10,11,12,13,27,27],"
-			"[14,15,16,17,18,19,20,21,22,23,24,25,26,0]]);"
-			"App.WinAck(0, 1);"
+	STRCMP_EQUAL("App.WinAck(0, 1);"
 			, buffer);
 	execute_cmd("/update", 0);
 	STRCMP_EQUAL("App.UpdateHolding("
@@ -168,7 +163,7 @@ TEST(html_game, no_tile_any_more)
 	STRCMP_EQUAL("App.UpdateHolding("
 			"[[2,3,4,5,6,7,8,9,10,11,12,13,27,0],"
 			"[14,15,16,17,18,19,20,21,22,23,24,25,26,0]]);"
-			"App.WinAck(0, 0);"
+			"App.WinAck(1, 0);"
 			, buffer);
 	set_cheapest_tile(54);
 	execute_cmd("/start", 0);
@@ -181,9 +176,7 @@ TEST(html_game, no_tile_any_more)
 	execute_cmd("/update", 0);
 	tilePool.empty();
 	execute_cmd("/pick", 0);
-	STRCMP_EQUAL("App.UpdateHolding("
-			"[[41,42,43,44,45,46,47,48,49,50,51,52,53,0],"
-			"[28,29,30,31,32,33,34,35,36,37,38,39,40,0]]);"
+	STRCMP_EQUAL(
 			"App.WinAck(0, 0);"
 			, buffer);
 	execute_cmd("/start", 0);
@@ -198,7 +191,7 @@ TEST(html_game, _WIN)
 {
 	execute_cmd("/start", 0);
 	execute_cmd("/win", 1);
-	STRCMP_EQUAL("App.UpdateHolding([[1,2,3,4,5,6,7,8,9,10,11,12,13,27],[14,15,16,17,18,19,20,21,22,23,24,25,26,0]]);alert(\"Are you kidding?\");"
+	STRCMP_EQUAL("alert(\"Are you kidding?\");"
 			, buffer);
 	execute_cmd("/throw", 1);
 	STRCMP_EQUAL("App.UpdateHolding([[2,3,4,5,6,7,8,9,10,11,12,13,27,0],[14,15,16,17,18,19,20,21,22,23,24,25,26,0]]);App.Throw(1, 0);App.ResumeUpdate();"
@@ -212,7 +205,7 @@ TEST(html_game, _WIN)
 	HAS_STRING("App.UpdateHolding([[2,3,4,5,6,7,8,9,10,11,12,13,27,0],[14,15,16,17,18,19,20,21,22,23,24,25,26,0]]);App.Throw(28, 1);App.StopUpdate();"
 			, buffer);
 	execute_cmd("/win", 0);
-	STRCMP_EQUAL("App.UpdateHolding([[2,3,4,5,6,7,8,9,10,11,12,13,27,0],[14,15,16,17,18,19,20,21,22,23,24,25,26,0]]);alert(\"Are you kidding?\");"
+	STRCMP_EQUAL("alert(\"Are you kidding?\");"
 			, buffer);
 	execute_cmd("/pick", 0);
 	execute_cmd("/throw", 29);
@@ -221,8 +214,9 @@ TEST(html_game, _WIN)
 	execute_cmd("/update", 0);
 	execute_cmd("/update", 0);
 	execute_cmd("/update", 0);
+	execute_cmd("/update", 0);
 	execute_cmd("/win", 0);
-	STRCMP_EQUAL("App.UpdateHolding([[2,3,4,5,6,7,8,9,10,11,12,13,27,0],[14,15,16,17,18,19,20,21,22,23,24,25,26,0]]);App.WinAck(0, 1);"
+	STRCMP_EQUAL("App.WinAck(0, 1);"
 			, buffer);
 }
 TEST(html_game, ai_WIN)
@@ -237,7 +231,7 @@ TEST(html_game, ai_WIN)
 	STRCMP_EQUAL("App.UpdateHolding([[2,3,4,5,6,7,8,9,10,11,12,13,27,0],[14,15,16,17,18,19,20,21,22,23,24,25,26,14]]);App.Pick(1, 14);App.ResumeUpdate();"
 			, buffer);
 	execute_cmd("/update", 0);
-	STRCMP_EQUAL("App.UpdateHolding([[2,3,4,5,6,7,8,9,10,11,12,13,27,0],[14,15,16,17,18,19,20,21,22,23,24,25,26,14]]);App.WinAck(0, 1);"
+	STRCMP_EQUAL("App.UpdateHolding([[2,3,4,5,6,7,8,9,10,11,12,13,27,0],[14,15,16,17,18,19,20,21,22,23,24,25,26,14]]);App.WinAck(1, 1);"
 			, buffer);
 	execute_cmd("/start", 0);
 	execute_cmd("/update", 0);
@@ -247,7 +241,7 @@ TEST(html_game, ai_WIN)
 	execute_cmd("/throw", 41);
 	execute_cmd("/update", 0);
 	execute_cmd("/update", 0);
-	STRCMP_EQUAL("App.UpdateHolding([[28,29,30,31,32,33,34,35,36,37,38,39,40,0],[16,17,18,19,20,21,22,23,24,25,26,27,41,0]]);App.WinAck(0, 1);"
+	STRCMP_EQUAL("App.UpdateHolding([[28,29,30,31,32,33,34,35,36,37,38,39,40,0],[16,17,18,19,20,21,22,23,24,25,26,27,41,0]]);App.WinAck(1, 1);"
 			, buffer);
 }
 

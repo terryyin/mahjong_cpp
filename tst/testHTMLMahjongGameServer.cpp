@@ -15,13 +15,13 @@ public:
 			HTMLCommandParser(NULL) {
 
 	}
-	MahjongCommandBase * parse(const char * command, const char *parameters) {
-		return (MahjongCommandBase *) mock().actualCall("parse").onObject(this).withParameter(
+	MahjongCommand * parse(const char * command, const char *parameters) {
+		return (MahjongCommand *) mock().actualCall("parse").onObject(this).withParameter(
 				"command", command).withParameter("parameters", parameters).returnValue().getObjectPointer();
 	}
 };
 
-class MockMahjongCommand: MahjongCommandBase {
+class MockMahjongCommand: MahjongCommand {
 public:
 	virtual void execute(MahjongGameRespond *respond) {
 		if (mock().hasData("string passing to respond"))

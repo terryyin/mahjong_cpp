@@ -40,17 +40,19 @@ void MJCommandShutdownServer::execute(MahjongGameRespond *respond) {
 	respond->shutdown();
 }
 
-MJCommandAction::MJCommandAction(HTMLMahjongGameServer * server, Game * game, GameID gameID, action_t action, tile_t tile) :
-		server_(server), gameID_(gameID), game_(game), action_(action), tile_(tile) {
+MJCommandAction::MJCommandAction(Game * game, action_t action, tile_t tile) :
+		game_(game), action_(action), tile_(tile) {
 }
 
 MJCommandAction::~MJCommandAction() {
 }
 
 void MJCommandAction::execute(MahjongGameRespond *respond) {
-	game_->update();
 	game_->set_action(action_, tile_);
-	respond->update(server_, gameID_);
+	game_->update();
+	UserView * view = game_->getUserView();
+	respond->updateAllHoldings(view);
+	respond->updateUIEvent(view);
 }
 
 MJCommandDoesNotExist::MJCommandDoesNotExist() {
@@ -64,6 +66,22 @@ void MJCommandDoesNotExist::execute(MahjongGameRespond *respond) {
 }
 
 void MJCommandUpdate::execute(MahjongGameRespond *respond) {
-	respond->update(server_, gameID_);
+	game_->update();
+	UserView * view = game_->getUserView();
+	respond->updateAllHoldings(view);
+	respond->updateUIEvent(view);
+}
+
+void MJCommandPick::execute(MahjongGameRespond *respond) {
+	game_->set_action(action_, tile_);
+	game_->update();
+	game_->update();
+	respond->updateUIEvent(game_->getUserView());
+}
+
+void MJCommandWin::execute(MahjongGameRespond *respond) {
+	game_->set_action(action_, tile_);
+	game_->update();
+	respond->updateUIEvent(game_->getUserView());
 }
 

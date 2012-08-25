@@ -1,4 +1,4 @@
-#include "agent.h"
+#include "Perspective.h"
 #include "tile_pool.h"
 #include "stdlib.h"
 #include "string.h"
@@ -11,12 +11,12 @@ MahjongTable::~MahjongTable() {
 		delete this->players[i];
 }
 
-Agent * MahjongTable::get_player_of_distance( int i) {
+Perspective * MahjongTable::get_player_of_distance( int i) {
 	return this->players[(this->current_player + i)%this->player_count];
 }
 
 void MahjongTable::add_player(
-		Agent * player) {
+		Perspective * player) {
 	this->players[this->player_count++] = player;
 }
 int MahjongTable::get_player_count() {
@@ -25,7 +25,7 @@ int MahjongTable::get_player_count() {
 void MahjongTable::pick( tile_t tile) {
 	int i = 0;
 	for (i = 0; i < this->player_count ; i++) {
-		Agent * agent = get_player_of_distance(i);
+		Perspective * agent = get_player_of_distance(i);
 		agent->pick(tile, i);
 	}
 }
@@ -39,7 +39,7 @@ void MahjongTable::change_current_player( int distance) {
 void MahjongTable::win( int score) {
 	int i = 0;
 	for (i = 0; i < this->player_count ; i++) {
-		Agent * agent = get_player_of_distance(i);
+		Perspective * agent = get_player_of_distance(i);
 		agent->win(score, i);
 	}
 	change_host();
@@ -48,7 +48,7 @@ void MahjongTable::win( int score) {
 void MahjongTable::deal( tile_t tiles[], int n) {
 	int i = 0;
 	for (i = 0; i < this->player_count ; i++) {
-		Agent * agent = get_player_of_distance(i);
+		Perspective * agent = get_player_of_distance(i);
 		agent->deal(tiles, n, i);
 	}
 	change_current_player(1);
@@ -57,7 +57,7 @@ void MahjongTable::deal( tile_t tiles[], int n) {
 void MahjongTable::throw_tile( tile_t tile){
 	int i = 0;
 	for (i = 0; i < this->player_count ; i++) {
-		Agent * agent = get_player_of_distance(i);
+		Perspective * agent = get_player_of_distance(i);
 		agent->discard_tile(tile, i);
 	}
 	this->last_tile = tile;
@@ -66,13 +66,13 @@ void MahjongTable::throw_tile( tile_t tile){
 void MahjongTable::pong(){
 	int i = 0;
 	for (i = 0; i < this->player_count ; i++) {
-		Agent * agent = get_player_of_distance(i);
+		Perspective * agent = get_player_of_distance(i);
 		agent->pong(this->last_tile, i);
 	}
 }
 int MahjongTable::chow( tile_t with){
 	int i = 0;
-	Agent * agent = get_player_of_distance(0);
+	Perspective * agent = get_player_of_distance(0);
 	if (!agent->chow(this->last_tile, with, 0))
 		return 0;
 	for (i = 1; i < this->player_count ; i++) {
@@ -99,7 +99,7 @@ void MahjongTable::setPool(tile_pool_t * pool)
 {
 	tile_pool = pool;
 }
-void MahjongTable::remove_agent( Agent * agent)
+void MahjongTable::remove_agent( Perspective * agent)
 {
 	int i = 0;
 	for (; i < this->player_count; i++)
@@ -117,7 +117,7 @@ void MahjongTable::update_state()
 {
 	int i;
 	tile_t action_tile;
-	Agent * agent = get_player_of_distance(0);
+	Perspective * agent = get_player_of_distance(0);
 	action_t player_action = agent->get_action(&action_tile);
 
 	/**********
@@ -126,7 +126,7 @@ void MahjongTable::update_state()
 	if (player_action == ACTION_RESTART) {
 		int i = 1;
 		for (; i < this->player_count; i++) {
-			Agent * agent = get_player_of_distance(i);
+			Perspective * agent = get_player_of_distance(i);
 			if(ACTION_RESTART != agent->get_action(NULL)){
 				player_action = NO_ACTION;
 				break;

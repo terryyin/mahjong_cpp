@@ -13,6 +13,8 @@ TEST_GROUP(MJCommand) {
 	char buffer[buffer_size];
 	MockHTMLMahjongGameServer server;
 	MockHTMLMahjongGameRespond respond;
+	MockGame game;
+	MockUserView view;
 };
 
 TEST(MJCommand, start_new){
@@ -37,11 +39,13 @@ TEST(MJCommand, shutdown){
 }
 
 TEST(MJCommand, start_game){
-	MockGame game;
 	mock().expectOneCall("update").onObject(&game);
 	mock().expectOneCall("set_action").onObject(&game);
-	mock().expectOneCall("update").onObject(&respond);
-	MJCommandRestart cmd(&server, &game, 123);
+	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
+	mock().expectOneCall("updateAllHoldings").onObject(&respond).withParameter("view", &view);
+	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
+
+	MJCommandRestart cmd(&game);
 	cmd.execute(&respond);
 }
 
@@ -53,17 +57,21 @@ TEST(MJCommand, game_does_not_exsit){
 
 TEST(MJCommand, update_game){
 	MockGame game;
-	mock().expectOneCall("update").onObject(&respond);
-	MJCommandUpdate cmd(&server, &game, 123);
+	mock().expectOneCall("update").onObject(&game);
+	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
+	mock().expectOneCall("updateAllHoldings").onObject(&respond).withParameter("view", &view);
+	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
+	MJCommandUpdate cmd(&game);
 	cmd.execute(&respond);
 }
 
 TEST(MJCommand, pick){
 	MockGame game;
-	mock().expectOneCall("update").onObject(&game);
+	mock().expectNCalls(2, "update").onObject(&game);
 	mock().expectOneCall("set_action").onObject(&game);
-	mock().expectOneCall("update").onObject(&respond);
-	MJCommandPick cmd(&server, &game, 123);
+	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
+	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
+	MJCommandPick cmd(&game);
 	cmd.execute(&respond);
 }
 
@@ -71,8 +79,10 @@ TEST(MJCommand, discard){
 	MockGame game;
 	mock().expectOneCall("update").onObject(&game);
 	mock().expectOneCall("set_action").onObject(&game);
-	mock().expectOneCall("update").onObject(&respond);
-	MJCommandDiscard cmd(&server, &game, 123, 1);
+	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
+	mock().expectOneCall("updateAllHoldings").onObject(&respond).withParameter("view", &view);
+	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
+	MJCommandDiscard cmd(&game, 1);
 	cmd.execute(&respond);
 }
 
@@ -80,8 +90,10 @@ TEST(MJCommand, chow){
 	MockGame game;
 	mock().expectOneCall("update").onObject(&game);
 	mock().expectOneCall("set_action").onObject(&game);
-	mock().expectOneCall("update").onObject(&respond);
-	MJCommandChow cmd(&server, &game, 123, 1);
+	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
+	mock().expectOneCall("updateAllHoldings").onObject(&respond).withParameter("view", &view);
+	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
+	MJCommandChow cmd(&game, 1);
 	cmd.execute(&respond);
 }
 
@@ -89,8 +101,10 @@ TEST(MJCommand, pong){
 	MockGame game;
 	mock().expectOneCall("update").onObject(&game);
 	mock().expectOneCall("set_action").onObject(&game);
-	mock().expectOneCall("update").onObject(&respond);
-	MJCommandPong cmd(&server, &game, 123);
+	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
+	mock().expectOneCall("updateAllHoldings").onObject(&respond).withParameter("view", &view);
+	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
+	MJCommandPong cmd(&game);
 	cmd.execute(&respond);
 }
 
@@ -98,8 +112,10 @@ TEST(MJCommand, kong){
 	MockGame game;
 	mock().expectOneCall("update").onObject(&game);
 	mock().expectOneCall("set_action").onObject(&game);
-	mock().expectOneCall("update").onObject(&respond);
-	MJCommandKong cmd(&server, &game, 123, 1);
+	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
+	mock().expectOneCall("updateAllHoldings").onObject(&respond).withParameter("view", &view);
+	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
+	MJCommandKong cmd(&game, 1);
 	cmd.execute(&respond);
 }
 
@@ -107,8 +123,9 @@ TEST(MJCommand, win){
 	MockGame game;
 	mock().expectOneCall("update").onObject(&game);
 	mock().expectOneCall("set_action").onObject(&game);
-	mock().expectOneCall("update").onObject(&respond);
-	MJCommandWin cmd(&server, &game, 123);
+	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
+	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
+	MJCommandWin cmd(&game);
 	cmd.execute(&respond);
 }
 

@@ -3,7 +3,7 @@
 
 #include "tile_pool.h"
 #include "player.h"
-#include "agent.h"
+#include "Perspective.h"
 
 #include "stdio.h"
 #include "mocks.h"
@@ -64,13 +64,13 @@ tile_pool_t * create_tile_pool_mocks() {
 	return new MockTilePool();
 }
 
-#include "agent.h"
+#include "Perspective.h"
 /*
  *  Using CppUMock to implement mock for agent.
  */
-class AgentMock: public Agent {
+class MockPerspective: public Perspective {
 public:
-	virtual void destroy(Agent *self) {
+	virtual void destroy(Perspective *self) {
 		free(self);
 	}
 	virtual void deal(tile_t tiles[], int buffer_size, int distance) {
@@ -100,9 +100,9 @@ public:
 	virtual void pong(tile_t tile, int distance){}
 	virtual int chow(tile_t tile, tile_t with, int distance){return 0;}
 	virtual void set_action(action_t action, tile_t tile){}
-
 };
-Agent * create_mock_agent(void) {
-	Agent * agent = new AgentMock();
+
+Perspective * createMockPerspective(void) {
+	Perspective * agent = new MockPerspective();
 	return agent;
 }

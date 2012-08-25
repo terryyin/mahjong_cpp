@@ -1,10 +1,10 @@
 #ifndef MOCKS_H_
 #define MOCKS_H_
 
-class Agent;
+class Perspective;
 class Evaluator;
 void setup_tile_pool_mocks(void);
-Agent * create_mock_agent(void);
+Perspective * createMockPerspective(void);
 Evaluator * createMockEvaluator(void);
 
 #include "HTMLMahjongGameRespond.h"
@@ -23,12 +23,16 @@ public:
 		mock().actualCall("shutdown").onObject(this);
 	}
 
-	void update(HTMLMahjongGameServer* server, GameID gameID) {
-		mock().actualCall("update").onObject(this);
+	void updateUIEvent(UserView *view) {
+		mock().actualCall("updateUIEvent").onObject(this).withParameter("view", view);
 	}
 
 	void gameDoesNotExist() {
 		mock().actualCall("gameDoesNotExist").onObject(this);
+	}
+
+	void updateAllHoldings(UserView *view) {
+		mock().actualCall("updateAllHoldings").onObject(this).withParameter("view", view);
 	}
 
 	void setString(const char * string) {
@@ -63,10 +67,26 @@ public:
 	virtual void update() {
 		mock().actualCall("update").onObject(this);
 	}
+
 	virtual void set_action(action_t action, tile_t tile) {
 		mock().actualCall("set_action").onObject(this);
 	}
 
+	virtual UserView *getUserView() {
+		return (UserView *)mock().actualCall("getUserView").onObject(this).returnValue().getPointerValue();
+	}
+
+};
+
+#include "UserPerspective.h"
+class MockUserView : public UserView {
+public:
+	UIEvent * popEvent() {
+		return (UIEvent *)mock().actualCall("popEvent").onObject(this).returnValue().getObjectPointer();
+	}
+	const char * get_tiles_array_string(char buffer[], int buffer_size) {
+		return "<tile list>";
+	}
 };
 
 #endif /* MOCKS_H_ */

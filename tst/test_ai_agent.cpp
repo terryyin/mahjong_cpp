@@ -2,13 +2,13 @@
 #include "CppUTestExt/MockSupport.h"
 
 #include "tiles.h"
-#include "ai_agent.h"
+#include "AIPerspective.h"
 
 #include "mocks.h"
 
 TEST_GROUP(ai_agent)
 {
-	AIAgent * agent;
+	AIPerspective * agent;
 	Evaluator * evaluator;
 	void setup() {
 		evaluator = createMockEvaluator();

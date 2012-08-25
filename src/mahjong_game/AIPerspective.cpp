@@ -1,23 +1,23 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "ai_agent.h"
+#include "AIPerspective.h"
 #include "player.h"
 #include "evaluator.h"
 #include "assert.h"
 
-AIAgent::AIAgent() {
+AIPerspective::AIPerspective() {
 	action = ACTION_RESTART;
 	player = NULL;
 	evaluator = create_evaluator_r();
 }
-AIAgent::~AIAgent() {
+AIPerspective::~AIPerspective() {
 	if (player)
 		delete player;
 	delete evaluator;
 }
 
-void AIAgent::deal(tile_t tiles[], int n, int distance) {
+void AIPerspective::deal(tile_t tiles[], int n, int distance) {
 	if (distance == 0) {
 		PlayerData * player_data = create_player_data();
 		player_data->deal(tiles, n);
@@ -25,7 +25,7 @@ void AIAgent::deal(tile_t tiles[], int n, int distance) {
 	}
 }
 
-tile_t AIAgent::ai_which_to_discard() {
+tile_t AIPerspective::ai_which_to_discard() {
 	int i;
 	int max = 0;
 	int index_to_throw = 0;
@@ -45,7 +45,7 @@ tile_t AIAgent::ai_which_to_discard() {
 
 	return holdings[index_to_throw];
 }
-void AIAgent::pick(tile_t tile, int distance) {
+void AIPerspective::pick(tile_t tile, int distance) {
 	if (distance == 0) {
 		player->pick(tile);
 		if (player->is_able_to_win(NO_TILE))
@@ -57,30 +57,30 @@ void AIAgent::pick(tile_t tile, int distance) {
 	}
 }
 
-void AIAgent::pong(tile_t tile, int distance) {
+void AIPerspective::pong(tile_t tile, int distance) {
 }
-int AIAgent::chow(tile_t tile, tile_t with, int distance) {
+int AIPerspective::chow(tile_t tile, tile_t with, int distance) {
 	return 0;
 }
-void AIAgent::win(int score, int distance) {
+void AIPerspective::win(int score, int distance) {
 	action = ACTION_RESTART;
 	delete player;
 	player = NULL;
 }
 
-action_t AIAgent::get_action(tile_t* tile) {
+action_t AIPerspective::get_action(tile_t* tile) {
 	if (tile != NULL)
 		*tile = this->tile;
 	return action;
 }
 
-void AIAgent::set_action(action_t action, tile_t tile) {
+void AIPerspective::set_action(action_t action, tile_t tile) {
 
 	this->action = action;
 	this->tile = tile;
 }
 
-void AIAgent::discard_tile(tile_t tile, int distance) {
+void AIPerspective::discard_tile(tile_t tile, int distance) {
 	if (distance == 0)
 		player->discard_tile(tile);
 	else {
@@ -91,13 +91,13 @@ void AIAgent::discard_tile(tile_t tile, int distance) {
 	}
 }
 
-void AIAgent::setEvaluator(Evaluator * evaluator){
+void AIPerspective::setEvaluator(Evaluator * evaluator){
 	if (this->evaluator != NULL)
 		delete this->evaluator;
 	this->evaluator = evaluator;
 }
 
-AIAgent * create_ai_agent() {
-	return new AIAgent();
+AIPerspective * create_ai_agent() {
+	return new AIPerspective();
 }
 

@@ -5,6 +5,8 @@
 
 #include "MahjongGameRespond.h"
 
+class UserView;
+
 class HTMLMahjongGameRespond : public MahjongGameRespond{
 public:
 	HTMLMahjongGameRespond();
@@ -12,8 +14,9 @@ public:
 	virtual void newGame(GameID gameID);
 	virtual void bye();
 	virtual void shutdown();
-	virtual void update(HTMLMahjongGameServer* server, GameID gameID);
 	virtual void gameDoesNotExist();
+	virtual void updateAllHoldings(UserView * view);
+	virtual void updateUIEvent(UserView * view);
 
 	const char * getString();
 	virtual void setString(const char * string);

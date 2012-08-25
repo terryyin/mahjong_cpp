@@ -1,11 +1,14 @@
 #include "HTMLCommandParser.h"
 #include "MahjongCommand.h"
 #include "mahjong_game.h"
+
 HTMLCommandParser::HTMLCommandParser(HTMLMahjongGameServer * server) :
 		server_(server) {
 }
+
 HTMLCommandParser::~HTMLCommandParser() {
 }
+
 void HTMLCommandParser::parse_parameter(const char* parameters, GameID& gameID,
 		tile_t& tile) {
 	if (parameters != NULL && parameters[0] >= '0' && parameters[0] <= '9') {
@@ -15,13 +18,19 @@ void HTMLCommandParser::parse_parameter(const char* parameters, GameID& gameID,
 	}
 }
 
-MahjongCommandBase * HTMLCommandParser::parse(const char * command,
+MahjongCommand * HTMLCommandParser::parse(const char * command,
 		const char *parameters) {
-	int gameID = 0;
+	GameID gameID = 0;
 	tile_t tile = NO_TILE;
 	const char * cmd = strchr(command, '/');
 
 	parse_parameter(parameters, gameID, tile);
+
+	return parseWithExtractedParameters(cmd, gameID, tile);
+}
+
+MahjongCommand * HTMLCommandParser::parseWithExtractedParameters(
+		const char * cmd, GameID gameID, tile_t tile) {
 
 	if (strcmp(cmd, "/game") == 0)
 		return new MJCommandStartNew(server_);
@@ -33,30 +42,35 @@ MahjongCommandBase * HTMLCommandParser::parse(const char * command,
 		return new MJCommandShutdownServer(server_);
 
 	Game * game = server_->getGameByID(gameID);
+	return parseWithExtractedParametersForGame(game, cmd, tile);
+}
+
+MahjongCommand * HTMLCommandParser::parseWithExtractedParametersForGame(
+		Game* game, const char * cmd, tile_t tile) {
 	if (game != NULL) {
 		if (strcmp(cmd, "/start") == 0)
-			return new MJCommandRestart(server_, game, gameID);
+			return new MJCommandRestart(game);
 
 		if (strcmp(cmd, "/update") == 0)
-			return new MJCommandUpdate(server_, game, gameID);
+			return new MJCommandUpdate(game);
 
 		if (strcmp(cmd, "/pick") == 0)
-			return new MJCommandPick(server_, game, gameID);
+			return new MJCommandPick(game);
 
 		if (strcmp(cmd, "/throw") == 0)
-			return new MJCommandDiscard(server_, game, gameID, tile);
+			return new MJCommandDiscard(game, tile);
 
 		if (strcmp(cmd, "/chow") == 0)
-			return new MJCommandChow(server_, game, gameID, tile);
+			return new MJCommandChow(game, tile);
 
 		if (strcmp(cmd, "/pong") == 0)
-			return new MJCommandPong(server_, game, gameID);
+			return new MJCommandPong(game);
 
 		if (strcmp(cmd, "/kong") == 0)
-			return new MJCommandKong(server_, game, gameID, tile);
+			return new MJCommandKong(game, tile);
 
 		if (strcmp(cmd, "/win") == 0)
-			return new MJCommandWin(server_, game, gameID);
+			return new MJCommandWin(game);
 	}
 	return new MJCommandDoesNotExist;
 }

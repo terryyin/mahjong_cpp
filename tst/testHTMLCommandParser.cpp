@@ -8,7 +8,7 @@
 TEST_GROUP(HTMLCommandParser) {
 	MockHTMLMahjongGameServer server;
 	HTMLCommandParser *parser;
-	MahjongCommandBase *cmd;
+	MahjongCommand *cmd;
 	void setup() {
 		cmd = NULL;
 		parser = new HTMLCommandParser(&server);
@@ -35,7 +35,7 @@ TEST(HTMLCommandParser, parse_shutdown) {
 }
 
 TEST(HTMLCommandParser, restart) {
-	UIAgent game;
+	UserPerspective game;
 	mock().expectOneCall("getGameByID").onObject(&server).withParameter(
 			"gameID", 3).andReturnValue(&game);
 	cmd = parser->parse("/start", "3000");
@@ -50,7 +50,7 @@ TEST(HTMLCommandParser, game_does_not_exist) {
 }
 
 TEST(HTMLCommandParser, MJCommandUpdate) {
-	UIAgent game;
+	UserPerspective game;
 	mock().expectOneCall("getGameByID").onObject(&server).withParameter(
 			"gameID", 3).andReturnValue(&game);
 	cmd = parser->parse("/update", "3000");
@@ -58,7 +58,7 @@ TEST(HTMLCommandParser, MJCommandUpdate) {
 }
 
 TEST(HTMLCommandParser, MJCommandDiscard) {
-	UIAgent game;
+	UserPerspective game;
 	mock().expectOneCall("getGameByID").onObject(&server).withParameter(
 			"gameID", 3).andReturnValue(&game);
 	cmd = parser->parse("/throw", "3005");
@@ -66,7 +66,7 @@ TEST(HTMLCommandParser, MJCommandDiscard) {
 }
 
 TEST(HTMLCommandParser, MJCommandPick) {
-	UIAgent game;
+	UserPerspective game;
 	mock().expectOneCall("getGameByID").onObject(&server).withParameter(
 			"gameID", 3).andReturnValue(&game);
 	cmd = parser->parse("/pick", "3000");
@@ -74,7 +74,7 @@ TEST(HTMLCommandParser, MJCommandPick) {
 }
 
 TEST(HTMLCommandParser, MJCommandChow) {
-	UIAgent game;
+	UserPerspective game;
 	mock().expectOneCall("getGameByID").onObject(&server).withParameter(
 			"gameID", 3).andReturnValue(&game);
 	cmd = parser->parse("/chow", "3002");
@@ -82,7 +82,7 @@ TEST(HTMLCommandParser, MJCommandChow) {
 }
 
 TEST(HTMLCommandParser, MJCommandPong) {
-	UIAgent game;
+	UserPerspective game;
 	mock().expectOneCall("getGameByID").onObject(&server).withParameter(
 			"gameID", 3).andReturnValue(&game);
 	cmd = parser->parse("/pong", "3000");
@@ -90,7 +90,7 @@ TEST(HTMLCommandParser, MJCommandPong) {
 }
 
 TEST(HTMLCommandParser, MJCommandKong) {
-	UIAgent game;
+	UserPerspective game;
 	mock().expectOneCall("getGameByID").onObject(&server).withParameter(
 			"gameID", 3).andReturnValue(&game);
 	cmd = parser->parse("/kong", "3002");
@@ -98,7 +98,7 @@ TEST(HTMLCommandParser, MJCommandKong) {
 }
 
 TEST(HTMLCommandParser, MJCommandWin) {
-	UIAgent game;
+	UserPerspective game;
 	mock().expectOneCall("getGameByID").onObject(&server).withParameter(
 			"gameID", 3).andReturnValue(&game);
 	cmd = parser->parse("/win", "3000");

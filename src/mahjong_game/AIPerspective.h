@@ -1,13 +1,13 @@
 #ifndef AI_AGENT_H_
 #define AI_AGENT_H_
 
-#include "agent.h"
+#include "Perspective.h"
 class PlayerData;
 class Evaluator;
-class AIAgent: public Agent{
+class AIPerspective: public Perspective{
 public:
-	AIAgent();
-	virtual ~AIAgent();
+	AIPerspective();
+	virtual ~AIPerspective();
 	void deal(tile_t tiles[], int n, int distance);
 	virtual void pick(tile_t tile, int distance);
 	virtual void pong(tile_t tile, int distance);
@@ -26,6 +26,6 @@ private:
 
 };
 
-AIAgent * create_ai_agent(void);
+AIPerspective * create_ai_agent(void);
 
 #endif /* AI_AGENT_H_ */

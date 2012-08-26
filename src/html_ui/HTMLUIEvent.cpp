@@ -6,10 +6,8 @@ using namespace std;
 string HTMLPickEvent::toString() {
 	char tmp[1024];
 	sprintf(tmp, "App.Pick(%d, %d);", distance_, tile_);
-	if (0 == distance_)
-		strcat(tmp, "App.StopUpdate();");
-	else
-		strcat(tmp, "App.ResumeUpdate();");
+	if (0 != distance_)
+		strcat(tmp, "|");
 
 	return tmp;
 }
@@ -17,10 +15,8 @@ string HTMLPickEvent::toString() {
 string HTMLDiscardEvent::toString() {
 	char tmp[1024];
 	sprintf(tmp, "App.Throw(%d, %d);", tile_, distance_);
-	if (1 == distance_)
-		strcat(tmp, "App.StopUpdate();");
-	else
-		strcat(tmp, "App.ResumeUpdate();");
+	if (0 == distance_)
+		strcat(tmp, "|");
 
 	return tmp;
 }

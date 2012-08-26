@@ -84,9 +84,11 @@ void UserPerspective::win(int score, int distance) {
 	add_event(eventFactory_.createWinEvent(distance, score));
 }
 action_t UserPerspective::get_action(tile_t* tile) {
+	action_t saved = action;
+	action = NO_ACTION;
 	if (tile != NULL)
-		*tile = this->action_tile;
-	return this->action;
+		*tile = action_tile;
+	return saved;
 }
 
 void UserPerspective::set_action(action_t action, tile_t tile) {

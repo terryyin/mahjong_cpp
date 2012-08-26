@@ -5,6 +5,8 @@
  *
  */
 var converter = new Array();
+var animations;
+
 converter[0]=0;converter[49]=1;converter[50]=2;converter[51]=3;converter[52]=4;converter[53]=5;converter[54]=6;converter[55]=7;converter[56]=8;converter[57]=9;converter[65]=21;converter[66]=22;converter[67]=23;converter[68]=24;converter[69]=25;converter[70]=26;converter[71]=27;converter[72]=28;converter[73]=29;converter[97]=41;converter[98]=42;converter[99]=43;converter[100]=44;converter[101]=45;converter[102]=46;converter[103]=47;converter[104]=48;converter[105]=49;converter[108]=61;converter[111]=64;converter[114]=67;converter[117]=70;converter[120]=73;converter[123]=76;converter[126]=79;
 var App = {
 		max_holding_count : 13,
@@ -88,14 +90,17 @@ var App = {
         Win : function () {
         	this._ExecuteCmd('win', 0);
         },
-        WinAck : function (reserved, score) {
+        WinAck : function (distance, score) {
         	this._ResetAllButtons();
         	this.StopUpdate();
 			if (score == 0) {
         		alert("Nobody wins.");
             }
             else {
-        		alert("You win ("+score+")!");
+            	if (distance == 0)
+            		alert("You win ("+score+")!");
+            	else
+            		alert("You lose ("+score+")!");
             }
             this._SetupBoard();
             this._UpdateAllCells();
@@ -152,6 +157,17 @@ var App = {
 		},
 		Throw : function (tile, player) {
 			if (tile != 0) {
+        		if(this.current[player] != tile) {
+        			for (i = 0; i < this.holdings[player].length; i++)
+        				if (this.holdings[player][i] == tile) {
+        					this.holdings[player][i] = this.current[player];
+        					break;
+        				}
+        			this.holdings[player].sort(function(a,b){return a-b});
+        		}
+    			this.current[player] = 0;
+        			
+        		this._UpdateAllCells();
 				cell = document.getElementById("sh_"+App.board_index);
 				App.board_index++;
 				cell.innerHTML = "<img src='images/"+converter[tile]+".png' height=64 width=41 style='-webkit-transform: rotate(180deg);-moz-transform: rotate(180deg);filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);'>"
@@ -180,7 +196,7 @@ var App = {
 		
 		ResumeUpdate: function () {
 			if (this.t==-1) {
-				this.t = setInterval("App._Update()", 250);
+//				this.t = setInterval("App._Update()", 250);
 			}
 		},
 		StopUpdate : function () {
@@ -222,9 +238,23 @@ var App = {
 			http.onreadystatechange = function () {
 			  if (http.readyState == 4) {
     			  var textout = http.responseText;
-    			  eval(textout);
+    			  App._Display(textout);
     		  }
 			};
+        },
+        _DisplayAnimation : function () {
+       		if (this.ti != -1)
+    			clearInterval(this.ti);
+        	eval(animations.shift());
+        	if (animations.length > 0)
+        		this.ti = setInterval("App._DisplayAnimation()", 500);
+        },
+
+        _Display : function (text) {
+        	this.ti = -1;
+        	animations = text.split("|");
+        	if (animations.length > 0)
+        		App._DisplayAnimation();
         },
         
         onexit : function ()

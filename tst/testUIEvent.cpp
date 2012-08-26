@@ -13,23 +13,23 @@ TEST_GROUP(HTMLUIEvent) {
 
 TEST(HTMLUIEvent, HTMLPickEvent) {
 	event = factory.createPickEvent(1, 2);
-	STRCMP_EQUAL("App.Pick(2, 1);App.ResumeUpdate();",
+	STRCMP_EQUAL("App.Pick(2, 1);|",
 			event->toString().c_str());
 }
 
 TEST(HTMLUIEvent, HTMLPickEvent_by_self) {
 	event = factory.createPickEvent(1, 0);
-	STRCMP_EQUAL("App.Pick(0, 1);App.StopUpdate();", event->toString().c_str());
+	STRCMP_EQUAL("App.Pick(0, 1);", event->toString().c_str());
 }
 
 TEST(HTMLUIEvent, DiscardEvent) {
 	event = factory.createDiscardEvent(1, 2);
-	STRCMP_EQUAL("App.Throw(1, 2);App.ResumeUpdate();", event->toString().c_str());
+	STRCMP_EQUAL("App.Throw(1, 2);", event->toString().c_str());
 }
 
 TEST(HTMLUIEvent, DiscardEvent_by_previous_player) {
 	event = factory.createDiscardEvent(1, 1);
-	STRCMP_EQUAL("App.Throw(1, 1);App.StopUpdate();", event->toString().c_str());
+	STRCMP_EQUAL("App.Throw(1, 1);", event->toString().c_str());
 }
 
 TEST(HTMLUIEvent, EnableWinEvent) {

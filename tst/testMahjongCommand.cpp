@@ -67,7 +67,7 @@ TEST(MJCommand, update_game){
 
 TEST(MJCommand, pick){
 	MockGame game;
-	mock().expectNCalls(2, "update").onObject(&game);
+	mock().expectNCalls(1, "update").onObject(&game);
 	mock().expectOneCall("set_action").onObject(&game);
 	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
 	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
@@ -80,7 +80,6 @@ TEST(MJCommand, discard){
 	mock().expectOneCall("update").onObject(&game);
 	mock().expectOneCall("set_action").onObject(&game);
 	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
-	mock().expectOneCall("updateAllHoldings").onObject(&respond).withParameter("view", &view);
 	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
 	MJCommandDiscard cmd(&game, 1);
 	cmd.execute(&respond);

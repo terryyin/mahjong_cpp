@@ -80,6 +80,7 @@ class MJCommandDiscard: public MJCommandAction {
 public:
 	MJCommandDiscard(Game *game, tile_t tile):
 		MJCommandAction(game, ACTION_DISCARD, tile){};
+	virtual void execute(MahjongGameRespond *respond);
 };
 class MJCommandChow: public MJCommandAction {
 public:

@@ -2,109 +2,141 @@
 #include "CppUTestExt/MockSupport.h"
 #include "mocks.h"
 #include "UserPerspective.h"
-#include <typeinfo>
+#include "HTMLUIEvent.h"
+#include "mocks.h"
 
-TEST_GROUP(UserPerspective)
-{
-	UserPerspective * agent;
-	UIEvent *event;
-	tile_t tile;
-	char buffer[1000];
-	void setup() {
-		agent = new UserPerspective();
+class DummyUIEvent: public UIEvent {
+public:
+	virtual ~DummyUIEvent() {
 	}
-	void teardown() {
-		delete agent;
+	virtual std::string toString() {
+		return "";
 	}
 };
 
-TEST(UserPerspective, pop_nothing_when_empty)
-{
-	CHECK_EQUAL(NULL, agent->popEvent());
+const tile_t WINNING_TILE = 1;
+
+TEST_GROUP(UserPerspective) {
+	UserPerspective * userPerspective;
+	UIEvent *event;
+	DummyUIEvent dummyEvent;
+	DummyUIEvent dummyEvent1;
+	DummyUIEvent dummyEvent2;
+	tile_t tile;
+	char buffer[1000];
+	void setup() {
+		MockUIEventFactory *eventFactory = new MockUIEventFactory;
+		userPerspective = new UserPerspective(eventFactory);
+	}
+	void teardown() {
+		delete userPerspective;
+	}
+	void deal() {
+		tile_t tiles[] = { WINNING_TILE, WINNING_TILE, WINNING_TILE+2, WINNING_TILE+2 };
+
+		mock().expectOneCall("createDealEvent").withParameter("view",
+				(UserView *) userPerspective).andReturnValue(&dummyEvent);
+		userPerspective->deal(tiles, 4, 0);
+		CHECK_EQUAL(&dummyEvent, userPerspective->popEvent());
+	}
+};
+
+TEST(UserPerspective, pop_nothing_when_empty) {
+	CHECK_EQUAL(NULL, userPerspective->popEvent());
 }
-TEST(UserPerspective, before_distribution)
-{
-	CHECK_EQUAL(0, agent->getNumberOfPlayer());
-}
-
-TEST(UserPerspective, event_deal)
-{
-	tile_t tiles[] = { MJ_NORTH };
-
-	agent->deal(tiles, 1, 0);
-	CHECK_EQUAL(NULL, agent->popEvent());
-	CHECK_EQUAL(1, agent->getNumberOfPlayer());
-}
-
-TEST(UserPerspective, event_pick)
-{
-	tile_t tiles[] = { MJ_EAST };
-
-	agent->deal(tiles, 1, 0);
-	agent->pick(MJ_NORTH, 0);
-
-	event = agent->popEvent();
-	STRCMP_EQUAL(typeid(HTMLPickEvent).name(), typeid(*event).name());
-	delete event;
-	CHECK_EQUAL(NULL, agent->popEvent());
-}
-
-TEST(UserPerspective, event_pick_and_win)
-{
-	tile_t tiles[] = { MJ_EAST };
-
-	agent->deal(tiles, 1, 0);
-	agent->pick(MJ_EAST, 0);
-
-	event = agent->popEvent();
-	STRCMP_EQUAL(typeid(HTMLPickEvent).name(), typeid(*event).name());
-	delete event;
-	event = agent->popEvent();
-	STRCMP_EQUAL(typeid(HTMLEnableWinEvent).name(), typeid(*event).name());
-	delete event;
-	CHECK_EQUAL(NULL, agent->popEvent());
+TEST(UserPerspective, before_distribution) {
+	CHECK_EQUAL(0, userPerspective->getNumberOfPlayer());
 }
 
-TEST(UserPerspective, action_get_empty)
-{
-	LONGS_EQUAL(NO_ACTION, agent->get_action(&tile));
+TEST(UserPerspective, event_deal) {
+	deal();
 }
 
-TEST(UserPerspective, action_set_and_get)
-{
-	agent->set_action(ACTION_DISCARD, MJ_EAST);
+TEST(UserPerspective, event_pick) {
+	deal();
 
-	LONGS_EQUAL(ACTION_DISCARD, agent->get_action(&tile));
+	mock().expectOneCall("createPickEvent").withParameter("tile",
+			WINNING_TILE+1).withParameter("distance", 0).andReturnValue(&dummyEvent1);
+
+	userPerspective->pick(WINNING_TILE+1, 0);
+
+	CHECK_EQUAL(&dummyEvent1, userPerspective->popEvent());
+	CHECK_EQUAL(NULL, userPerspective->popEvent());
+}
+
+TEST(UserPerspective, event_pick_and_win) {
+	deal();
+
+	mock().expectOneCall("createPickEvent").withParameter("tile",
+			WINNING_TILE).withParameter("distance", 0).andReturnValue(&dummyEvent1);
+	mock().expectOneCall("createEnableWinEvent").andReturnValue(&dummyEvent2);
+
+	userPerspective->pick(WINNING_TILE, 0);
+
+	CHECK_EQUAL(&dummyEvent1, userPerspective->popEvent());
+	CHECK_EQUAL(&dummyEvent2, userPerspective->popEvent());
+	CHECK_EQUAL(NULL, userPerspective->popEvent());
+}
+
+TEST(UserPerspective, action_get_empty) {
+	LONGS_EQUAL(NO_ACTION, userPerspective->popActionRequest(&tile));
+}
+
+TEST(UserPerspective, action_set_and_get) {
+	userPerspective->set_action(ACTION_DISCARD, MJ_EAST);
+
+	LONGS_EQUAL(ACTION_DISCARD, userPerspective->popActionRequest(&tile));
 	LONGS_EQUAL(MJ_EAST, tile);
 }
 
-TEST(UserPerspective, event_discard)
-{
-	tile_t tiles[] = { MJ_NORTH };
+TEST(UserPerspective, event_discard) {
+	deal();
 
-	agent->deal(tiles, 1, 0);
-	agent->discard_tile(MJ_NORTH, 0);
+	mock().expectOneCall("createDiscardEvent").withParameter("tile",
+			WINNING_TILE).withParameter("distance", 0).andReturnValue(&dummyEvent1);
 
-	event = agent->popEvent();
-	STRCMP_EQUAL(typeid(HTMLDiscardEvent).name(), typeid(*event).name());
-	delete event;
-	CHECK_EQUAL(NULL, agent->popEvent());
+	userPerspective->discard_tile(WINNING_TILE, 0);
+
+	CHECK_EQUAL(&dummyEvent1, userPerspective->popEvent());
+	CHECK_EQUAL(NULL, userPerspective->popEvent());
 }
 
-TEST(UserPerspective, other_player_discard_and_play_can_do_some_reaction)
-{
-	tile_t tiles[] = { C(1),C(1),C(3),C(3) };
+TEST(UserPerspective, event_pong) {
+	deal();
 
-	agent->deal(tiles, 4, 0);
-	agent->discard_tile(C(1), 1);
+	mock().expectOneCall("createEnableWinEvent").andReturnValue(&dummyEvent1);
+	mock().expectOneCall("createDealEvent").ignoreOtherParameters().andReturnValue(&dummyEvent2);
 
-	event = agent->popEvent();
-	STRCMP_EQUAL(typeid(HTMLDiscardEvent).name(), typeid(*event).name());
-	delete event;
-	event = agent->popEvent();
-	STRCMP_EQUAL(typeid(HTMLEnableWinEvent).name(), typeid(*event).name());
-	delete event;
-	event = agent->popEvent();
-	STRCMP_EQUAL(typeid(HTMLEnablePongEvent).name(), typeid(*event).name());
-	delete event;
+	userPerspective->pong(WINNING_TILE, 0);
+
+	POINTERS_EQUAL(&dummyEvent2, userPerspective->popEvent());
+	POINTERS_EQUAL(&dummyEvent1, userPerspective->popEvent());
+	POINTERS_EQUAL(NULL, userPerspective->popEvent());
+}
+
+TEST(UserPerspective, event_chow) {
+	deal();
+
+	mock().expectOneCall("createDealEvent").ignoreOtherParameters().andReturnValue(&dummyEvent1);
+
+	userPerspective->chow(WINNING_TILE+1, WINNING_TILE, 0);
+
+	POINTERS_EQUAL(&dummyEvent1, userPerspective->popEvent());
+	POINTERS_EQUAL(NULL, userPerspective->popEvent());
+}
+
+TEST(UserPerspective, other_player_discard_and_play_can_do_some_reaction) {
+	deal();
+
+	mock().expectOneCall("createDiscardEvent").withParameter("tile",
+			WINNING_TILE).withParameter("distance", 1).andReturnValue(&dummyEvent1);
+	mock().expectOneCall("createEnableWinEvent").andReturnValue(&dummyEvent2);
+	mock().expectOneCall("createEnablePongEvent").andReturnValue(&dummyEvent2);
+
+	userPerspective->discard_tile(WINNING_TILE, 1);
+
+	CHECK_EQUAL(&dummyEvent1, userPerspective->popEvent());
+	CHECK_EQUAL(&dummyEvent2, userPerspective->popEvent());
+	CHECK_EQUAL(&dummyEvent2, userPerspective->popEvent());
+	CHECK_EQUAL(NULL, userPerspective->popEvent());
 }

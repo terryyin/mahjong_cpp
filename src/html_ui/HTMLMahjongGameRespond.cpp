@@ -37,27 +37,38 @@ void HTMLMahjongGameRespond::gameDoesNotExist() {
 	content_ = "alert('Game does not exist. Restart, please.');";
 }
 
+class TileArrayScriptGenerator {
+public:
+	const char * getTilesArrayString(UserView * view, char buffer[], int buffer_size);
+private:
+	void catTilesToString(char buffer[], const tile_t * tiles, int n);
+	void catEatenToString(char buffer[], const eaten_t * eaten, int n);
+	void catPlayerTilesToString(PlayerTiles * player, char buffer[], int buffer_size);
+};
+
 void HTMLMahjongGameRespond::updateAllHoldings(UserView * view) {
 	const int buffer_size = 1000;
 	char buffer[buffer_size];
 	char tmp[buffer_size] = "";
-	getTilesArrayString(view, tmp, buffer_size);
+	TileArrayScriptGenerator script;
+	script.getTilesArrayString(view, tmp, buffer_size);
 	snprintf(buffer, buffer_size, "App.UpdateHolding(%s);", tmp);
 	content_ += buffer;
 }
 
 void HTMLMahjongGameRespond::updateUIEvent(UserView * view) {
 	UIEvent *event;
-	while (true) {
-		event = view->popEvent();
-		if (event == NULL)
-			break;
+	while ((event = view->popEvent()) != NULL) {
 		content_ += event->toString();
 		delete event;
 	}
 }
 
-void HTMLMahjongGameRespond::catTilesToString(char buffer[], const tile_t * tiles, int n) {
+void HTMLMahjongGameRespond::clear() {
+	content_ = "";
+}
+
+void TileArrayScriptGenerator::catTilesToString(char buffer[], const tile_t * tiles, int n) {
 	char tmp_tile[100];
 	int i = 0;
 	for (i = 0; i < n; i++) {
@@ -66,7 +77,7 @@ void HTMLMahjongGameRespond::catTilesToString(char buffer[], const tile_t * tile
 	}
 }
 
-void HTMLMahjongGameRespond::catEatenToString(char buffer[], const eaten_t * eaten, int n) {
+void TileArrayScriptGenerator::catEatenToString(char buffer[], const eaten_t * eaten, int n) {
 	char tmp_tile[100];
 	int i = 0;
 	for (i = 0; i < n; i++) {
@@ -75,7 +86,7 @@ void HTMLMahjongGameRespond::catEatenToString(char buffer[], const eaten_t * eat
 	}
 }
 
-void HTMLMahjongGameRespond::catPlayerTilesToString(PlayerTiles * player, char buffer[],
+void TileArrayScriptGenerator::catPlayerTilesToString(PlayerTiles * player, char buffer[],
 		int buffer_size) {
 	strcat(buffer, "[");
 	tile_t tiles[MAX_HOLDING_COUNT];
@@ -93,7 +104,7 @@ void HTMLMahjongGameRespond::catPlayerTilesToString(PlayerTiles * player, char b
 	strcat(buffer, "]");
 }
 
-const char * HTMLMahjongGameRespond::getTilesArrayString(UserView * view,
+const char * TileArrayScriptGenerator::getTilesArrayString(UserView * view,
 		char buffer[], int buffer_size) {
 	sprintf(buffer, "[");
 	int count = view->getNumberOfPlayer();
@@ -105,8 +116,4 @@ const char * HTMLMahjongGameRespond::getTilesArrayString(UserView * view,
 	}
 	strcat(buffer, "]");
 	return buffer;
-}
-
-void HTMLMahjongGameRespond::clear() {
-	content_ = "";
 }

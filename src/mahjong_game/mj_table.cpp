@@ -1,9 +1,14 @@
 #include "Perspective.h"
-#include "tile_pool.h"
-#include "stdlib.h"
-#include "string.h"
+#include "TilePool.h"
 #include "mj_table.h"
-#include "assert.h"
+
+MahjongTable::MahjongTable(TilePool *pool) {
+	this->tile_pool = pool;
+	this->state = GAME_END;
+	this->player_count = 0;
+	this->current_player = 0;
+	this->host = 0;
+}
 
 MahjongTable::~MahjongTable() {
 }
@@ -79,84 +84,73 @@ int MahjongTable::chow(tile_t with) {
 	return 1;
 }
 
-MahjongTable::MahjongTable(tile_pool_t *pool) {
-	this->tile_pool = pool;
-	this->state = GAME_END;
-	this->player_count = 0;
-	this->current_player = 0;
-	this->host = 0;
+void MahjongTable::restartGameWhenAllPlayersAreReady() {
+	tile_pool->shuffle();
+	tile_t tiles[MAX_HOLDING_COUNT];
+	int cnt = get_player_count();
+	for (; cnt > 0; cnt--) {
+		for (int i = 0; i < MAX_HOLDING_COUNT; i++) {
+			tiles[i] = tile_pool->pop_a_tile();
+		}
+		deal(tiles, MAX_HOLDING_COUNT);
+	}
+	pick(tile_pool->pop_a_tile());
+	this->state = GAME_PICKED;
 }
 
-void MahjongTable::nextMove() {
+bool MahjongTable::doPlayerAction() {
 	tile_t action_tile;
-	while (true) {
-		Perspective * agent = get_player_of_distance(0);
-		action_t player_action = agent->get_action(&action_tile);
-
-		/**********
-		 * get current player.
-		 * *******************/
-		if (player_action == ACTION_RESTART) {
-			int i = 1;
-			for (; i < this->player_count; i++) {
-				Perspective * agent = get_player_of_distance(i);
-				if (ACTION_RESTART != agent->get_action(NULL)) {
-					player_action = NO_ACTION;
-					break;
-				}
-			}
-		}
-
-		if (player_action == NO_ACTION)
-			break;
-
-		if (this->state == GAME_END) {
-			if (ACTION_RESTART == player_action) {
-				tile_pool->shuffle();
-				tile_t tiles[MAX_HOLDING_COUNT];
-
-				int cnt = get_player_count();
-				for (; cnt > 0; cnt--) {
-					for (int i = 0; i < MAX_HOLDING_COUNT; i++) {
-						tiles[i] = tile_pool->pop_a_tile();
-					}
-					deal(tiles, MAX_HOLDING_COUNT);
-				}
-
-				pick(tile_pool->pop_a_tile());
-
-				this->state = GAME_PICKED;
-			}
-		} else if (this->state == GAME_PICKED) {
-			if (ACTION_DISCARD == player_action) {
-				throw_tile(action_tile);
-				if (tile_pool->is_end()) {
-					win(0);
-					this->state = GAME_END;
-				} else {
-					this->state = GAME_PICKING;
-				}
-			} else if (ACTION_WIN == player_action) {
-				win(1);
-				this->state = GAME_END;
-			}
-			else
-				break;
-		} else if (this->state == GAME_PICKING) {
-			if (ACTION_PICK == player_action) {
-				pick(tile_pool->pop_a_tile());
-				this->state = GAME_PICKED;
-			} else if (ACTION_WIN == player_action) {
-				win(1);
-				this->state = GAME_END;
-			} else if (ACTION_PONG == player_action) {
-				pong();
-				this->state = GAME_PICKED;
-			} else if (ACTION_CHOW == player_action) {
-				if (chow(action_tile))
-					this->state = GAME_PICKED;
-			} else
-				break;
+	Perspective* agent = get_player_of_distance(0);
+	action_t player_action = agent->popActionRequest(&action_tile);
+	/**********
+	 * get current player.
+	 * *******************/
+	if (player_action == ACTION_RESTART) {
+		int i = 1;
+		for (; i < this->player_count; i++) {
+			Perspective * agent = get_player_of_distance(i);
+			if (ACTION_RESTART != agent->popActionRequest(NULL))
+				player_action = NO_ACTION;
 		}
 	}
+	if (player_action == NO_ACTION)
+		return false;
+
+	if (this->state == GAME_END) {
+		if (ACTION_RESTART == player_action) {
+			restartGameWhenAllPlayersAreReady();
+		}
+	} else if (this->state == GAME_PICKED) {
+		if (ACTION_DISCARD == player_action) {
+			throw_tile(action_tile);
+			if (tile_pool->is_end()) {
+				win(0);
+				this->state = GAME_END;
+			} else {
+				this->state = GAME_PICKING;
+			}
+		} else if (ACTION_WIN == player_action) {
+			win(1);
+			this->state = GAME_END;
+		}
+	} else if (this->state == GAME_PICKING) {
+		if (ACTION_PICK == player_action) {
+			pick(tile_pool->pop_a_tile());
+			this->state = GAME_PICKED;
+		} else if (ACTION_WIN == player_action) {
+			win(1);
+			this->state = GAME_END;
+		} else if (ACTION_PONG == player_action) {
+			pong();
+			this->state = GAME_PICKED;
+		} else if (ACTION_CHOW == player_action) {
+			if (chow(action_tile))
+				this->state = GAME_PICKED;
+		}
+	}
+
+	return true;
+}
+void MahjongTable::nextMove() {
+	while (doPlayerAction());
 }

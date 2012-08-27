@@ -22,7 +22,7 @@ public:
 	virtual void pong(tile_t tile, int distance)=0;
 	virtual int chow(tile_t tile, tile_t with, int distance)=0;
 	virtual void win(int score, int distance)=0;
-	virtual action_t get_action(tile_t* tile)=0;
+	virtual action_t popActionRequest(tile_t* tile)=0;
 	virtual void set_action(action_t action, tile_t tile)=0;
 	virtual void discard_tile(tile_t tile, int distance)=0;
 

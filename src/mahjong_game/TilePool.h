@@ -6,10 +6,10 @@
 #define ALL_COUNT 134
 #define MAX_PICKS 70
 
-class tile_pool_t {
+class TilePool {
 public:
-	tile_pool_t();
-	virtual ~tile_pool_t();
+	TilePool();
+	virtual ~TilePool();
 	virtual void shuffle();
 	virtual int is_end();
 	virtual tile_t pop_a_tile();
@@ -20,6 +20,6 @@ private:
 	int picks_count;
 };
 
-extern tile_pool_t * (*create_tile_pool)(void);
+extern TilePool * (*create_tile_pool)(void);
 
 #endif

@@ -3,8 +3,7 @@
 
 #include "tiles.h"
 #include "Perspective.h"
-#include "UIEventQueue.h"
-#include "HTMLUIEvent.h"
+#include "UIEvent.h"
 
 class MahjongTable;
 
@@ -21,14 +20,14 @@ public:
 
 class UserPerspective: public Perspective, public UserView {
 public:
-	UserPerspective();
+	UserPerspective(UIEventFactory *eventFactory = NULL);
 	virtual ~UserPerspective();
 	virtual void deal(tile_t tiles[], int n, int distance);
 	virtual void pick(tile_t tile, int distance);
 	virtual void pong(tile_t tile, int distance);
 	virtual int chow(tile_t tile, tile_t with, int distance);
 	virtual void win(int score, int distance);
-	virtual action_t get_action(tile_t* tile);
+	virtual action_t popActionRequest(tile_t* tile);
 	virtual void set_action(action_t action, tile_t tile);
 	virtual void discard_tile(tile_t tile, int distance);
 
@@ -51,7 +50,7 @@ private:
 	PlayerTiles * players[MAX_NUMBER_OF_PLAYER];
 	MahjongTable * game_flow;
 	Game * game;
-	HTMLEventFactory eventFactory_;
+	UIEventFactory *eventFactory_;
 	void _remove_players();
 };
 

@@ -1,12 +1,9 @@
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include "tile_pool.h"
+#include "TilePool.h"
 
 TEST_BASE(base_tile_pool) {
-	tile_pool_t * game;
+	TilePool * game;
 	void setup() {
 		game = create_tile_pool();
 	}

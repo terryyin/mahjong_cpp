@@ -4,8 +4,54 @@
 class Perspective;
 class Evaluator;
 void setup_tile_pool_mocks(void);
-Perspective * createMockPerspective(void);
 Evaluator * createMockEvaluator(void);
+
+#include "Perspective.h"
+#include "tiles.h"
+class MockPerspective: public Perspective {
+public:
+	virtual void destroy(Perspective *self) {
+		free(self);
+	}
+
+	virtual void deal(tile_t tiles[], int buffer_size, int distance) {
+		char s[100];
+		mock().actualCall("agent.deal").onObject(this).withParameter("distance",
+				distance).withParameter("tiles",
+				tiles_to_string(tiles, buffer_size, s, 100));
+	}
+
+	virtual action_t popActionRequest(tile_t* tile) {
+		if (tile != NULL)
+			*tile =
+					mock().actualCall("agent.get_action.tile").onObject(this).returnValue().getIntValue();
+		return (action_t) mock().actualCall("agent.get_action").onObject(this).returnValue().getIntValue();
+	}
+
+	virtual void pick(tile_t tile, int distance) {
+		mock().actualCall("agent.pick").onObject(this).withParameter("tile",
+				tile).withParameter("distance", distance);
+	}
+
+	virtual void win(int score, int distance) {
+		mock().actualCall("agent.win").onObject(this).withParameter("score",
+				score).withParameter("distance", distance);
+	}
+
+	virtual void discard_tile(tile_t tile, int distance) {
+		mock().actualCall("agent.discard_tile").onObject(this).withParameter(
+				"tile", tile).withParameter("distance", distance);
+	}
+	virtual void pong(tile_t tile, int distance) {
+	}
+
+	virtual int chow(tile_t tile, tile_t with, int distance) {
+		return 0;
+	}
+
+	virtual void set_action(action_t action, tile_t tile) {
+	}
+};
 
 #include "HTMLMahjongGameRespond.h"
 class MockHTMLMahjongGameRespond: public HTMLMahjongGameRespond {
@@ -24,7 +70,8 @@ public:
 	}
 
 	void updateUIEvent(UserView *view) {
-		mock().actualCall("updateUIEvent").onObject(this).withParameter("view", view);
+		mock().actualCall("updateUIEvent").onObject(this).withParameter("view",
+				view);
 	}
 
 	void gameDoesNotExist() {
@@ -32,7 +79,8 @@ public:
 	}
 
 	void updateAllHoldings(UserView *view) {
-		mock().actualCall("updateAllHoldings").onObject(this).withParameter("view", view);
+		mock().actualCall("updateAllHoldings").onObject(this).withParameter(
+				"view", view);
 	}
 
 };
@@ -60,7 +108,7 @@ public:
 };
 
 #include "game.h"
-class MockGame : public Game {
+class MockGame: public Game {
 public:
 	virtual void nextMove() {
 		mock().actualCall("update").onObject(this);
@@ -71,16 +119,16 @@ public:
 	}
 
 	virtual UserView *getUserView() {
-		return (UserView *)mock().actualCall("getUserView").onObject(this).returnValue().getPointerValue();
+		return (UserView *) mock().actualCall("getUserView").onObject(this).returnValue().getPointerValue();
 	}
 
 };
 
 #include "UserPerspective.h"
-class MockUserView : public UserView {
+class MockUserView: public UserView {
 public:
 	UIEvent * popEvent() {
-		return (UIEvent *)mock().actualCall("popEvent").onObject(this).returnValue().getObjectPointer();
+		return (UIEvent *) mock().actualCall("popEvent").onObject(this).returnValue().getObjectPointer();
 	}
 
 	const char * get_tiles_array_string(char buffer[], int buffer_size) {
@@ -92,10 +140,52 @@ public:
 	}
 
 	PlayerTiles *getPlayerData(int distance) {
-		return (PlayerTiles *)mock().actualCall("getPlayerData").onObject(this).returnValue().getObjectPointer();
+		return (PlayerTiles *) mock().actualCall("getPlayerData").onObject(this).returnValue().getObjectPointer();
+	}
+};
+
+#include "UIEvent.h"
+class MockUIEventFactory: public UIEventFactory {
+public:
+	virtual ~MockUIEventFactory() {
 	}
 
+	virtual UIEvent * createPickEvent(tile_t tile, int distance) {
+		return (UIEvent *) mock().actualCall("createPickEvent").withParameter(
+				"tile", tile).withParameter("distance", distance).returnValue().getObjectPointer();
+	}
 
+	virtual UIEvent * createDiscardEvent(tile_t tile, int distance) {
+		return (UIEvent *) mock().actualCall("createDiscardEvent").withParameter(
+				"tile", tile).withParameter("distance", distance).returnValue().getObjectPointer();
+	}
+
+	virtual UIEvent * createEnableWinEvent() {
+		return (UIEvent *) mock().actualCall("createEnableWinEvent").returnValue().getObjectPointer();
+	}
+
+	virtual UIEvent * createWinEvent(int distance, int score) {
+		return (UIEvent *) mock().actualCall("createWinEvent").withParameter(
+				"score", score).withParameter("distance", distance).returnValue().getObjectPointer();
+	}
+
+	virtual UIEvent * createMessageEvent(const char * message) {
+		return (UIEvent *) mock().actualCall("createMessageEvent").withParameter(
+				"message", message).returnValue().getObjectPointer();
+	}
+
+	virtual UIEvent * createEnablePongEvent() {
+		return (UIEvent *) mock().actualCall("createEnablePongEvent").returnValue().getObjectPointer();
+	}
+
+	virtual UIEvent * createEnableChewEvent() {
+		return (UIEvent *) mock().actualCall("createEnableChewEvent").returnValue().getObjectPointer();
+	}
+
+	virtual UIEvent * createDealEvent(UserView * view) {
+		return (UIEvent *) mock().actualCall("createDealEvent").withParameter(
+				"view", view).returnValue().getObjectPointer();
+	}
 };
 
 #endif /* MOCKS_H_ */

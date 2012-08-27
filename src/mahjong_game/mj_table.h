@@ -3,7 +3,7 @@
 
 #include "tile.h"
 
-class tile_pool_t;
+class TilePool;
 class PlayerTiles;
 class Perspective;
 
@@ -16,13 +16,15 @@ typedef enum {
 
 class MahjongTable{
 public:
-	MahjongTable(tile_pool_t *pool);
+	MahjongTable(TilePool *pool);
 
 	~MahjongTable();
 
 	void nextMove();
 
 	void addPlayer(Perspective * player);
+
+	bool doPlayerAction();
 
 private:
 	Perspective * get_player_of_distance( int i);
@@ -35,7 +37,8 @@ private:
 	void throw_tile( tile_t tile);
 	void pong();
 	int chow( tile_t with);
-	tile_pool_t *tile_pool;
+	void restartGameWhenAllPlayersAreReady();
+	TilePool *tile_pool;
 	game_state_t state;
 	Perspective * players[MAX_NUMBER_OF_PLAYER];
 	int player_count;

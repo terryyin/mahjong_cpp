@@ -4,7 +4,7 @@
 
 #include "Perspective.h"
 class UserPerspective;
-class tile_pool_t;
+class TilePool;
 class MahjongTable;
 class UserView;
 
@@ -21,7 +21,7 @@ public:
 	virtual void setAction(action_t action, tile_t tile);
 
 private:
-	tile_pool_t * pool_;
+	TilePool * pool_;
 	MahjongTable * table_;
 	Perspective * aiPerspective_;
 	UserPerspective * userPerspective_;

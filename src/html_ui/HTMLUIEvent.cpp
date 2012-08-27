@@ -3,6 +3,70 @@
 
 using namespace std;
 
+class HTMLPickEvent: public UIEvent {
+public:
+	HTMLPickEvent(tile_t tile, int distance) :
+			tile_(tile), distance_(distance) {
+	}
+	virtual ~HTMLPickEvent() {
+	}
+	virtual std::string toString();
+private:
+	tile_t tile_;
+	int distance_;
+};
+
+class HTMLEnableWinEvent: public UIEvent {
+public:
+	virtual std::string toString();
+};
+
+class HTMLDiscardEvent: public UIEvent {
+public:
+	HTMLDiscardEvent(tile_t tile, int distance):
+		tile_(tile), distance_(distance) {}
+	std::string toString();
+private:
+	tile_t tile_;
+	int distance_;
+};
+
+class HTMLWinEvent: public UIEvent {
+public:
+	HTMLWinEvent(int distance, int score): distance_(distance), score_(score) {}
+	std::string toString();
+private:
+	int distance_;
+	int score_;
+};
+
+class HTMLMessageEvent: public UIEvent {
+public:
+	HTMLMessageEvent(const char * message) {message_ = message;}
+	std::string toString();
+private:
+	const char * message_;
+};
+
+class HTMLEnablePongEvent: public UIEvent {
+public:
+	std::string toString();
+};
+
+class HTMLEnableChewEvent: public UIEvent {
+public:
+	std::string toString();
+};
+
+class UserView;
+class HTMLDealEvent: public UIEvent {
+public:
+	HTMLDealEvent(UserView * view):view_(view){}
+	std::string toString();
+private:
+	UserView * view_;
+};
+
 string HTMLPickEvent::toString() {
 	char tmp[1024];
 	sprintf(tmp, "App.Pick(%d, %d);", distance_, tile_);
@@ -45,6 +109,24 @@ string HTMLEnableChewEvent::toString() {
 	return "App.LightButton('chew');";
 }
 
+class TileArrayScriptGenerator {
+public:
+	const char * getTilesArrayString(UserView * view, char buffer[], int buffer_size);
+private:
+	void catTilesToString(char buffer[], const tile_t * tiles, int n);
+	void catEatenToString(char buffer[], const eaten_t * eaten, int n);
+	void catPlayerTilesToString(PlayerTiles * player, char buffer[], int buffer_size);
+};
+
+string HTMLDealEvent::toString() {
+	const int buffer_size = 1024;
+	char tmp[buffer_size];
+	char buffer[buffer_size];
+	TileArrayScriptGenerator().getTilesArrayString(view_, tmp, buffer_size);
+	snprintf(buffer, buffer_size, "App.UpdateHolding(%s);", tmp);
+	return buffer;
+}
+
 UIEvent * HTMLEventFactory::createPickEvent(tile_t tile, int distance) {
 	return new HTMLPickEvent(tile, distance);
 }
@@ -71,4 +153,8 @@ UIEvent * HTMLEventFactory::createEnablePongEvent() {
 
 UIEvent * HTMLEventFactory::createEnableChewEvent() {
 	return new HTMLEnableChewEvent();
+}
+
+UIEvent * HTMLEventFactory::createDealEvent(UserView * view) {
+	return new HTMLDealEvent(view);
 }

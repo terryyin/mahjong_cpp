@@ -42,7 +42,6 @@ TEST(MJCommand, start_game){
 	mock().expectOneCall("update").onObject(&game);
 	mock().expectOneCall("set_action").onObject(&game);
 	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
-	mock().expectOneCall("updateAllHoldings").onObject(&respond).withParameter("view", &view);
 	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
 
 	MJCommandRestart cmd(&game);
@@ -52,16 +51,6 @@ TEST(MJCommand, start_game){
 TEST(MJCommand, game_does_not_exsit){
 	mock().expectOneCall("gameDoesNotExist").onObject(&respond);
 	MJCommandDoesNotExist cmd;
-	cmd.execute(&respond);
-}
-
-TEST(MJCommand, update_game){
-	MockGame game;
-	mock().expectOneCall("update").onObject(&game);
-	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
-	mock().expectOneCall("updateAllHoldings").onObject(&respond).withParameter("view", &view);
-	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
-	MJCommandUpdate cmd(&game);
 	cmd.execute(&respond);
 }
 
@@ -90,7 +79,6 @@ TEST(MJCommand, chow){
 	mock().expectOneCall("update").onObject(&game);
 	mock().expectOneCall("set_action").onObject(&game);
 	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
-	mock().expectOneCall("updateAllHoldings").onObject(&respond).withParameter("view", &view);
 	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
 	MJCommandChow cmd(&game, 1);
 	cmd.execute(&respond);
@@ -101,7 +89,6 @@ TEST(MJCommand, pong){
 	mock().expectOneCall("update").onObject(&game);
 	mock().expectOneCall("set_action").onObject(&game);
 	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
-	mock().expectOneCall("updateAllHoldings").onObject(&respond).withParameter("view", &view);
 	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
 	MJCommandPong cmd(&game);
 	cmd.execute(&respond);
@@ -112,7 +99,6 @@ TEST(MJCommand, kong){
 	mock().expectOneCall("update").onObject(&game);
 	mock().expectOneCall("set_action").onObject(&game);
 	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
-	mock().expectOneCall("updateAllHoldings").onObject(&respond).withParameter("view", &view);
 	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
 	MJCommandKong cmd(&game, 1);
 	cmd.execute(&respond);

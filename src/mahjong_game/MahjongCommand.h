@@ -62,41 +62,41 @@ class MJCommandRestart: public MJCommandAction {
 public:
 	MJCommandRestart(Game *game):
 		MJCommandAction(game, ACTION_RESTART, NO_TILE){};
-};
-
-class MJCommandUpdate : public MJCommandAction {
-public:
-	MJCommandUpdate(Game *game):
-		MJCommandAction(game, NO_ACTION, NO_TILE){};
 	virtual void execute(MahjongGameRespond *respond);
 };
+
 class MJCommandPick: public MJCommandAction {
 public:
 	MJCommandPick(Game *game):
 		MJCommandAction(game, ACTION_PICK, NO_TILE){};
 	virtual void execute(MahjongGameRespond *respond);
 };
+
 class MJCommandDiscard: public MJCommandAction {
 public:
 	MJCommandDiscard(Game *game, tile_t tile):
 		MJCommandAction(game, ACTION_DISCARD, tile){};
 	virtual void execute(MahjongGameRespond *respond);
 };
+
 class MJCommandChow: public MJCommandAction {
 public:
 	MJCommandChow(Game *game, tile_t tile):
 		MJCommandAction(game, ACTION_CHOW, tile){};
 };
+
 class MJCommandPong: public MJCommandAction {
 public:
 	MJCommandPong(Game *game):
 		MJCommandAction(game, ACTION_PONG, NO_TILE){};
 };
+
 class MJCommandKong: public MJCommandAction {
 public:
 	MJCommandKong(Game *game, tile_t tile):
 		MJCommandAction(game, ACTION_KONG, tile){};
 };
+
 class MJCommandWin: public MJCommandAction {
 public:
 	MJCommandWin(Game *game):

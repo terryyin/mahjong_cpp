@@ -1,5 +1,5 @@
 #include "game.h"
-#include "tile_pool.h"
+#include "TilePool.h"
 #include "mj_table.h"
 #include "PlayerTiles.h"
 #include "UserPerspective.h"

@@ -68,7 +68,7 @@ void AIPerspective::win(int score, int distance) {
 	player = NULL;
 }
 
-action_t AIPerspective::get_action(tile_t* tile) {
+action_t AIPerspective::popActionRequest(tile_t* tile) {
 	if (tile != NULL)
 		*tile = this->tile;
 	return action;

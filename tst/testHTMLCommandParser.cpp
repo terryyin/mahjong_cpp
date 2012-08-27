@@ -49,14 +49,6 @@ TEST(HTMLCommandParser, game_does_not_exist) {
 	STRCMP_EQUAL(typeid(MJCommandDoesNotExist).name(), typeid(*cmd).name());
 }
 
-TEST(HTMLCommandParser, MJCommandUpdate) {
-	UserPerspective game;
-	mock().expectOneCall("getGameByID").onObject(&server).withParameter(
-			"gameID", 3).andReturnValue(&game);
-	cmd = parser->parse("/update", "3000");
-	STRCMP_EQUAL(typeid(MJCommandUpdate).name(), typeid(*cmd).name());
-}
-
 TEST(HTMLCommandParser, MJCommandDiscard) {
 	UserPerspective game;
 	mock().expectOneCall("getGameByID").onObject(&server).withParameter(

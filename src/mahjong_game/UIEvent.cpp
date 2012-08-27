@@ -1,5 +1,5 @@
 #include "mahjong_game.h"
-#include "UIEventQueue.h"
+#include "UIEvent.h"
 
 UIEventQueue::UIEventQueue() {
 }

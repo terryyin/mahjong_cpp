@@ -100,26 +100,26 @@ action_t UserPerspective::popActionRequest(tile_t* tile) {
 	return saved;
 }
 
-void UserPerspective::set_action(action_t action, tile_t tile) {
+void UserPerspective::set_action(PlayerActionRequest * actionRequest) {
 	PlayerTiles *player = this->players[0];
-	if (action == ACTION_WIN) {
+	if (actionRequest->action_ == ACTION_WIN) {
 		if (!player->is_able_to_win(this->last_tile)) {
 			add_event(eventFactory_->createMessageEvent("Are you kidding?"));
 			return;
 		}
-	} else if (action == ACTION_PONG) {
+	} else if (actionRequest->action_ == ACTION_PONG) {
 		if (!player->is_able_to_pong(this->last_tile)) {
 			add_event(eventFactory_->createMessageEvent("Are you kidding?"));
 			return;
 		}
-	} else if (action == ACTION_CHOW) {
+	} else if (actionRequest->action_ == ACTION_CHOW) {
 		if (!player->is_able_to_chew(this->last_tile)) {
 			add_event(eventFactory_->createMessageEvent("Are you kidding?"));
 			return;
 		}
 	}
-	this->action = action;
-	this->action_tile = tile;
+	this->action = actionRequest->action_;
+	this->action_tile = actionRequest->tile_;
 }
 
 void UserPerspective::react_others_throw(tile_t tile, int distance) {

@@ -49,7 +49,7 @@ public:
 		return 0;
 	}
 
-	virtual void set_action(action_t action, tile_t tile) {
+	virtual void set_action(PlayerActionRequest *actionRequest) {
 	}
 };
 
@@ -114,7 +114,7 @@ public:
 		mock().actualCall("update").onObject(this);
 	}
 
-	virtual void setAction(action_t action, tile_t tile) {
+	virtual void setAction(PlayerActionRequest * actionRequest) {
 		mock().actualCall("set_action").onObject(this);
 	}
 

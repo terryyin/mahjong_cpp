@@ -59,9 +59,11 @@ void AIPerspective::pick(tile_t tile, int distance) {
 
 void AIPerspective::pong(tile_t tile, int distance) {
 }
+
 int AIPerspective::chow(tile_t tile, tile_t with, int distance) {
 	return 0;
 }
+
 void AIPerspective::win(int score, int distance) {
 	action = ACTION_RESTART;
 	delete player;
@@ -74,10 +76,10 @@ action_t AIPerspective::popActionRequest(tile_t* tile) {
 	return action;
 }
 
-void AIPerspective::set_action(action_t action, tile_t tile) {
+void AIPerspective::set_action(PlayerActionRequest *actionRequest) {
 
-	this->action = action;
-	this->tile = tile;
+	this->action = actionRequest->action_;
+	this->tile = actionRequest->tile_;
 }
 
 void AIPerspective::discard_tile(tile_t tile, int distance) {

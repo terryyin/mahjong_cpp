@@ -102,6 +102,7 @@ bool MahjongTable::doPlayerAction() {
 	tile_t action_tile;
 	Perspective* agent = get_player_of_distance(0);
 	action_t player_action = agent->popActionRequest(&action_tile);
+
 	/**********
 	 * get current player.
 	 * *******************/

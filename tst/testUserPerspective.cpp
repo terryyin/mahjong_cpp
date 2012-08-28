@@ -83,7 +83,8 @@ TEST(UserPerspective, action_get_empty) {
 }
 
 TEST(UserPerspective, action_set_and_get) {
-	userPerspective->set_action(ACTION_DISCARD, MJ_EAST);
+	PlayerActionRequest request(ACTION_DISCARD, MJ_EAST, 1);
+	userPerspective->set_action(&request);
 
 	LONGS_EQUAL(ACTION_DISCARD, userPerspective->popActionRequest(&tile));
 	LONGS_EQUAL(MJ_EAST, tile);

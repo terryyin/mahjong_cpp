@@ -31,6 +31,7 @@ void Game::nextMove(){
 	table_->nextMove();
 }
 
-void Game::setAction(action_t action, tile_t tile) {
-	userPerspective_->set_action(action, tile);
+void Game::setAction(PlayerActionRequest * actionRequest) {
+	userPerspective_->set_action(actionRequest);
 }
+

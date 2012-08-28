@@ -18,7 +18,7 @@ public:
 
 	virtual void nextMove();
 
-	virtual void setAction(action_t action, tile_t tile);
+	virtual void setAction(PlayerActionRequest * actionRequest);
 
 private:
 	TilePool * pool_;

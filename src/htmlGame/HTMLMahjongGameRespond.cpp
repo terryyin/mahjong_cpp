@@ -3,6 +3,7 @@
 #include "UserPerspective.h"
 #include "Hand.h"
 #include "string.h"
+#include "stdio.h"
 
 const char * html_frame =
 		"<html>\n"

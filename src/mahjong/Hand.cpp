@@ -13,30 +13,30 @@ void Hand::sort() {
 	tiles_sort(this->holdings, MAX_HOLDING_COUNT);
 }
 
-int Hand::is_able_to_win(tile_t discard) {
+int Hand::isAbleToWin(tile_t discard) {
 	if (discard == NO_TILE)
 		discard = this->current;
 	return tiles_plus_one_is_winning(this->holdings, MAX_HOLDING_COUNT, discard);
 }
 
-int Hand::get_holdings(tile_t * tiles_buffer, int buffer_size) {
+int Hand::getHoldings(tile_t * tiles_buffer, int buffer_size) {
 	int tile_count = tiles_get_count(this->holdings, MAX_HOLDING_COUNT);
 	memcpy(tiles_buffer, this->holdings, tile_count * sizeof(tile_t));
 	return tile_count;
 }
 
-int Hand::get_eaten(eaten_t * tiles_buffer, int buffer_size) {
+int Hand::getMelds(meld_t * tiles_buffer, int buffer_size) {
 	int tile_count = 0;
-	for (; tile_count < MAX_EATEN_COUNT; tile_count++) {
-		if (this->eaten[tile_count])
-			tiles_buffer[tile_count] = this->eaten[tile_count];
+	for (; tile_count < MAX_meld_COUNT; tile_count++) {
+		if (this->meld[tile_count])
+			tiles_buffer[tile_count] = this->meld[tile_count];
 		else
 			break;
 	}
 	return tile_count;
 }
 
-tile_t Hand::get_current() {
+tile_t Hand::getCurrentTileAtHand() {
 	return this->current;
 }
 
@@ -44,8 +44,8 @@ void Hand::deal(tile_t tiles[], int buffer_size) {
 	int i = 0;
 	for (i = 0; i < MAX_HOLDING_COUNT; i++)
 		this->holdings[i] = NO_TILE;
-	for (i = 0; i < MAX_EATEN_COUNT; i++)
-		this->eaten[i] = 0;
+	for (i = 0; i < MAX_meld_COUNT; i++)
+		this->meld[i] = 0;
 	for (i = 0; i < buffer_size; i++)
 		this->holdings[i] = tiles[i];
 	sort();
@@ -71,15 +71,15 @@ tile_t Hand::discard_tile(tile_t tile) {
 
 	return NO_TILE;
 }
-int Hand::is_able_to_pong(tile_t tile) {
+int Hand::isAbleToPong(tile_t tile) {
 	return tiles_is_able_to_pong(this->holdings, MAX_HOLDING_COUNT, tile);
 }
 
-int Hand::is_able_to_chow(tile_t tile) {
+int Hand::isAbleToChow(tile_t tile) {
 	return tiles_is_able_to_chow(this->holdings, MAX_HOLDING_COUNT, tile);
 }
 
-void Hand::rearrange_after_eat(eaten_t eaten) {
+void Hand::rearrange_after_eat(meld_t meld) {
 	int i, cnt;
 
 	sort();
@@ -87,11 +87,11 @@ void Hand::rearrange_after_eat(eaten_t eaten) {
 	this->current = this->holdings[cnt - 1];
 	this->holdings[cnt - 1] = NO_TILE;
 
-	for (i = 0; i < MAX_EATEN_COUNT; i++) {
-		if (this->eaten[i] == 0)
+	for (i = 0; i < MAX_meld_COUNT; i++) {
+		if (this->meld[i] == 0)
 			break;
 	}
-	this->eaten[i] = eaten;
+	this->meld[i] = meld;
 }
 
 void Hand::pong(tile_t tile) {
@@ -144,11 +144,11 @@ Hand::Hand() {
 	for (i = 0; i < MAX_HOLDING_COUNT; i++) {
 		holdings[i] = NO_TILE;
 	}
-	for (i = 0; i < MAX_EATEN_COUNT; i++) {
-		eaten[i] = 0;
+	for (i = 0; i < MAX_meld_COUNT; i++) {
+		meld[i] = 0;
 	}
 }
 
-Hand * create_player_data() {
+Hand * createHand() {
 	return new Hand;
 }

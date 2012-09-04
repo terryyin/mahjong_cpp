@@ -4,30 +4,10 @@
 #include "Wall.h"
 #include "Hand.h"
 #include "Perspective.h"
-
+#include "EvaluatorAdapter.h"
 #include "mocks.h"
 
-#include "../mahjong_evaluator/include/mj_evaluator.h"
-#include "evaluator.h"
-/*
- * This a bad example of mocking 3rd-party code.
- * LIB_xxx are 3rd-party functions.
- * In our test, we write a stub for it, and make it as a mock.
- * The better solution is to write an adaptor for LIB_xxx functions
- * and then mock the adaptor.
- */
-int LIB_evaluator_evaluate_array(mahjong_evaluator_handle_t* self, tile_t tiles[],
-		int array_size) {
-	return mock().actualCall("LIB_evaluator_evaluate_array").withParameter("tiles",
-			tiles).withParameter("array_size", array_size).returnValue().getIntValue();
-}
-mahjong_evaluator_handle_t* LIB_create_evaluator(void) {
-	return NULL;
-}
-void LIB_evaluator_destroy(mahjong_evaluator_handle_t*) {
-}
-
-class MockEvaluator: public Evaluator{
+class MockEvaluator: public EvaluatorAdapter{
 public:
 	MockEvaluator() {}
 	virtual ~MockEvaluator(){}
@@ -36,7 +16,7 @@ public:
 				tiles).withParameter("array_size", array_size).returnValue().getIntValue();
 	}
 };
-Evaluator * createMockEvaluator(void)
+EvaluatorAdapter * createMockEvaluator(void)
 {
 	return new MockEvaluator();
 }

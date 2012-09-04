@@ -8,11 +8,11 @@ extern "C"
 {
 #endif
 
-struct mahjong_evaluator_handle_t;
+typedef int mahjong_evaluator_handle_t;
 
-mahjong_evaluator_handle_t* LIB_create_evaluator(void);
-void LIB_evaluator_destroy(mahjong_evaluator_handle_t*);
-int LIB_evaluator_evaluate_array(mahjong_evaluator_handle_t* self, tile_t tiles[], int array_size);
+mahjong_evaluator_handle_t LIB_create_evaluator(void);
+void LIB_evaluator_destroy(mahjong_evaluator_handle_t handle);
+int LIB_evaluator_evaluate_array(mahjong_evaluator_handle_t handle, tile_t tiles[], int array_size);
 
 #ifdef __cplusplus
 }

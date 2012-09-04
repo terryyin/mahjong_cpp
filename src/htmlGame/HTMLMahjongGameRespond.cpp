@@ -44,7 +44,7 @@ public:
 	const char * getTilesArrayString(UserView * view, char buffer[], int buffer_size);
 private:
 	void catTilesToString(char buffer[], const tile_t * tiles, int n);
-	void catEatenToString(char buffer[], const eaten_t * eaten, int n);
+	void catmeldToString(char buffer[], const meld_t * meld, int n);
 	void catPlayerTilesToString(Hand * player, char buffer[], int buffer_size);
 };
 
@@ -79,11 +79,11 @@ void TileArrayScriptGenerator::catTilesToString(char buffer[], const tile_t * ti
 	}
 }
 
-void TileArrayScriptGenerator::catEatenToString(char buffer[], const eaten_t * eaten, int n) {
+void TileArrayScriptGenerator::catmeldToString(char buffer[], const meld_t * meld, int n) {
 	char tmp_tile[100];
 	int i = 0;
 	for (i = 0; i < n; i++) {
-		sprintf(tmp_tile, "%d,", eaten[i]);
+		sprintf(tmp_tile, "%d,", meld[i]);
 		strcat(buffer, tmp_tile);
 	}
 }
@@ -92,13 +92,13 @@ void TileArrayScriptGenerator::catPlayerTilesToString(Hand * player, char buffer
 		int buffer_size) {
 	strcat(buffer, "[");
 	tile_t tiles[MAX_HOLDING_COUNT];
-	eaten_t eaten[MAX_EATEN_COUNT];
-	int n = player->get_holdings(tiles, MAX_HOLDING_COUNT);
+	meld_t meld[MAX_meld_COUNT];
+	int n = player->getHoldings(tiles, MAX_HOLDING_COUNT);
 	catTilesToString(buffer, tiles, n);
-	tiles[0] = player->get_current();
+	tiles[0] = player->getCurrentTileAtHand();
 	catTilesToString(buffer, tiles, 1);
-	n = player->get_eaten(eaten, MAX_EATEN_COUNT);
-	catEatenToString(buffer, eaten, n);
+	n = player->getMelds(meld, MAX_meld_COUNT);
+	catmeldToString(buffer, meld, n);
 	int len = strlen(buffer);
 	if (buffer[len - 1] == ',') {
 		buffer[len - 1] = '\0';

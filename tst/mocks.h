@@ -2,8 +2,8 @@
 #define MOCKS_H_
 
 class Perspective;
-class Evaluator;
-Evaluator * createMockEvaluator(void);
+class EvaluatorAdapter;
+EvaluatorAdapter * createMockEvaluator(void);
 
 #include "Perspective.h"
 #include "tiles.h"

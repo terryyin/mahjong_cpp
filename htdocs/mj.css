@@ -32,26 +32,26 @@ body {
    border-top-color: #1b435e;
    background: #1b435e;
    }
-.eaten {
+.meld {
 	opacity : 0.5;
     filter: alpha(opacity=50); // msie
   }
 table.player {
 	position:relative;
 	}
-table.eaten_plate {
+table.meld_plate {
 	top:0;
  	left:0;
 }
-img.eaten_plate {
+img.meld_plate {
 -webkit-transform: rotate(180deg);-moz-transform: rotate(180deg);filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
 }
 
-table.eaten_w {
+table.meld_w {
 	   background: #1b435e;
 	   padding: 1px 1px;
 }
-td.eaten_w {
+td.meld_w {
 	padding: 0px 0px;
 }
 .active_tile:hover {

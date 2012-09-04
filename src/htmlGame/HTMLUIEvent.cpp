@@ -116,7 +116,7 @@ public:
 	const char * getTilesArrayString(UserView * view, char buffer[], int buffer_size);
 private:
 	void catTilesToString(char buffer[], const tile_t * tiles, int n);
-	void catEatenToString(char buffer[], const eaten_t * eaten, int n);
+	void catmeldToString(char buffer[], const meld_t * meld, int n);
 	void catPlayerTilesToString(Hand * player, char buffer[], int buffer_size);
 };
 

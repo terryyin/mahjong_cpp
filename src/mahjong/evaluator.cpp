@@ -2,27 +2,32 @@
 #include <stdio.h>
 #include <string.h>
 #include "tile.h"
-#include "evaluator.h"
+#include "EvaluatorAdapter.h"
 #include "../mahjong_evaluator/include/mj_evaluator.h"
 
 
-class EvaluatorImpl : public Evaluator {
+class EvaluatorImpl : public EvaluatorAdapter {
 public:
 	EvaluatorImpl() {
-		this->evalutor = LIB_create_evaluator();
 	}
+
 	~EvaluatorImpl() {
-		LIB_evaluator_destroy(this->evalutor);
 	}
+
 	virtual int evaluate_array(tile_t tiles[], int array_size){
-		return LIB_evaluator_evaluate_array(this->evalutor, tiles, array_size);
+		mahjong_evaluator_handle_t handle;
+		handle = LIB_create_evaluator();
+		int score = LIB_evaluator_evaluate_array(handle, tiles, array_size);
+		LIB_evaluator_destroy(handle);
+
+		return score;
 	}
-private:
-	mahjong_evaluator_handle_t* evalutor;
 };
 
 
-static Evaluator * create_evaluator_r_impl() {
+static EvaluatorAdapter * create_evaluator_impl() {
 	return new EvaluatorImpl();
 }
-Evaluator * (*createEvaluator)(void) = create_evaluator_r_impl;
+
+EvaluatorAdapter * (*createEvaluatorAdapter)(void) = create_evaluator_impl;
+

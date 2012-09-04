@@ -9,7 +9,7 @@
 TEST_GROUP(ai_perspective)
 {
 	AIPerspective * perspective;
-	Evaluator * evaluator;
+	EvaluatorAdapter * evaluator;
 	void setup() {
 		evaluator = createMockEvaluator();
 		perspective = new AIPerspective();

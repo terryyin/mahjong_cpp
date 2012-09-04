@@ -28,7 +28,7 @@ typedef char tile_t;
 #define MJ_BAMBOO(n)    ((tile_t)(MJ_BAMBOO_BASE + (n)))
 #define B MJ_BAMBOO
 
-typedef int eaten_t;
+typedef int meld_t;
 #define PONG(tile)  (0x80 | (tile))
 #define CHOW(lowestTile)  (0x100 | (lowestTile))
 

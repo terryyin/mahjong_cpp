@@ -6,10 +6,10 @@
 
 #include "HTMLMahjongGameServer.h"
 #include "Wall.h"
-#include "evaluator.h"
+#include "EvaluatorAdapter.h"
 
-Evaluator * create_simple_evaluator_r();
-void set_cheapest_tile(tile_t tile);
+EvaluatorAdapter * createSimpleEvaluator();
+void setCheapestTileForSimpleEvaluator(tile_t tile);
 
 #include "mocks.h"
 
@@ -56,7 +56,7 @@ TEST_GROUP(html_game) {
 	EverIncreasingWall *wall;
 
 	void setup() {
-		UT_PTR_SET(createEvaluator, create_simple_evaluator_r);
+		UT_PTR_SET(createEvaluatorAdapter, createSimpleEvaluator);
 		UT_PTR_SET(createWall, createEverIncreasingWall);
 		server.executeGameCommand("/game", "", &respond);
 		gameID = server.getLastGameID();
@@ -101,7 +101,7 @@ TEST(html_game, a_game) {
 	execute_cmd("/throw", 1);
 	HAS_STRING("App.Throw(1, 0);|App.Pick(1, 28);|App.Throw(14, 1);",
 			respond.getString());
-	set_cheapest_tile(28);
+	setCheapestTileForSimpleEvaluator(28);
 	wall->setCurrentTile(27);
 	execute_cmd("/pick", 0);
 	STRCMP_EQUAL( "App.Pick(0, 27);App.LightButton('win');",
@@ -109,7 +109,7 @@ TEST(html_game, a_game) {
 	execute_cmd("/win", 0);
 	STRCMP_EQUAL("App.WinAck(0, 1);", respond.getString());
 	wall->setCurrentTile(1);
-	set_cheapest_tile(27);
+	setCheapestTileForSimpleEvaluator(27);
 	execute_cmd("/start", 0);
 	HAS_STRING(
 			"App.UpdateHolding([[14,15,16,17,18,19,20,21,22,23,24,25,26,0],[1,2,3,4,5,6,7,8,9,10,11,12,13,0]]);App.Pick(1, 27);|App.Throw(27, 1);",
@@ -120,7 +120,7 @@ TEST(html_game, no_tile_any_more) {
 	wall->empty();
 	execute_cmd("/throw", 1);
 	STRCMP_EQUAL( "App.Throw(1, 0);|App.WinAck(1, 0);", respond.getString());
-	set_cheapest_tile(54);
+	setCheapestTileForSimpleEvaluator(54);
 	execute_cmd("/start", 0);
 	HAS_STRING(
 			"App.UpdateHolding([[41,42,43,44,45,46,47,48,49,50,51,52,53,0],[28,29,30,31,32,33,34,35,36,37,38,39,40,0]]);App.Pick(1, 54);|App.Throw(54, 1);",
@@ -138,11 +138,11 @@ TEST(html_game, _WIN) {
 	execute_cmd("/throw", 1);
 	HAS_STRING( "App.Throw(1, 0);|App.Pick(1, 28);|App.Throw(14, 1);",
 			respond.getString());
-	set_cheapest_tile(28);
+	setCheapestTileForSimpleEvaluator(28);
 	execute_cmd("/win", 0);
 	STRCMP_EQUAL("alert(\"Are you kidding?\");", respond.getString());
 	execute_cmd("/pick", 0);
-	set_cheapest_tile(27);
+	setCheapestTileForSimpleEvaluator(27);
 	wall->setCurrentTile(27);
 	execute_cmd("/throw", 29);
 	execute_cmd("/win", 0);
@@ -168,7 +168,7 @@ TEST(html_game, pong) {
 	wall->setCurrentTile(2);
 	execute_cmd("/pick", 0);
 	wall->setCurrentTile(2);
-	set_cheapest_tile(2);
+	setCheapestTileForSimpleEvaluator(2);
 	execute_cmd("/throw", 3);
 	HAS_STRING(
 			"App.Throw(3, 0);|App.Pick(1, 2);|App.Throw(2, 1);App.LightButton('pong');",
@@ -189,7 +189,7 @@ IGNORE_TEST(html_game, chow_when_not_able_to_chow) {
 }
 
 IGNORE_TEST(html_game, chow) {
-	set_cheapest_tile(14);
+	setCheapestTileForSimpleEvaluator(14);
 	execute_cmd("/throw", 1);
 	execute_cmd("/chow", 12);
 	STRCMP_EQUAL(

@@ -10,19 +10,19 @@ var animations;
 converter[0]=0;converter[49]=1;converter[50]=2;converter[51]=3;converter[52]=4;converter[53]=5;converter[54]=6;converter[55]=7;converter[56]=8;converter[57]=9;converter[65]=21;converter[66]=22;converter[67]=23;converter[68]=24;converter[69]=25;converter[70]=26;converter[71]=27;converter[72]=28;converter[73]=29;converter[97]=41;converter[98]=42;converter[99]=43;converter[100]=44;converter[101]=45;converter[102]=46;converter[103]=47;converter[104]=48;converter[105]=49;converter[108]=61;converter[111]=64;converter[114]=67;converter[117]=70;converter[120]=73;converter[123]=76;converter[126]=79;
 var App = {
 		max_holding_count : 13,
-		max_eaten_count : 4,
+		max_meld_count : 4,
 		player_count : 2,
 		current_player : 0,
 		holdings : Array(this.player_count),
 		current : Array(this.player_count),
-		eaten : Array(this.player_count),
+		meld : Array(this.player_count),
 		board_index : 1,
 		chowing : false,
         setup : function () 
         {
         		for (j = 0; j < this.player_count; j++) {
         			this.holdings[j] = Array(0);
-        			this.eaten[j] = Array(0);
+        			this.meld[j] = Array(0);
         		}
         			
                 document.onclick = App.onclick;
@@ -46,9 +46,9 @@ var App = {
         		for (var i = 0; i < cnt -1; i++)
         			this.holdings[j][i] = new_holdings[j][i];
         		this.current[j] = new_holdings[j][i];
-        		this.eaten[j] = Array(new_holdings[j].length - cnt)
+        		this.meld[j] = Array(new_holdings[j].length - cnt)
         		for (cnt=0, i++; i < new_holdings[j].length; i++) {
-        			this.eaten[j][cnt++] = new_holdings[j][i];
+        			this.meld[j][cnt++] = new_holdings[j][i];
         		}
         	}
             this._UpdateAllCells();
@@ -176,7 +176,7 @@ var App = {
 		},
 		RemoveLast : function () {
 			cell = document.getElementById("sh_"+(App.board_index-1));
-			cell.className = "eaten";
+			cell.className = "meld";
 		},
 		LightButton : function (button) {
 			cell = document.getElementById(button+"_button");
@@ -306,9 +306,9 @@ var App = {
         	}
         },
         _SetupPlayer : function(player) {
-        	html = "<table class=player><tr><td width=50><table class='eaten_plate'><tr>"
-        	for (i = 0; i < this.max_eaten_count; i++)
-        		html += ("<td id=eaten_"+player+"_"+i+">");
+        	html = "<table class=player><tr><td width=50><table class='meld_plate'><tr>"
+        	for (i = 0; i < this.max_meld_count; i++)
+        		html += ("<td id=meld_"+player+"_"+i+">");
         	html = html+"</table><td><table><tr>"
             cnt = 1;
             for (var i=0; i<this.max_holding_count; i++) {
@@ -347,18 +347,18 @@ var App = {
         },
         _UpdateAllCells : function() {
         	for (j = 0; j < this.player_count; j++) {
-        		for (i =0; i < this.max_eaten_count; i++) {
-        			this._UpdateEaten(j, i)
+        		for (i =0; i < this.max_meld_count; i++) {
+        			this._Updatemeld(j, i)
         		}
             	for (i = 0; i <=this.max_holding_count; i++)
             		this._UpdateCell(j, i);
         	}
         },
-        _UpdateEaten: function (player, index) {
-          	cell = document.getElementById("eaten_"+player+"_"+index);
-          	if (index < this.eaten[player].length) {
+        _Updatemeld: function (player, index) {
+          	cell = document.getElementById("meld_"+player+"_"+index);
+          	if (index < this.meld[player].length) {
           		inc = 0
-          		e = this.eaten[player][index];
+          		e = this.meld[player][index];
           		if (e > 0x100) {
           			e -= 0x100;
           			inc = 1;
@@ -366,12 +366,12 @@ var App = {
           		else
           			e-= 0x80;
           		e= converter[e];
-          		html = "<table class=eaten_w><tr>"
-          		html += ("<td class=eaten_w>"+"<img class=eaten_plate src='images/"+e+".png' height=64 width=41>");
+          		html = "<table class=meld_w><tr>"
+          		html += ("<td class=meld_w>"+"<img class=meld_plate src='images/"+e+".png' height=64 width=41>");
           		e += inc;
-          		html += ("<td class=eaten_w>"+"<img class=eaten_plate src='images/"+e+".png' height=64 width=41>");
+          		html += ("<td class=meld_w>"+"<img class=meld_plate src='images/"+e+".png' height=64 width=41>");
           		e += inc;
-          		html += ("<td class=eaten_w>"+"<img class=eaten_plate src='images/"+e+".png' height=64 width=41>");
+          		html += ("<td class=meld_w>"+"<img class=meld_plate src='images/"+e+".png' height=64 width=41>");
           		html += "</table>"
           		cell.innerHTML = html;
           	}

@@ -3,13 +3,13 @@
 #include <string.h>
 #include "AIPerspective.h"
 #include "Hand.h"
-#include "evaluator.h"
+#include "EvaluatorAdapter.h"
 #include "assert.h"
 
 AIPerspective::AIPerspective() {
 	currentActionRequest_.action_ = ACTION_RESTART;
 	player = NULL;
-	evaluator = createEvaluator();
+	evaluator = createEvaluatorAdapter();
 }
 AIPerspective::~AIPerspective() {
 	if (player)
@@ -19,7 +19,7 @@ AIPerspective::~AIPerspective() {
 
 void AIPerspective::deal(tile_t tiles[], int n, int distance) {
 	if (distance == 0) {
-		Hand * player_data = create_player_data();
+		Hand * player_data = createHand();
 		player_data->deal(tiles, n);
 		player = player_data;
 	}
@@ -31,11 +31,11 @@ tile_t AIPerspective::whichToDiscard() {
 	int index_to_throw = 0;
 	tile_t holdings[MAX_HOLDING_COUNT + 1];
 	tile_t tiles[MAX_HOLDING_COUNT + 1];
-	int tile_count = player->get_holdings(holdings, MAX_HOLDING_COUNT);
-	holdings[tile_count] = player->get_current();
+	int tile_count = player->getHoldings(holdings, MAX_HOLDING_COUNT);
+	holdings[tile_count] = player->getCurrentTileAtHand();
 	for (i = 0; i < tile_count + 1; i++) {
-		player->get_holdings(tiles, MAX_HOLDING_COUNT);
-		tiles[i] = player->get_current();
+		player->getHoldings(tiles, MAX_HOLDING_COUNT);
+		tiles[i] = player->getCurrentTileAtHand();
 		int score = evaluator->evaluate_array(tiles, tile_count);
 		if (score > max) {
 			max = score;
@@ -48,7 +48,7 @@ tile_t AIPerspective::whichToDiscard() {
 void AIPerspective::pick(tile_t tile, int distance) {
 	if (distance == 0) {
 		player->pick(tile);
-		if (player->is_able_to_win(NO_TILE))
+		if (player->isAbleToWin(NO_TILE))
 			currentActionRequest_.action_ = ACTION_WIN;
 		else {
 			currentActionRequest_.action_ = ACTION_DISCARD;
@@ -78,14 +78,14 @@ void AIPerspective::discard(tile_t tile, int distance) {
 	if (distance == 0)
 		player->discard_tile(tile);
 	else {
-		if (player->is_able_to_win(tile))
+		if (player->isAbleToWin(tile))
 			currentActionRequest_.action_ = ACTION_WIN;
 		else
 			currentActionRequest_.action_ = ACTION_PICK;
 	}
 }
 
-void AIPerspective::setEvaluator(Evaluator * evaluator){
+void AIPerspective::setEvaluator(EvaluatorAdapter * evaluator){
 	if (this->evaluator != NULL)
 		delete this->evaluator;
 	this->evaluator = evaluator;

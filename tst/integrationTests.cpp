@@ -56,7 +56,7 @@ TEST_GROUP(html_game) {
 	EverIncreasingWall *wall;
 
 	void setup() {
-		UT_PTR_SET(create_evaluator_r, create_simple_evaluator_r);
+		UT_PTR_SET(createEvaluator, create_simple_evaluator_r);
 		UT_PTR_SET(createWall, createEverIncreasingWall);
 		server.executeGameCommand("/game", "", &respond);
 		gameID = server.getLastGameID();

@@ -9,7 +9,7 @@
 AIPerspective::AIPerspective() {
 	currentActionRequest_.action_ = ACTION_RESTART;
 	player = NULL;
-	evaluator = create_evaluator_r();
+	evaluator = createEvaluator();
 }
 AIPerspective::~AIPerspective() {
 	if (player)

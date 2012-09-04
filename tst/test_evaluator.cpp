@@ -14,7 +14,7 @@ TEST(Evaluator, evaluator_array){
 			.withParameter("tiles", "")
 			.withParameter("array_size", 0)
 			.andReturnValue(SCORE);
-	Evaluator * evaluator = create_evaluator_r();
+	Evaluator * evaluator = createEvaluator();
 	LONGS_EQUAL(SCORE, evaluator->evaluate_array(NULL, 0));
 	delete evaluator;
 }

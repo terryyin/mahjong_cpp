@@ -7,6 +7,6 @@ public:
 	virtual int evaluate_array(tile_t tiles[], int array_size)=0;
 };
 
-extern Evaluator * (*create_evaluator_r)(void);
+extern Evaluator * (*createEvaluator)(void);
 
 #endif /* EVALUATOR_H_ */

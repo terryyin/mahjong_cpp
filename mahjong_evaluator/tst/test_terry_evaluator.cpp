@@ -1,9 +1,3 @@
-/*
- * test_terry_evaluator.c
- *
- *  Created on: Jan 26, 2011
- *      Author: terry
- */
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
 #include "memory.h"

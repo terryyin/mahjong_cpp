@@ -16,15 +16,15 @@
  * The better solution is to write an adaptor for LIB_xxx functions
  * and then mock the adaptor.
  */
-int LIB_evaluator_evaluate_array(Evaluator* self, tile_t tiles[],
+int LIB_evaluator_evaluate_array(mahjong_evaluator_handle_t* self, tile_t tiles[],
 		int array_size) {
 	return mock().actualCall("LIB_evaluator_evaluate_array").withParameter("tiles",
 			tiles).withParameter("array_size", array_size).returnValue().getIntValue();
 }
-Evaluator* LIB_create_evaluator(void) {
+mahjong_evaluator_handle_t* LIB_create_evaluator(void) {
 	return NULL;
 }
-void LIB_evaluator_destroy(Evaluator*) {
+void LIB_evaluator_destroy(mahjong_evaluator_handle_t*) {
 }
 
 class MockEvaluator: public Evaluator{

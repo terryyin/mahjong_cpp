@@ -4,6 +4,10 @@
 #include "tile.h"
 #define MAX_HOLDING_COUNT 13
 
+#ifndef bool
+#define bool int
+#endif
+
 bool tiles_is_able_to_chow(tile_t tiles[], int size_of_array, tile_t tile);
 int tiles_get_count(tile_t tiles[], int size_of_array);
 int tiles_get_index_of_tile(tile_t tiles[], int n, tile_t tile);

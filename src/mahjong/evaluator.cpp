@@ -18,11 +18,11 @@ public:
 		return LIB_evaluator_evaluate_array(this->evalutor, tiles, array_size);
 	}
 private:
-	Evaluator* evalutor;
+	mahjong_evaluator_handle_t* evalutor;
 };
 
 
 static Evaluator * create_evaluator_r_impl() {
 	return new EvaluatorImpl();
 }
-Evaluator * (*create_evaluator_r)(void) = create_evaluator_r_impl;
+Evaluator * (*createEvaluator)(void) = create_evaluator_r_impl;

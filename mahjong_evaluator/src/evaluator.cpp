@@ -4,23 +4,20 @@ extern "C" {
 #include "terry_evaluator.h"
 }
 
-class Evaluator {
-public:
-	Evaluator() {}
-	~Evaluator() {}
+struct mahjong_evaluator_handle_t {
 };
 
 
-evaluator_ptr_t LIB_create_evaluator(void)
+mahjong_evaluator_handle_t * LIB_create_evaluator(void)
 {
-	return new Evaluator;
+	return new mahjong_evaluator_handle_t;
 }
-void LIB_evaluator_destroy(evaluator_ptr_t e)
+void LIB_evaluator_destroy(mahjong_evaluator_handle_t * e)
 {
 	delete e;
 }
 
-int LIB_evaluator_evaluate_array(evaluator_ptr_t self, tile_t tiles[], int array_size)
+int LIB_evaluator_evaluate_array(mahjong_evaluator_handle_t * self, tile_t tiles[], int array_size)
 {
 	return terry_ai_evaluate_array(tiles, array_size);
 }

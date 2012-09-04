@@ -1,6 +1,6 @@
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
-#include "HTMLCommandparser.h"
+#include "HTMLCommandParser.h"
 #include "MahjongCommand.h"
 #include <typeinfo>
 #include "mocks.h"

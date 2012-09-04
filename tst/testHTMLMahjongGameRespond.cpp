@@ -4,6 +4,7 @@
 #include "mocks.h"
 #include "HTMLUIEvent.h"
 #include "Hand.h"
+#include "string.h"
 
 TEST_GROUP(HTMLMahjongGameRespond) {
 	HTMLMahjongGameRespond respond;

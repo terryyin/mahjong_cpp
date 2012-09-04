@@ -1,5 +1,7 @@
 #include "mahjong_game.h"
 #include "HTMLUIEvent.h"
+#include "string.h"
+#include "stdio.h"
 
 using namespace std;
 

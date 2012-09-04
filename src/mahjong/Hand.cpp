@@ -1,30 +1,31 @@
-#include "PlayerTiles.h"
+#include "Hand.h"
 #include "memory.h"
 #include <stdlib.h>
 #include "Perspective.h"
 
-PlayerTiles::~PlayerTiles() {
+Hand::~Hand() {
 }
-void PlayerTiles::pick(tile_t tile) {
+void Hand::pick(tile_t tile) {
 	this->current = tile;
 }
 
-void PlayerTiles::sort() {
+void Hand::sort() {
 	tiles_sort(this->holdings, MAX_HOLDING_COUNT);
 }
 
-int PlayerTiles::is_able_to_win(tile_t discard) {
+int Hand::is_able_to_win(tile_t discard) {
 	if (discard == NO_TILE)
 		discard = this->current;
 	return tiles_plus_one_is_winning(this->holdings, MAX_HOLDING_COUNT, discard);
 }
 
-int PlayerTiles::get_holdings(tile_t * tiles_buffer, int buffer_size) {
+int Hand::get_holdings(tile_t * tiles_buffer, int buffer_size) {
 	int tile_count = tiles_get_count(this->holdings, MAX_HOLDING_COUNT);
 	memcpy(tiles_buffer, this->holdings, tile_count * sizeof(tile_t));
 	return tile_count;
 }
-int PlayerTiles::get_eaten(eaten_t * tiles_buffer, int buffer_size) {
+
+int Hand::get_eaten(eaten_t * tiles_buffer, int buffer_size) {
 	int tile_count = 0;
 	for (; tile_count < MAX_EATEN_COUNT; tile_count++) {
 		if (this->eaten[tile_count])
@@ -34,11 +35,12 @@ int PlayerTiles::get_eaten(eaten_t * tiles_buffer, int buffer_size) {
 	}
 	return tile_count;
 }
-tile_t PlayerTiles::get_current() {
+
+tile_t Hand::get_current() {
 	return this->current;
 }
 
-void PlayerTiles::deal(tile_t tiles[], int buffer_size) {
+void Hand::deal(tile_t tiles[], int buffer_size) {
 	int i = 0;
 	for (i = 0; i < MAX_HOLDING_COUNT; i++)
 		this->holdings[i] = NO_TILE;
@@ -49,7 +51,7 @@ void PlayerTiles::deal(tile_t tiles[], int buffer_size) {
 	sort();
 }
 
-tile_t PlayerTiles::discard_tile(tile_t tile) {
+tile_t Hand::discard_tile(tile_t tile) {
 	if (tile == this->current) {
 		this->current = NO_TILE;
 		return tile;
@@ -69,13 +71,15 @@ tile_t PlayerTiles::discard_tile(tile_t tile) {
 
 	return NO_TILE;
 }
-int PlayerTiles::is_able_to_pong(tile_t tile) {
+int Hand::is_able_to_pong(tile_t tile) {
 	return tiles_is_able_to_pong(this->holdings, MAX_HOLDING_COUNT, tile);
 }
-int PlayerTiles::is_able_to_chew(tile_t tile) {
+
+int Hand::is_able_to_chow(tile_t tile) {
 	return tiles_is_able_to_chow(this->holdings, MAX_HOLDING_COUNT, tile);
 }
-void PlayerTiles::rearrange_after_eat(eaten_t eaten) {
+
+void Hand::rearrange_after_eat(eaten_t eaten) {
 	int i, cnt;
 
 	sort();
@@ -90,7 +94,7 @@ void PlayerTiles::rearrange_after_eat(eaten_t eaten) {
 	this->eaten[i] = eaten;
 }
 
-void PlayerTiles::pong(tile_t tile) {
+void Hand::pong(tile_t tile) {
 	int i, cnt = 0;
 	for (i = 0; i < MAX_HOLDING_COUNT; i++) {
 		if (this->holdings[i] == tile && cnt < 2) {
@@ -101,7 +105,7 @@ void PlayerTiles::pong(tile_t tile) {
 	rearrange_after_eat(PONG(tile));
 }
 
-int PlayerTiles::is_able_to_chow(tile_t tile, tile_t smallest)
+int Hand::is_able_to_chow(tile_t tile, tile_t smallest)
 {
 	int i, cnt;
 	if (tile > smallest + 2)
@@ -114,7 +118,7 @@ int PlayerTiles::is_able_to_chow(tile_t tile, tile_t smallest)
 				return 0;
 	return 1;
 }
-void PlayerTiles::_chow(tile_t tile, tile_t smallest)
+void Hand::_chow(tile_t tile, tile_t smallest)
 {
 	int i, cnt = 0;
 	cnt = tiles_get_count(this->holdings, MAX_HOLDING_COUNT);
@@ -125,14 +129,16 @@ void PlayerTiles::_chow(tile_t tile, tile_t smallest)
 
 	rearrange_after_eat(CHOW(smallest));
 }
-int PlayerTiles::chow(tile_t tile, tile_t with) {
+
+int Hand::chow(tile_t tile, tile_t with) {
 	tile_t smallest = tile < with ? tile : with;
 	if (!is_able_to_chow(tile, smallest))
 		return 0;
 	_chow(tile, smallest);
 	return 1;
 }
-PlayerTiles::PlayerTiles() {
+
+Hand::Hand() {
 	int i;
 	current = NO_TILE;
 	for (i = 0; i < MAX_HOLDING_COUNT; i++) {
@@ -143,6 +149,6 @@ PlayerTiles::PlayerTiles() {
 	}
 }
 
-PlayerTiles * create_player_data() {
-	return new PlayerTiles;
+Hand * create_player_data() {
+	return new Hand;
 }

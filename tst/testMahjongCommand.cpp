@@ -39,8 +39,7 @@ TEST(MJCommand, shutdown){
 }
 
 TEST(MJCommand, start_game){
-	mock().expectOneCall("update").onObject(&game);
-	mock().expectOneCall("set_action").onObject(&game);
+	mock().expectOneCall("nextMove").onObject(&game).ignoreOtherParameters();
 	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
 	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
 
@@ -56,8 +55,7 @@ TEST(MJCommand, game_does_not_exsit){
 
 TEST(MJCommand, pick){
 	MockGame game;
-	mock().expectNCalls(1, "update").onObject(&game);
-	mock().expectOneCall("set_action").onObject(&game);
+	mock().expectOneCall("nextMove").onObject(&game).ignoreOtherParameters();
 	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
 	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
 	MJCommandPick cmd(&game);
@@ -66,8 +64,7 @@ TEST(MJCommand, pick){
 
 TEST(MJCommand, discard){
 	MockGame game;
-	mock().expectOneCall("update").onObject(&game);
-	mock().expectOneCall("set_action").onObject(&game);
+	mock().expectOneCall("nextMove").onObject(&game).ignoreOtherParameters();
 	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
 	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
 	MJCommandDiscard cmd(&game, 1);
@@ -76,8 +73,7 @@ TEST(MJCommand, discard){
 
 TEST(MJCommand, chow){
 	MockGame game;
-	mock().expectOneCall("update").onObject(&game);
-	mock().expectOneCall("set_action").onObject(&game);
+	mock().expectOneCall("nextMove").onObject(&game).ignoreOtherParameters();
 	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
 	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
 	MJCommandChow cmd(&game, 1);
@@ -86,8 +82,7 @@ TEST(MJCommand, chow){
 
 TEST(MJCommand, pong){
 	MockGame game;
-	mock().expectOneCall("update").onObject(&game);
-	mock().expectOneCall("set_action").onObject(&game);
+	mock().expectOneCall("nextMove").onObject(&game).ignoreOtherParameters();
 	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
 	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
 	MJCommandPong cmd(&game);
@@ -96,8 +91,7 @@ TEST(MJCommand, pong){
 
 TEST(MJCommand, kong){
 	MockGame game;
-	mock().expectOneCall("update").onObject(&game);
-	mock().expectOneCall("set_action").onObject(&game);
+	mock().expectOneCall("nextMove").onObject(&game).ignoreOtherParameters();
 	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
 	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
 	MJCommandKong cmd(&game, 1);
@@ -106,8 +100,7 @@ TEST(MJCommand, kong){
 
 TEST(MJCommand, win){
 	MockGame game;
-	mock().expectOneCall("update").onObject(&game);
-	mock().expectOneCall("set_action").onObject(&game);
+	mock().expectOneCall("nextMove").onObject(&game).ignoreOtherParameters();
 	mock().expectOneCall("getUserView").onObject(&game).andReturnValue((void*)&view);
 	mock().expectOneCall("updateUIEvent").onObject(&respond).withParameter("view", &view);
 	MJCommandWin cmd(&game);

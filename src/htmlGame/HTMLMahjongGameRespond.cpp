@@ -1,7 +1,7 @@
 #include "HTMLMahjongGameRespond.h"
 #include "game.h"
 #include "UserPerspective.h"
-#include "PlayerTiles.h"
+#include "Hand.h"
 
 const char * html_frame =
 		"<html>\n"
@@ -43,7 +43,7 @@ public:
 private:
 	void catTilesToString(char buffer[], const tile_t * tiles, int n);
 	void catEatenToString(char buffer[], const eaten_t * eaten, int n);
-	void catPlayerTilesToString(PlayerTiles * player, char buffer[], int buffer_size);
+	void catPlayerTilesToString(Hand * player, char buffer[], int buffer_size);
 };
 
 void HTMLMahjongGameRespond::updateAllHoldings(UserView * view) {
@@ -86,7 +86,7 @@ void TileArrayScriptGenerator::catEatenToString(char buffer[], const eaten_t * e
 	}
 }
 
-void TileArrayScriptGenerator::catPlayerTilesToString(PlayerTiles * player, char buffer[],
+void TileArrayScriptGenerator::catPlayerTilesToString(Hand * player, char buffer[],
 		int buffer_size) {
 	strcat(buffer, "[");
 	tile_t tiles[MAX_HOLDING_COUNT];
@@ -109,7 +109,7 @@ const char * TileArrayScriptGenerator::getTilesArrayString(UserView * view,
 	sprintf(buffer, "[");
 	int count = view->getNumberOfPlayer();
 	for (int i = 0; i < count; i++) {
-		PlayerTiles *data = view->getPlayerData(i);
+		Hand *data = view->getHand(i);
 		if (i)
 			strcat(buffer, ",");
 		catPlayerTilesToString(data, buffer, buffer_size);

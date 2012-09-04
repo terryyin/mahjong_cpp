@@ -2,7 +2,7 @@
 #include "CppUTestExt/MockSupport.h"
 #include "mocks.h"
 #include "HTMLUIEvent.h"
-#include "PlayerTiles.h"
+#include "Hand.h"
 
 TEST_GROUP(HTMLUIEvent) {
 	HTMLEventFactory factory;
@@ -55,13 +55,13 @@ TEST(HTMLUIEvent, EnablePongEvent) {
 
 TEST(HTMLUIEvent, EnableChewEvent) {
 	event = factory.createEnableChewEvent();
-	STRCMP_EQUAL("App.LightButton('chew');", event->toString().c_str());
+	STRCMP_EQUAL("App.LightButton('chow');", event->toString().c_str());
 }
 
 TEST(HTMLUIEvent, dealEvent) {
 	tile_t tiles1[] = { 1 };
 	tile_t tiles2[] = { 2, 3 };
-	PlayerTiles playerData1, playerData2;
+	Hand playerData1, playerData2;
 	playerData1.deal(tiles1, 1);
 	playerData2.deal(tiles2, 2);
 	MockUserView view;

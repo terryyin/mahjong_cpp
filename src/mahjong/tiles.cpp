@@ -4,6 +4,7 @@
 
 static int tiles_is_winning(tile_t tile_array[], int size_of_array,
 		int had_pair);
+
 static int tiles_is_winning_remove_a_pair(tile_t tile_array[],
 		int size_of_array) {
 	if (tile_array[0] == tile_array[1]) {
@@ -12,6 +13,7 @@ static int tiles_is_winning_remove_a_pair(tile_t tile_array[],
 	}
 	return 0;
 }
+
 static int tiles_is_winning_remove_a_pong(tile_t tile_array[],
 		int size_of_array, int had_pair) {
 	if (size_of_array > 2) {
@@ -22,6 +24,7 @@ static int tiles_is_winning_remove_a_pong(tile_t tile_array[],
 	}
 	return 0;
 }
+
 static int tiles_is_winning_remove_a_chow(tile_t tile_array[],
 		int size_of_array, int had_pair) {
 	if (size_of_array > 2) {
@@ -95,7 +98,7 @@ void tiles_sort(tile_t tiles[], int n) {
 	qsort(tiles, cnt, sizeof(tile_t), tile_compare);
 
 }
-int tiles_is_able_to_pong(tile_t tiles[], int n, tile_t tile) {
+bool tiles_is_able_to_pong(tile_t tiles[], int n, tile_t tile) {
 	int i, cnt = 0;
 	for (i = 0; i < n; i++) {
 		if (tiles[i] == tile) {
@@ -105,11 +108,11 @@ int tiles_is_able_to_pong(tile_t tiles[], int n, tile_t tile) {
 	return cnt >= 2;
 }
 
-int tiles_plus_one_is_winning(tile_t holding[], int n, tile_t discard) {
+bool tiles_plus_one_is_winning(tile_t holding[], int n, tile_t discard) {
 	tile_t tiles[MAX_HOLDING_COUNT + 1];
 
 	if (n > MAX_HOLDING_COUNT)
-		return 0;
+		return false;
 
 	memset(tiles, 0, sizeof(tiles));
 	memcpy(tiles, holding, n * sizeof(tile_t));
@@ -126,6 +129,7 @@ tile_t * tiles_from_string(tile_t * buffer, const char * string) {
 		buffer[cnt++] = (tile_t) *string++;
 	return buffer;
 }
+
 const char * tiles_to_string(tile_t tiles[], int n, char * buf, int buffer_size) {
 	if (buffer_size - 1< n)
 		n = buffer_size - 1;

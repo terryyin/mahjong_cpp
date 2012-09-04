@@ -3,7 +3,7 @@
 
 #include "Perspective.h"
 #include "GameIDMap.h"
-class TilePool;
+class Wall;
 class GameIDMap;
 class HTMLCommandParser;
 class HTMLMahjongGameRespond;

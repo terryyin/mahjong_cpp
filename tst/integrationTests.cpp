@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #include "HTMLMahjongGameServer.h"
-#include "TilePool.h"
+#include "Wall.h"
 #include "evaluator.h"
 
 Evaluator * create_simple_evaluator_r();
@@ -13,37 +13,39 @@ void set_cheapest_tile(tile_t tile);
 
 #include "mocks.h"
 
-class EverIncreasingTilePool: public TilePool {
+class EverIncreasingWall: public Wall {
 public:
-	EverIncreasingTilePool() :
-			current_tile_(1), tile_pool_end_(false) {
+	EverIncreasingWall() :
+			Wall(NULL, 0, 0), currentTile_(1), wallEnd_(false) {
 	}
 
-	tile_t pop_a_tile() {
-		return current_tile_++;
+	tile_t popATile() {
+		return currentTile_++;
 	}
 
-	int is_end() {
-		return tile_pool_end_;
+	bool isEnd() {
+		return wallEnd_;
 	}
 
 	void empty() {
-		tile_pool_end_ = true;
+		wallEnd_ = true;
+	}
+
+	void shuffleAndRebuild() {
 	}
 
 	void setCurrentTile(int t) {
-		current_tile_ = t;
+		currentTile_ = t;
 	}
 private:
-	tile_t current_tile_;
-	bool tile_pool_end_;
-} *lastCreatedEverIncreasingTilePool = NULL;
+	tile_t currentTile_;
+	bool wallEnd_;
+}*lastCreatedEverIncreasingWall = NULL;
 
-static TilePool * createEverIncreasingTilePool() {
-	lastCreatedEverIncreasingTilePool = new EverIncreasingTilePool;
-	return lastCreatedEverIncreasingTilePool;
+static Wall * createEverIncreasingWall() {
+	lastCreatedEverIncreasingWall = new EverIncreasingWall;
+	return lastCreatedEverIncreasingWall;
 }
-
 
 #define HAS_STRING(expect, actual) HAS_STRING_LOCATION(expect, actual, __FILE__, __LINE__)
 TEST_GROUP(html_game) {
@@ -51,14 +53,15 @@ TEST_GROUP(html_game) {
 	int gameID;
 	HTMLMahjongGameServer server;
 	HTMLMahjongGameRespond respond;
-	EverIncreasingTilePool *tilePool;
+	EverIncreasingWall *wall;
 
 	void setup() {
 		UT_PTR_SET(create_evaluator_r, create_simple_evaluator_r);
-		UT_PTR_SET(create_tile_pool, createEverIncreasingTilePool);
+		UT_PTR_SET(createWall, createEverIncreasingWall);
 		server.executeGameCommand("/game", "", &respond);
 		gameID = server.getLastGameID();
-		tilePool = lastCreatedEverIncreasingTilePool;
+		wall = lastCreatedEverIncreasingWall;
+		execute_cmd("/start", 0);
 	}
 
 	void teardown() {
@@ -89,100 +92,107 @@ TEST_GROUP(html_game) {
 };
 
 TEST(html_game, start) {
-	execute_cmd("/start", 0);
-	STRCMP_EQUAL("App.UpdateHolding([[1,2,3,4,5,6,7,8,9,10,11,12,13,27],[14,15,16,17,18,19,20,21,22,23,24,25,26,0]]);App.Pick(0, 27);"
-	, respond.getString());
+	STRCMP_EQUAL(
+			"App.UpdateHolding([[1,2,3,4,5,6,7,8,9,10,11,12,13,27],[14,15,16,17,18,19,20,21,22,23,24,25,26,0]]);App.Pick(0, 27);",
+			respond.getString());
 }
 
 TEST(html_game, a_game) {
-	execute_cmd("/start", 0);
 	execute_cmd("/throw", 1);
-	STRCMP_EQUAL("App.Throw(1, 0);|App.Pick(1, 28);|App.Throw(14, 1);", respond.getString());
+	HAS_STRING("App.Throw(1, 0);|App.Pick(1, 28);|App.Throw(14, 1);",
+			respond.getString());
 	set_cheapest_tile(28);
-	tilePool->setCurrentTile(27);
+	wall->setCurrentTile(27);
 	execute_cmd("/pick", 0);
-	STRCMP_EQUAL( "App.Pick(0, 27);App.LightButton('win');", respond.getString());
+	STRCMP_EQUAL( "App.Pick(0, 27);App.LightButton('win');",
+			respond.getString());
 	execute_cmd("/win", 0);
 	STRCMP_EQUAL("App.WinAck(0, 1);", respond.getString());
-	tilePool->setCurrentTile(1);
+	wall->setCurrentTile(1);
 	set_cheapest_tile(27);
 	execute_cmd("/start", 0);
-	STRCMP_EQUAL("App.UpdateHolding([[14,15,16,17,18,19,20,21,22,23,24,25,26,0],[1,2,3,4,5,6,7,8,9,10,11,12,13,0]]);App.Pick(1, 27);|App.Throw(27, 1);", respond.getString());
+	HAS_STRING(
+			"App.UpdateHolding([[14,15,16,17,18,19,20,21,22,23,24,25,26,0],[1,2,3,4,5,6,7,8,9,10,11,12,13,0]]);App.Pick(1, 27);|App.Throw(27, 1);",
+			respond.getString());
 }
 
 TEST(html_game, no_tile_any_more) {
-	execute_cmd("/start", 0);
-	tilePool->empty();
+	wall->empty();
 	execute_cmd("/throw", 1);
-	STRCMP_EQUAL(
-			"App.Throw(1, 0);|App.WinAck(1, 0);", respond.getString());
+	STRCMP_EQUAL( "App.Throw(1, 0);|App.WinAck(1, 0);", respond.getString());
 	set_cheapest_tile(54);
 	execute_cmd("/start", 0);
-	STRCMP_EQUAL("App.UpdateHolding([[41,42,43,44,45,46,47,48,49,50,51,52,53,0],[28,29,30,31,32,33,34,35,36,37,38,39,40,0]]);App.Pick(1, 54);|App.Throw(54, 1);App.WinAck(0, 0);", respond.getString());
+	HAS_STRING(
+			"App.UpdateHolding([[41,42,43,44,45,46,47,48,49,50,51,52,53,0],[28,29,30,31,32,33,34,35,36,37,38,39,40,0]]);App.Pick(1, 54);|App.Throw(54, 1);",
+			respond.getString());
+	HAS_STRING("App.WinAck(0, 0);", respond.getString());
 	execute_cmd("/start", 0);
-	STRCMP_EQUAL( "App.UpdateHolding([[55,56,57,58,59,60,61,62,63,64,65,66,67,81],[68,69,70,71,72,73,74,75,76,77,78,79,80,0]]);App.Pick(0, 81);"
-	, respond.getString());
+	STRCMP_EQUAL(
+			"App.UpdateHolding([[55,56,57,58,59,60,61,62,63,64,65,66,67,81],[68,69,70,71,72,73,74,75,76,77,78,79,80,0]]);App.Pick(0, 81);",
+			respond.getString());
 }
 
 TEST(html_game, _WIN) {
-	execute_cmd("/start", 0);
 	execute_cmd("/win", 1);
 	STRCMP_EQUAL("alert(\"Are you kidding?\");", respond.getString());
 	execute_cmd("/throw", 1);
-	STRCMP_EQUAL(
-			"App.Throw(1, 0);|App.Pick(1, 28);|App.Throw(14, 1);",
+	HAS_STRING( "App.Throw(1, 0);|App.Pick(1, 28);|App.Throw(14, 1);",
 			respond.getString());
 	set_cheapest_tile(28);
 	execute_cmd("/win", 0);
 	STRCMP_EQUAL("alert(\"Are you kidding?\");", respond.getString());
 	execute_cmd("/pick", 0);
 	set_cheapest_tile(27);
-	tilePool->setCurrentTile(27);
+	wall->setCurrentTile(27);
 	execute_cmd("/throw", 29);
 	execute_cmd("/win", 0);
 	STRCMP_EQUAL("App.WinAck(0, 1);", respond.getString());
 }
 
 TEST(html_game, ai_WIN) {
-	execute_cmd("/start", 0);
-	tilePool->setCurrentTile(14);
+	wall->setCurrentTile(14);
 	execute_cmd("/throw", 1);
-	STRCMP_EQUAL(
-			"App.Throw(1, 0);|App.Pick(1, 14);|App.WinAck(1, 1);",
+	STRCMP_EQUAL( "App.Throw(1, 0);|App.Pick(1, 14);|App.WinAck(1, 1);",
 			respond.getString());
 	execute_cmd("/start", 0);
-	tilePool->setCurrentTile(41);
+	wall->setCurrentTile(41);
 	execute_cmd("/pick", 0);
 	execute_cmd("/throw", 41);
-	STRCMP_EQUAL(
-			"App.Throw(41, 0);|App.WinAck(1, 1);",
-			respond.getString());
+	STRCMP_EQUAL( "App.Throw(41, 0);|App.WinAck(1, 1);", respond.getString());
 }
 
 TEST(html_game, pong) {
-	execute_cmd("/start", 0);
 	execute_cmd("/throw", 1);
 	execute_cmd("/pong", 0);
-	STRCMP_EQUAL( "alert(\"Are you kidding?\");",
-			respond.getString());
-	tilePool->setCurrentTile(2);
+	STRCMP_EQUAL( "alert(\"Are you kidding?\");", respond.getString());
+	wall->setCurrentTile(2);
 	execute_cmd("/pick", 0);
-	tilePool->setCurrentTile(2);
+	wall->setCurrentTile(2);
 	set_cheapest_tile(2);
 	execute_cmd("/throw", 3);
-	STRCMP_EQUAL(
-		"App.Throw(3, 0);|App.Pick(1, 2);|App.Throw(2, 1);App.LightButton('pong');",
-			respond.getString());
-	execute_cmd("/chow", 0);
-	STRCMP_EQUAL( "alert(\"Are you kidding?\");",
+	HAS_STRING(
+			"App.Throw(3, 0);|App.Pick(1, 2);|App.Throw(2, 1);App.LightButton('pong');",
 			respond.getString());
 	execute_cmd("/pong", 0);
 	STRCMP_EQUAL( "App.UpdateHolding("
-"[[4,5,6,7,8,9,10,11,12,13,27,130],"
+	"[[4,5,6,7,8,9,10,11,12,13,27,130],"
 	"[15,16,17,18,19,20,21,22,23,24,25,26,28,0]]);", respond.getString());
 	execute_cmd("/throw", 4);
-	STRCMP_EQUAL(
-			"App.Throw(4, 0);|App.Pick(1, 3);|App.Throw(15, 1);",
+	HAS_STRING( "App.Throw(4, 0);|App.Pick(1, 3);|App.Throw(15, 1);",
 			respond.getString());
 }
 
+IGNORE_TEST(html_game, chow_when_not_able_to_chow) {
+	execute_cmd("/throw", 1);
+	execute_cmd("/chow", 0);
+	STRCMP_EQUAL( "alert(\"Cannot meld chow.\");", respond.getString());
+}
+
+IGNORE_TEST(html_game, chow) {
+	set_cheapest_tile(14);
+	execute_cmd("/throw", 1);
+	execute_cmd("/chow", 12);
+	STRCMP_EQUAL(
+			"App.UpdateHolding([[2,3,4,5,6,7,8,9,10,11,27,268],[15,16,17,18,19,20,21,22,23,24,25,26,28,0]]);",
+			respond.getString());
+}

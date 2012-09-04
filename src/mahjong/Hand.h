@@ -5,10 +5,10 @@
 
 #include "tiles.h"
 
-class PlayerTiles {
+class Hand {
 public:
-	PlayerTiles();
-	~PlayerTiles();
+	Hand();
+	~Hand();
 	int get_holdings(tile_t * tiles_buffer, int buffer_size);
 	int get_eaten(eaten_t * tiles_buffer, int buffer_size);
 	tile_t get_current();
@@ -20,7 +20,7 @@ public:
 	void deal(tile_t tiles[], int tiles_count);
 
 	int is_able_to_pong(tile_t tile);
-	int is_able_to_chew(tile_t tile);
+	int is_able_to_chow(tile_t tile);
 	int is_able_to_win(tile_t tile);
 private:
 	void sort();
@@ -33,6 +33,6 @@ private:
 	tile_t current;
 };
 
-PlayerTiles * create_player_data(void);
+Hand * create_player_data(void);
 
 #endif /* PLAYER_H_ */

@@ -3,7 +3,7 @@
 #include "HTMLMahjongGameRespond.h"
 #include "mocks.h"
 #include "HTMLUIEvent.h"
-#include "PlayerTiles.h"
+#include "Hand.h"
 
 TEST_GROUP(HTMLMahjongGameRespond) {
 	HTMLMahjongGameRespond respond;
@@ -66,7 +66,7 @@ TEST(HTMLMahjongGameRespond, event_deal)
 {
 	tile_t tiles1[] = { 1 };
 	tile_t tiles2[] = { 2, 3 };
-	PlayerTiles playerData1, playerData2;
+	Hand playerData1, playerData2;
 	playerData1.deal(tiles1, 1);
 	playerData2.deal(tiles2, 2);
 

@@ -5,10 +5,6 @@ UIEventQueue::UIEventQueue() {
 }
 
 UIEventQueue::~UIEventQueue() {
-	while(!eventQueue_.empty()){
-		delete eventQueue_.front();
-		eventQueue_.pop();
-	}
 }
 
 UIEvent * UIEventQueue::popEvent() {

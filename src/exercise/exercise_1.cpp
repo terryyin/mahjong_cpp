@@ -1,9 +1,9 @@
 #include "tile.h"
 
-int tiles_is_able_to_chow(tile_t tiles[], int tile_count, tile_t tile)
+bool tiles_is_able_to_chow(tile_t tiles[], int tileCount, tile_t tileToChow)
 {
 	/*
 	 * exercise: add your code here.
 	 */
-	return 0;
+	return false;
 }

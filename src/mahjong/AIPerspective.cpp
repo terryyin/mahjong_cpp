@@ -2,12 +2,12 @@
 #include <stdio.h>
 #include <string.h>
 #include "AIPerspective.h"
-#include "PlayerTiles.h"
+#include "Hand.h"
 #include "evaluator.h"
 #include "assert.h"
 
 AIPerspective::AIPerspective() {
-	action = ACTION_RESTART;
+	currentActionRequest_.action_ = ACTION_RESTART;
 	player = NULL;
 	evaluator = create_evaluator_r();
 }
@@ -19,13 +19,13 @@ AIPerspective::~AIPerspective() {
 
 void AIPerspective::deal(tile_t tiles[], int n, int distance) {
 	if (distance == 0) {
-		PlayerTiles * player_data = create_player_data();
+		Hand * player_data = create_player_data();
 		player_data->deal(tiles, n);
 		player = player_data;
 	}
 }
 
-tile_t AIPerspective::ai_which_to_discard() {
+tile_t AIPerspective::whichToDiscard() {
 	int i;
 	int max = 0;
 	int index_to_throw = 0;
@@ -49,10 +49,10 @@ void AIPerspective::pick(tile_t tile, int distance) {
 	if (distance == 0) {
 		player->pick(tile);
 		if (player->is_able_to_win(NO_TILE))
-			action = ACTION_WIN;
+			currentActionRequest_.action_ = ACTION_WIN;
 		else {
-			action = ACTION_DISCARD;
-			this->tile = ai_which_to_discard();
+			currentActionRequest_.action_ = ACTION_DISCARD;
+			currentActionRequest_.tile_ = whichToDiscard();
 		}
 	}
 }
@@ -65,31 +65,23 @@ int AIPerspective::chow(tile_t tile, tile_t with, int distance) {
 }
 
 void AIPerspective::win(int score, int distance) {
-	action = ACTION_RESTART;
+	currentActionRequest_.action_ = ACTION_RESTART;
 	delete player;
 	player = NULL;
 }
 
-action_t AIPerspective::popActionRequest(tile_t* tile) {
-	if (tile != NULL)
-		*tile = this->tile;
-	return action;
+void AIPerspective::pushActionRequest(PlayerActionRequest *actionRequest) {
+
 }
 
-void AIPerspective::set_action(PlayerActionRequest *actionRequest) {
-
-	this->action = actionRequest->action_;
-	this->tile = actionRequest->tile_;
-}
-
-void AIPerspective::discard_tile(tile_t tile, int distance) {
+void AIPerspective::discard(tile_t tile, int distance) {
 	if (distance == 0)
 		player->discard_tile(tile);
 	else {
 		if (player->is_able_to_win(tile))
-			action = ACTION_WIN;
+			currentActionRequest_.action_ = ACTION_WIN;
 		else
-			action = ACTION_PICK;
+			currentActionRequest_.action_ = ACTION_PICK;
 	}
 }
 

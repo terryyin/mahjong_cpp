@@ -30,6 +30,6 @@ typedef char tile_t;
 
 typedef int eaten_t;
 #define PONG(tile)  (0x80 | (tile))
-#define CHOW(tile)  (0x100 | (tile))
+#define CHOW(lowestTile)  (0x100 | (lowestTile))
 
 #endif /* TILE_H_ */

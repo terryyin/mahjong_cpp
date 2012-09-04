@@ -1,8 +1,8 @@
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
 
-#include "TilePool.h"
-#include "PlayerTiles.h"
+#include "Wall.h"
+#include "Hand.h"
 #include "Perspective.h"
 
 #include "mocks.h"
@@ -41,25 +41,46 @@ Evaluator * createMockEvaluator(void)
 	return new MockEvaluator();
 }
 
-class MockTilePool:public TilePool{
+class MockWall:public Wall{
 public:
-	MockTilePool(){}
-	~MockTilePool(){}
-	void shuffle() {
-		mock().actualCall("tile_pool_shuffle").onObject(this);
+	MockWall():Wall(NULL, 0, 0){}
+	~MockWall(){}
+	void shuffleAndRebuild() {
+		mock().actualCall("shuffleAndRebuild").onObject(this);
 	}
 
-	int is_end() {
-		return mock().actualCall("tile_pool_is_end").onObject(this).returnValue().getIntValue();
+	bool isEnd() {
+		return mock().actualCall("isEnd").onObject(this).returnValue().getIntValue();
 	}
 
-	tile_t pop_a_tile() {
-		return (tile_t) mock().actualCall("tile_pool_pop_a_tile").onObject(this).returnValue().getIntValue();
+	tile_t popATile() {
+		return (tile_t) mock().actualCall("popATile").onObject(this).returnValue().getIntValue();
 	}
 };
 
-
-TilePool * create_tile_pool_mocks() {
-	return new MockTilePool();
+Wall * createMockWall() {
+	return new MockWall();
 }
 
+class Dependency {
+
+};
+
+class Singleton {
+private:
+	Singleton() {
+	}
+
+public:
+	Singleton * getInstance() {
+		if (instance_ == NULL)
+			instance_ = new Singleton;
+		return instance_;
+	}
+	void setInstance(Singleton * new_instance) {
+		delete instance_;
+		instance_ = new_instance;
+	}
+private:
+	static Singleton * instance_;
+};

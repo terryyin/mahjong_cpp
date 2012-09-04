@@ -3,7 +3,6 @@
 
 class Perspective;
 class Evaluator;
-void setup_tile_pool_mocks(void);
 Evaluator * createMockEvaluator(void);
 
 #include "Perspective.h"
@@ -16,30 +15,23 @@ public:
 
 	virtual void deal(tile_t tiles[], int buffer_size, int distance) {
 		char s[100];
-		mock().actualCall("agent.deal").onObject(this).withParameter("distance",
+		mock().actualCall("deal").onObject(this).withParameter("distance",
 				distance).withParameter("tiles",
 				tiles_to_string(tiles, buffer_size, s, 100));
 	}
 
-	virtual action_t popActionRequest(tile_t* tile) {
-		if (tile != NULL)
-			*tile =
-					mock().actualCall("agent.get_action.tile").onObject(this).returnValue().getIntValue();
-		return (action_t) mock().actualCall("agent.get_action").onObject(this).returnValue().getIntValue();
-	}
-
 	virtual void pick(tile_t tile, int distance) {
-		mock().actualCall("agent.pick").onObject(this).withParameter("tile",
+		mock().actualCall("pick").onObject(this).withParameter("tile",
 				tile).withParameter("distance", distance);
 	}
 
 	virtual void win(int score, int distance) {
-		mock().actualCall("agent.win").onObject(this).withParameter("score",
+		mock().actualCall("win").onObject(this).withParameter("score",
 				score).withParameter("distance", distance);
 	}
 
-	virtual void discard_tile(tile_t tile, int distance) {
-		mock().actualCall("agent.discard_tile").onObject(this).withParameter(
+	virtual void discard(tile_t tile, int distance) {
+		mock().actualCall("discard_tile").onObject(this).withParameter(
 				"tile", tile).withParameter("distance", distance);
 	}
 	virtual void pong(tile_t tile, int distance) {
@@ -49,7 +41,7 @@ public:
 		return 0;
 	}
 
-	virtual void set_action(PlayerActionRequest *actionRequest) {
+	virtual void pushActionRequest(PlayerActionRequest *actionRequest) {
 	}
 };
 
@@ -110,8 +102,8 @@ public:
 #include "game.h"
 class MockGame: public Game {
 public:
-	virtual void nextMove() {
-		mock().actualCall("update").onObject(this);
+	virtual void nextMove(PlayerActionRequest *request) {
+		mock().actualCall("nextMove").onObject(this).withParameter("request", request);
 	}
 
 	virtual void setAction(PlayerActionRequest * actionRequest) {
@@ -139,8 +131,8 @@ public:
 		return mock().actualCall("getNumberOfPlayer").onObject(this).returnValue().getIntValue();
 	}
 
-	PlayerTiles *getPlayerData(int distance) {
-		return (PlayerTiles *) mock().actualCall("getPlayerData").onObject(this).returnValue().getObjectPointer();
+	Hand *getHand(int distance) {
+		return (Hand *) mock().actualCall("getPlayerData").onObject(this).returnValue().getObjectPointer();
 	}
 };
 

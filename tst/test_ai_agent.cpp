@@ -6,41 +6,41 @@
 
 #include "mocks.h"
 
-TEST_GROUP(ai_agent)
+TEST_GROUP(ai_perspective)
 {
-	AIPerspective * agent;
+	AIPerspective * perspective;
 	Evaluator * evaluator;
 	void setup() {
 		evaluator = createMockEvaluator();
-		agent = new AIPerspective();
-		agent->setEvaluator(evaluator);
+		perspective = new AIPerspective();
+		perspective->setEvaluator(evaluator);
 		tile_t holdings[] = { C(1) };
-		agent->deal(holdings, 1, 0);
+		perspective->deal(holdings, 1, 0);
 	}
 	void teardown() {
-		delete agent;
+		delete perspective;
 	}
 
 };
 
-TEST(ai_agent, player_creation)
+TEST(ai_perspective, player_creation)
 {
-	LONGS_EQUAL(ACTION_RESTART, agent->popActionRequest(NULL));
+	LONGS_EQUAL(ACTION_RESTART, perspective->popActionRequest().action_);
 }
 
-TEST(ai_agent, player_pick_when_winning)
+TEST(ai_perspective, player_pick_when_winning)
 {
-	agent->pick(C(1), 0);
-	LONGS_EQUAL(ACTION_WIN, agent->popActionRequest(NULL));
+	perspective->pick(C(1), 0);
+	LONGS_EQUAL(ACTION_WIN, perspective->popActionRequest().action_);
 }
 
-TEST(ai_agent, player_react_when_winning)
+TEST(ai_perspective, player_react_when_winning)
 {
-	agent->discard_tile(C(1), 1);
-	LONGS_EQUAL(ACTION_WIN, agent->popActionRequest(NULL));
+	perspective->discard(C(1), 1);
+	LONGS_EQUAL(ACTION_WIN, perspective->popActionRequest().action_);
 }
 
-TEST(ai_agent, player_pick)
+TEST(ai_perspective, player_pick)
 {
 	// ai player will call the evaluator to evaluate the array
 	// twice, because there are two tiles after pick.
@@ -48,12 +48,12 @@ TEST(ai_agent, player_pick)
 			.onObject(evaluator)
 			.ignoreOtherParameters()
 			.andReturnValue(1);
-	agent->pick(C(3), 0);
-	LONGS_EQUAL(ACTION_DISCARD, agent->popActionRequest(NULL));
+	perspective->pick(C(3), 0);
+	LONGS_EQUAL(ACTION_DISCARD, perspective->popActionRequest().action_);
 }
 
-TEST(ai_agent, player_win)
+TEST(ai_perspective, player_win)
 {
-	agent->win(0, 0);
-	LONGS_EQUAL(ACTION_RESTART, agent->popActionRequest(NULL));
+	perspective->win(0, 0);
+	LONGS_EQUAL(ACTION_RESTART, perspective->popActionRequest().action_);
 }

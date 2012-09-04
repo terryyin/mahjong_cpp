@@ -16,8 +16,9 @@ CPP_PLATFORM = Gcc
 
 SRC_DIRS = \
 	src/exercise\
-	src/html_ui\
-	src/mahjong_game
+	src/htmlGame\
+	src/httpServer\
+	src/mahjong
 
 TEST_SRC_DIRS = \
 	tst
@@ -39,9 +40,9 @@ $(EVALUATOR_LIB) :
 	
 .PHONY: product
 product : $(PRODUCT)
-
+	./$(PRODUCT)
+	
 $(PRODUCT): $(TARGET_LIB) $(PRDUCT_MAIN_OBJ) $(EVALUATOR_LIB) $(CPPUTEST_LIB)
 	@echo 'Building target: $@'
 	$(CC) -o $@ -g $^ $(LD_LIBRARIES)
 	@echo 'Running the game. Go to your browser to play at http://localhst:8888'
-	./$(PRODUCT)

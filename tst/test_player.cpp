@@ -4,12 +4,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "tiles.h"
-#include "PlayerTiles.h"
+#include "Hand.h"
 #include "mj_table.h"
 #include "mocks.h"
 
 TEST_GROUP(common_player) {
-	PlayerTiles * player;
+	Hand * player;
 	tile_t tiles[100];
 	void setup() {
 		player=create_player_data();

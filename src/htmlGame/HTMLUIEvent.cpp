@@ -106,7 +106,7 @@ string HTMLEnablePongEvent::toString() {
 }
 
 string HTMLEnableChewEvent::toString() {
-	return "App.LightButton('chew');";
+	return "App.LightButton('chow');";
 }
 
 class TileArrayScriptGenerator {
@@ -115,7 +115,7 @@ public:
 private:
 	void catTilesToString(char buffer[], const tile_t * tiles, int n);
 	void catEatenToString(char buffer[], const eaten_t * eaten, int n);
-	void catPlayerTilesToString(PlayerTiles * player, char buffer[], int buffer_size);
+	void catPlayerTilesToString(Hand * player, char buffer[], int buffer_size);
 };
 
 string HTMLDealEvent::toString() {

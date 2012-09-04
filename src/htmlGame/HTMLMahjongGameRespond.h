@@ -5,7 +5,7 @@
 #include "MahjongGameRespond.h"
 
 class UserView;
-class PlayerTiles;
+class Hand;
 
 class HTMLMahjongGameRespond : public MahjongGameRespond{
 public:

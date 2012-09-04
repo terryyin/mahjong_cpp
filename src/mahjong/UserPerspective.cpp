@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "UserPerspective.h"
-#include "PlayerTiles.h"
+#include "Hand.h"
 #include "assert.h"
 #include "mj_table.h"
 #include "game.h"
@@ -12,21 +12,18 @@ UserPerspective::UserPerspective(UIEventFactory *eventFactory) {
 	if (eventFactory == NULL)
 		eventFactory = new HTMLEventFactory;
 	eventFactory_ = eventFactory;
-	action = NO_ACTION;
 	game_flow = NULL;
-	game = NULL;
 	last_tile = NO_TILE;
-	action_tile = NO_TILE;
 	int i = 0;
 	for (; i < MAX_NUMBER_OF_PLAYER; i++)
-		players[i] = NULL;
+		Hands[i] = NULL;
 }
 
 void UserPerspective::_remove_players() {
 	for (int i = 0; i < MAX_NUMBER_OF_PLAYER; i++) {
-		if (NULL != this->players[i])
-			delete this->players[i];
-		this->players[i] = NULL;
+		if (NULL != this->Hands[i])
+			delete this->Hands[i];
+		this->Hands[i] = NULL;
 	}
 }
 UserPerspective::~UserPerspective() {
@@ -39,10 +36,11 @@ UIEvent * UserPerspective::popEvent() {
 }
 
 void UserPerspective::deal(tile_t tiles[], int n, int distance) {
-	PlayerTiles * player_data = create_player_data();
+	currentActionRequest_.action_ = NO_ACTION;
+	Hand * player_data = create_player_data();
 	player_data->deal(tiles, n);
-	delete players[distance];
-	this->players[distance] = player_data;
+	delete Hands[distance];
+	this->Hands[distance] = player_data;
 	if (distance == 0)
 		add_event(eventFactory_->createDealEvent(this));
 }
@@ -54,13 +52,13 @@ void UserPerspective::add_event(UIEvent * event) {
 void UserPerspective::react_after_pick(int distance) {
 	this->last_tile = NO_TILE;
 	if (distance == 0) {
-		PlayerTiles * player = this->players[0];
+		Hand * player = this->Hands[0];
 		if (player->is_able_to_win(NO_TILE))
 			add_event(eventFactory_->createEnableWinEvent());
 	}
 }
 void UserPerspective::pick(tile_t tile, int distance) {
-	PlayerTiles * player_data = this->players[distance];
+	Hand * player_data = this->Hands[distance];
 	assert(player_data);
 	player_data->pick(tile);
 
@@ -69,22 +67,23 @@ void UserPerspective::pick(tile_t tile, int distance) {
 	react_after_pick(distance);
 }
 void UserPerspective::pong(tile_t tile, int distance) {
-	PlayerTiles * player_data = this->players[distance];
+	Hand * player_data = this->Hands[distance];
 	assert(player_data);
 	player_data->pong(tile);
 	add_event(eventFactory_->createDealEvent(this));
 
-	this->action = NO_ACTION;
 	react_after_pick(distance);
 }
 
 int UserPerspective::chow(tile_t tile, tile_t with, int distance) {
-	PlayerTiles * player_data = this->players[distance];
+	Hand * player_data = this->Hands[distance];
 	assert(player_data);
-	if (!player_data->chow(tile, with))
+	if (!player_data->chow(tile, with)) {
+		if (distance == 0)
+			add_event(eventFactory_->createMessageEvent("Cannot meld chow."));
 		return 0;
+	}
 	add_event(eventFactory_->createDealEvent(this));
-	this->action = NO_ACTION;
 	react_after_pick(distance);
 	return 1;
 }
@@ -92,16 +91,9 @@ int UserPerspective::chow(tile_t tile, tile_t with, int distance) {
 void UserPerspective::win(int score, int distance) {
 	add_event(eventFactory_->createWinEvent(distance, score));
 }
-action_t UserPerspective::popActionRequest(tile_t* tile) {
-	action_t saved = action;
-	action = NO_ACTION;
-	if (tile != NULL)
-		*tile = action_tile;
-	return saved;
-}
 
-void UserPerspective::set_action(PlayerActionRequest * actionRequest) {
-	PlayerTiles *player = this->players[0];
+void UserPerspective::pushActionRequest(PlayerActionRequest * actionRequest) {
+	Hand *player = this->Hands[0];
 	if (actionRequest->action_ == ACTION_WIN) {
 		if (!player->is_able_to_win(this->last_tile)) {
 			add_event(eventFactory_->createMessageEvent("Are you kidding?"));
@@ -113,31 +105,30 @@ void UserPerspective::set_action(PlayerActionRequest * actionRequest) {
 			return;
 		}
 	} else if (actionRequest->action_ == ACTION_CHOW) {
-		if (!player->is_able_to_chew(this->last_tile)) {
+		if (!player->is_able_to_chow(this->last_tile)) {
 			add_event(eventFactory_->createMessageEvent("Are you kidding?"));
 			return;
 		}
 	}
-	this->action = actionRequest->action_;
-	this->action_tile = actionRequest->tile_;
+	this->currentActionRequest_ = *actionRequest;
 }
 
 void UserPerspective::react_others_throw(tile_t tile, int distance) {
 	if (distance != 0) {
-		PlayerTiles * player = this->players[0];
+		Hand * player = this->Hands[0];
 		if (player->is_able_to_win(tile))
 			add_event(eventFactory_->createEnableWinEvent());
 		if (player->is_able_to_pong(tile))
 			add_event(eventFactory_->createEnablePongEvent());
 		if (distance == 1) {
-			if (player->is_able_to_chew(tile))
+			if (player->is_able_to_chow(tile))
 				add_event(eventFactory_->createEnableChewEvent());
 		}
 	}
 }
-void UserPerspective::discard_tile(tile_t tile, int distance) {
+void UserPerspective::discard(tile_t tile, int distance) {
 	this->last_tile = tile;
-	PlayerTiles * player_data = this->players[distance];
+	Hand * player_data = this->Hands[distance];
 	if (player_data != NULL)
 		player_data->discard_tile(tile);
 
@@ -156,23 +147,20 @@ MahjongTable * UserPerspective::getTable()
 }
 
 
-void UserPerspective::set_game(Game * game) {
-	this->game = game;
-}
-
-void UserPerspective::update_game() {
-	this->game_flow->nextMove();
-}
-
 int UserPerspective::getNumberOfPlayer() {
 	int count = 0;
 	for (int i = 0; i < MAX_NUMBER_OF_PLAYER; i++)
-		if (this->players[i] != NULL)
+		if (this->Hands[i] != NULL)
 			count++;
 	return count;
 }
 
-PlayerTiles *UserPerspective::getPlayerData(int distance) {
-	return this->players[distance];
+Hand *UserPerspective::getHand(int distance) {
+	return this->Hands[distance];
+}
+
+void UserPerspective::setHand(int distance, Hand * hand) {
+	delete this->Hands[distance];
+	this->Hands[distance] = hand;
 }
 

@@ -1,0 +1,59 @@
+#include "CppUTest/TestHarness.h"
+#include "CppUTestExt/MockSupport.h"
+
+#include "tiles.h"
+#include "AIPerspective.h"
+
+#include "mocks.h"
+
+TEST_GROUP(ai_perspective)
+{
+	AIPerspective * perspective;
+	Evaluator * evaluator;
+	void setup() {
+		evaluator = createMockEvaluator();
+		perspective = new AIPerspective();
+		perspective->setEvaluator(evaluator);
+		tile_t holdings[] = { C(1) };
+		perspective->deal(holdings, 1, 0);
+	}
+	void teardown() {
+		delete perspective;
+	}
+
+};
+
+TEST(ai_perspective, player_creation)
+{
+	LONGS_EQUAL(ACTION_RESTART, perspective->popActionRequest().action_);
+}
+
+TEST(ai_perspective, player_pick_when_winning)
+{
+	perspective->pick(C(1), 0);
+	LONGS_EQUAL(ACTION_WIN, perspective->popActionRequest().action_);
+}
+
+TEST(ai_perspective, player_react_when_winning)
+{
+	perspective->discard(C(1), 1);
+	LONGS_EQUAL(ACTION_WIN, perspective->popActionRequest().action_);
+}
+
+TEST(ai_perspective, player_pick)
+{
+	// ai player will call the evaluator to evaluate the array
+	// twice, because there are two tiles after pick.
+	mock()	.expectNCalls(2, "evaluate_array")
+			.onObject(evaluator)
+			.ignoreOtherParameters()
+			.andReturnValue(1);
+	perspective->pick(C(3), 0);
+	LONGS_EQUAL(ACTION_DISCARD, perspective->popActionRequest().action_);
+}
+
+TEST(ai_perspective, player_win)
+{
+	perspective->win(0, 0);
+	LONGS_EQUAL(ACTION_RESTART, perspective->popActionRequest().action_);
+}

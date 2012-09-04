@@ -2,6 +2,7 @@
 #include "game.h"
 #include "UserPerspective.h"
 #include "Hand.h"
+#include "string.h"
 
 const char * html_frame =
 		"<html>\n"

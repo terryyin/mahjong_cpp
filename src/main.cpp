@@ -3,6 +3,7 @@
 #include "httpd.h"
 #include "HTMLMahjongGameServer.h"
 #include "HTMLMahjongGameRespond.h"
+#include "string.h"
 
 static HTMLMahjongGameServer server(set_shutdown_flag);
 void execute_game_command(const char * command, const char *parameters, char * buffer, int buffer_size)

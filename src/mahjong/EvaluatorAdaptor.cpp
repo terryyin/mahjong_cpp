@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 #include "tile.h"
-#include "EvaluatorAdapter.h"
+#include "EvaluatorAdaptor.h"
 #include "../mahjong_evaluator/include/mj_evaluator.h"
 
 
-class EvaluatorImpl : public EvaluatorAdapter {
+class EvaluatorImpl : public EvaluatorAdaptor {
 public:
 	EvaluatorImpl() {
 	}
@@ -25,9 +25,9 @@ public:
 };
 
 
-static EvaluatorAdapter * create_evaluator_impl() {
+static EvaluatorAdaptor * create_evaluator_impl() {
 	return new EvaluatorImpl();
 }
 
-EvaluatorAdapter * (*createEvaluatorAdapter)(void) = create_evaluator_impl;
+EvaluatorAdaptor * (*createEvaluatorAdaptor)(void) = create_evaluator_impl;
 

@@ -33,6 +33,6 @@ private:
 	tile_t current;
 };
 
-Hand * createHand(void);
+extern Hand * (*createHand)(void);
 
 #endif /* PLAYER_H_ */

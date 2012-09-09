@@ -4,10 +4,10 @@
 #include "Wall.h"
 #include "Hand.h"
 #include "Perspective.h"
-#include "EvaluatorAdapter.h"
+#include "EvaluatorAdaptor.h"
 #include "mocks.h"
 
-class MockEvaluator: public EvaluatorAdapter{
+class MockEvaluator: public EvaluatorAdaptor{
 public:
 	MockEvaluator() {}
 	virtual ~MockEvaluator(){}
@@ -16,7 +16,7 @@ public:
 				tiles).withParameter("array_size", array_size).returnValue().getIntValue();
 	}
 };
-EvaluatorAdapter * createMockEvaluator(void)
+EvaluatorAdaptor * createMockEvaluator(void)
 {
 	return new MockEvaluator();
 }

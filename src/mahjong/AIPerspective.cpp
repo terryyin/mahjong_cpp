@@ -3,13 +3,13 @@
 #include <string.h>
 #include "AIPerspective.h"
 #include "Hand.h"
-#include "EvaluatorAdapter.h"
+#include "EvaluatorAdaptor.h"
 #include "assert.h"
 
 AIPerspective::AIPerspective() {
 	currentActionRequest_.action_ = ACTION_RESTART;
 	player = NULL;
-	evaluator = createEvaluatorAdapter();
+	evaluator = createEvaluatorAdaptor();
 }
 AIPerspective::~AIPerspective() {
 	if (player)
@@ -85,7 +85,7 @@ void AIPerspective::discard(tile_t tile, int distance) {
 	}
 }
 
-void AIPerspective::setEvaluator(EvaluatorAdapter * evaluator){
+void AIPerspective::setEvaluator(EvaluatorAdaptor * evaluator){
 	if (this->evaluator != NULL)
 		delete this->evaluator;
 	this->evaluator = evaluator;

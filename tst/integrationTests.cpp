@@ -6,9 +6,9 @@
 
 #include "HTMLMahjongGameServer.h"
 #include "Wall.h"
-#include "EvaluatorAdapter.h"
+#include "EvaluatorAdaptor.h"
 
-EvaluatorAdapter * createSimpleEvaluator();
+EvaluatorAdaptor * createSimpleEvaluator();
 void setCheapestTileForSimpleEvaluator(tile_t tile);
 
 #include "mocks.h"
@@ -56,7 +56,7 @@ TEST_GROUP(html_game) {
 	EverIncreasingWall *wall;
 
 	void setup() {
-		UT_PTR_SET(createEvaluatorAdapter, createSimpleEvaluator);
+		UT_PTR_SET(createEvaluatorAdaptor, createSimpleEvaluator);
 		UT_PTR_SET(createWall, createEverIncreasingWall);
 		server.executeGameCommand("/game", "", &respond);
 		gameID = server.getLastGameID();

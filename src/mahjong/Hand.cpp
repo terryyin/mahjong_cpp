@@ -149,6 +149,7 @@ Hand::Hand() {
 	}
 }
 
-Hand * createHand() {
+static Hand * createHandImpl() {
 	return new Hand;
 }
+Hand * (*createHand)() = createHandImpl;

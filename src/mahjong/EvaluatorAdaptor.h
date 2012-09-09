@@ -1,12 +1,12 @@
 #ifndef EVALUATOR_H_
 #define EVALUATOR_H_
 
-class EvaluatorAdapter {
+class EvaluatorAdaptor {
 public:
-	virtual ~EvaluatorAdapter() {}
+	virtual ~EvaluatorAdaptor() {}
 	virtual int evaluate_array(tile_t tiles[], int array_size)=0;
 };
 
-extern EvaluatorAdapter * (*createEvaluatorAdapter)(void);
+extern EvaluatorAdaptor * (*createEvaluatorAdaptor)(void);
 
 #endif /* EVALUATOR_H_ */

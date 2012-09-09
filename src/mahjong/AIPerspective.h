@@ -3,7 +3,7 @@
 
 #include "Perspective.h"
 class Hand;
-class EvaluatorAdapter;
+class EvaluatorAdaptor;
 class AIPerspective: public Perspective{
 public:
 	AIPerspective();
@@ -17,12 +17,12 @@ public:
 	virtual void discard(tile_t tile, int distance);
 
 	virtual void pushActionRequest(PlayerActionRequest * actionRequest);
-	void setEvaluator(EvaluatorAdapter * evaluator);
+	void setEvaluator(EvaluatorAdaptor * evaluator);
 
 private:
 	tile_t whichToDiscard();
 	Hand * player;
-	EvaluatorAdapter * evaluator;
+	EvaluatorAdaptor * evaluator;
 
 };
 

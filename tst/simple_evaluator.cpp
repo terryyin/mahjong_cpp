@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "tile.h"
-#include "EvaluatorAdapter.h"
+#include "EvaluatorAdaptor.h"
 
 static tile_t cheapest_tile = NO_TILE;
 void setCheapestTileForSimpleEvaluator(tile_t tile) {
@@ -17,7 +17,7 @@ void setCheapestTileForSimpleEvaluator(tile_t tile) {
  * the "cheapest_tile" a higher score.
  * Therefore the AI will always choose the cheapest tile to discard.
  */
-class evaluator_imp_t : public EvaluatorAdapter {
+class evaluator_imp_t : public EvaluatorAdaptor {
 public:
 	virtual int evaluate_array(tile_t tiles[], int array_size){
 		for(int i=0; i < array_size; i++) {
@@ -29,7 +29,7 @@ public:
 
 };
 
-EvaluatorAdapter * createSimpleEvaluator() {
+EvaluatorAdaptor * createSimpleEvaluator() {
 	return new evaluator_imp_t();
 }
 

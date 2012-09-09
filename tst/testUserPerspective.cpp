@@ -18,6 +18,38 @@ const tile_t WINNING_TILE = 10;
 const tile_t ANY_TILE = 8;
 tile_t defaultTilesPongTheWinningTileAndChowWinningTilePlusOne[] = { WINNING_TILE, WINNING_TILE, WINNING_TILE+2, WINNING_TILE+2 };
 
+class HandBuilder {
+public:
+	HandBuilder(): numberOfTiles_(0){}
+	Hand * build() {
+		return createHand(tiles_, numberOfTiles_);
+	}
+
+	HandBuilder& withAPairOf(tile_t tile) {
+		tiles_[numberOfTiles_++] = tile;
+		tiles_[numberOfTiles_++] = tile;
+		return *this;
+	}
+
+	HandBuilder& withPongOf(tile_t tile) {
+		tiles_[numberOfTiles_++] = tile;
+		tiles_[numberOfTiles_++] = tile;
+		tiles_[numberOfTiles_++] = tile;
+		return *this;
+	}
+
+private:
+	Hand * createHand(tile_t * tiles, int count) {
+		Hand * hand = new Hand();
+		hand->deal(tiles, count);
+		return hand;
+	}
+
+private:
+	tile_t tiles_[MAX_HOLDING_COUNT];
+	int numberOfTiles_;
+};
+
 class HandDataMother {
 public:
 	Hand *createAllIrrelevantHand() {

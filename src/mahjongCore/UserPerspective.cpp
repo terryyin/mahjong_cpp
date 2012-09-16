@@ -12,7 +12,6 @@ UserPerspective::UserPerspective(UIEventFactory *eventFactory) {
 	if (eventFactory == NULL)
 		eventFactory = new HTMLEventFactory;
 	eventFactory_ = eventFactory;
-	game_flow = NULL;
 	last_tile = NO_TILE;
 	int i = 0;
 	for (; i < MAX_NUMBER_OF_PLAYER; i++)
@@ -35,7 +34,7 @@ UIEvent * UserPerspective::popEvent() {
 	return eventQueue_.popEvent();
 }
 
-void UserPerspective::deal(tile_t tiles[], int n, int distance) {
+void UserPerspective::deal(Tile tiles[], int n, int distance) {
 	currentActionRequest_.action_ = NO_ACTION;
 	Hand * player_data = createHand();
 	player_data->deal(tiles, n);
@@ -57,7 +56,7 @@ void UserPerspective::react_after_pick(int distance) {
 			add_event(eventFactory_->createEnableWinEvent());
 	}
 }
-void UserPerspective::pick(tile_t tile, int distance) {
+void UserPerspective::pick(Tile tile, int distance) {
 	Hand * player_data = this->Hands[distance];
 	assert(player_data);
 	player_data->pick(tile);
@@ -66,7 +65,7 @@ void UserPerspective::pick(tile_t tile, int distance) {
 
 	react_after_pick(distance);
 }
-void UserPerspective::pong(tile_t tile, int distance) {
+void UserPerspective::pong(Tile tile, int distance) {
 	Hand * player_data = this->Hands[distance];
 	assert(player_data);
 	player_data->pong(tile);
@@ -75,7 +74,7 @@ void UserPerspective::pong(tile_t tile, int distance) {
 	react_after_pick(distance);
 }
 
-int UserPerspective::chow(tile_t tile, tile_t with, int distance) {
+int UserPerspective::chow(Tile tile, Tile with, int distance) {
 	Hand * player_data = this->Hands[distance];
 	assert(player_data);
 	if (!player_data->chow(tile, with)) {
@@ -113,7 +112,7 @@ void UserPerspective::pushActionRequest(PlayerActionRequest * actionRequest) {
 	this->currentActionRequest_ = *actionRequest;
 }
 
-void UserPerspective::react_others_throw(tile_t tile, int distance) {
+void UserPerspective::react_others_throw(Tile tile, int distance) {
 	if (distance != 0) {
 		Hand * player = this->Hands[0];
 		if (player->isAbleToWin(tile))
@@ -126,26 +125,16 @@ void UserPerspective::react_others_throw(tile_t tile, int distance) {
 		}
 	}
 }
-void UserPerspective::discard(tile_t tile, int distance) {
+void UserPerspective::discard(Tile tile, int distance) {
 	this->last_tile = tile;
 	Hand * player_data = this->Hands[distance];
 	if (player_data != NULL)
-		player_data->discard_tile(tile);
+		player_data->discard(tile);
 
 	add_event(eventFactory_->createDiscardEvent(tile, distance));
 
 	react_others_throw(tile, distance);
 }
-
-void UserPerspective::set_game_flow(MahjongTable * game_flow) {
-	this->game_flow = game_flow;
-}
-
-MahjongTable * UserPerspective::getTable()
-{
-	return this->game_flow;
-}
-
 
 int UserPerspective::getNumberOfPlayer() {
 	int count = 0;

@@ -24,8 +24,8 @@ class UserView;
 class UIEventFactory{
 public:
 	virtual ~UIEventFactory() {};
-	virtual UIEvent * createPickEvent(tile_t tile, int distance) = 0;
-	virtual UIEvent * createDiscardEvent(tile_t tile, int distance) = 0;
+	virtual UIEvent * createPickEvent(Tile tile, int distance) = 0;
+	virtual UIEvent * createDiscardEvent(Tile tile, int distance) = 0;
 	virtual UIEvent * createEnableWinEvent() = 0;
 	virtual UIEvent * createWinEvent(int distance, int score) = 0;
 	virtual UIEvent * createMessageEvent(const char * message) = 0;

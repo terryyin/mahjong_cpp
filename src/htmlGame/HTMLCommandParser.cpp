@@ -12,7 +12,7 @@ HTMLCommandParser::~HTMLCommandParser() {
 }
 
 void HTMLCommandParser::parse_parameter(const char* parameters, GameID& gameID,
-		tile_t& tile) {
+		Tile& tile) {
 	if (parameters != NULL && parameters[0] >= '0' && parameters[0] <= '9') {
 		int param = atoi(parameters);
 		gameID = param / 1000;
@@ -23,7 +23,7 @@ void HTMLCommandParser::parse_parameter(const char* parameters, GameID& gameID,
 MahjongCommand * HTMLCommandParser::parse(const char * command,
 		const char *parameters) {
 	GameID gameID = 0;
-	tile_t tile = NO_TILE;
+	Tile tile = NO_TILE;
 	const char * cmd = strchr(command, '/');
 
 	parse_parameter(parameters, gameID, tile);
@@ -32,7 +32,7 @@ MahjongCommand * HTMLCommandParser::parse(const char * command,
 }
 
 MahjongCommand * HTMLCommandParser::parseWithExtractedParameters(
-		const char * cmd, GameID gameID, tile_t tile) {
+		const char * cmd, GameID gameID, Tile tile) {
 
 	if (strcmp(cmd, "/game") == 0)
 		return new MJCommandStartNew(server_);
@@ -48,7 +48,7 @@ MahjongCommand * HTMLCommandParser::parseWithExtractedParameters(
 }
 
 MahjongCommand * HTMLCommandParser::parseWithExtractedParametersForGame(
-		Game* game, const char * cmd, tile_t tile) {
+		Game* game, const char * cmd, Tile tile) {
 	if (game != NULL) {
 		if (strcmp(cmd, "/start") == 0)
 			return new MJCommandRestart(game);

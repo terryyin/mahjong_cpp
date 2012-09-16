@@ -9,18 +9,18 @@ public:
 	AIPerspective();
 	virtual ~AIPerspective();
 
-	void deal(tile_t tiles[], int n, int distance);
-	virtual void pick(tile_t tile, int distance);
-	virtual void pong(tile_t tile, int distance);
-	virtual int chow(tile_t tile, tile_t with, int distance);
+	void deal(Tile tiles[], int n, int distance);
+	virtual void pick(Tile tile, int distance);
+	virtual void pong(Tile tile, int distance);
+	virtual int chow(Tile tile, Tile with, int distance);
 	virtual void win(int score, int distance);
-	virtual void discard(tile_t tile, int distance);
+	virtual void discard(Tile tile, int distance);
 
 	virtual void pushActionRequest(PlayerActionRequest * actionRequest);
 	void setEvaluator(EvaluatorAdaptor * evaluator);
 
 private:
-	tile_t whichToDiscard();
+	Tile whichToDiscard();
 	Hand * player;
 	EvaluatorAdaptor * evaluator;
 

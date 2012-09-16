@@ -15,18 +15,19 @@ CPPUTEST_USE_EXTENSIONS = Y
 CPP_PLATFORM = Gcc
 
 SRC_DIRS = \
-	src/exercise\
 	src/htmlGame\
 	src/httpServer\
-	src/mahjong
+	src/mahjongCore
 
 TEST_SRC_DIRS = \
-	tst
+	tst\
+	tst/mahjongCore
 
 INCLUDE_DIRS =\
   .\
   include\
   $(SRC_DIRS)\
+  $(EVALUATOR)/include\
   $(CPPUTEST_HOME)/include
   
 PRDUCT_MAIN_OBJ = src/main.o

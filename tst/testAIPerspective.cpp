@@ -1,7 +1,7 @@
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
 
-#include "tiles.h"
+#include "TileArray.h"
 #include "AIPerspective.h"
 
 #include "mocks.h"
@@ -14,7 +14,7 @@ TEST_GROUP(ai_perspective)
 		evaluator = createMockEvaluator();
 		perspective = new AIPerspective();
 		perspective->setEvaluator(evaluator);
-		tile_t holdings[] = { C(1) };
+		Tile holdings[] = { C(1) };
 		perspective->deal(holdings, 1, 0);
 	}
 	void teardown() {

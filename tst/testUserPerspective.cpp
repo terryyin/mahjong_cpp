@@ -14,9 +14,9 @@ public:
 	}
 };
 
-const tile_t WINNING_TILE = 10;
-const tile_t ANY_TILE = 8;
-tile_t defaultTilesPongTheWinningTileAndChowWinningTilePlusOne[] = { WINNING_TILE, WINNING_TILE, WINNING_TILE+2, WINNING_TILE+2 };
+const Tile WINNING_TILE = 10;
+const Tile ANY_TILE = 8;
+Tile defaultTilesPongTheWinningTileAndChowWinningTilePlusOne[] = { WINNING_TILE, WINNING_TILE, WINNING_TILE+2, WINNING_TILE+2 };
 
 class HandBuilder {
 public:
@@ -25,13 +25,13 @@ public:
 		return createHand(tiles_, numberOfTiles_);
 	}
 
-	HandBuilder& withAPairOf(tile_t tile) {
+	HandBuilder& withAPairOf(Tile tile) {
 		tiles_[numberOfTiles_++] = tile;
 		tiles_[numberOfTiles_++] = tile;
 		return *this;
 	}
 
-	HandBuilder& withPongOf(tile_t tile) {
+	HandBuilder& withPongOf(Tile tile) {
 		tiles_[numberOfTiles_++] = tile;
 		tiles_[numberOfTiles_++] = tile;
 		tiles_[numberOfTiles_++] = tile;
@@ -39,46 +39,46 @@ public:
 	}
 
 private:
-	Hand * createHand(tile_t * tiles, int count) {
+	Hand * createHand(Tile * tiles, int count) {
 		Hand * hand = new Hand();
 		hand->deal(tiles, count);
 		return hand;
 	}
 
 private:
-	tile_t tiles_[MAX_HOLDING_COUNT];
+	Tile tiles_[MAX_HOLDING_COUNT];
 	int numberOfTiles_;
 };
 
 class HandDataMother {
 public:
 	Hand *createAllIrrelevantHand() {
-		tile_t tiles[] = { 1, 4, 7, 11 };
+		Tile tiles[] = { 1, 4, 7, 11 };
 		return createHand(tiles, 4);
 	}
 
 	Hand * createHandWinWithTheWinningTile() {
-		tile_t tiles[] = {WINNING_TILE};
+		Tile tiles[] = {WINNING_TILE};
 		return createHand(tiles, 1);
 	}
 
 	Hand *createHandPongTheWinningTile() {
-		tile_t tiles[] = {WINNING_TILE, WINNING_TILE, WINNING_TILE + 3, WINNING_TILE + 6};
+		Tile tiles[] = {WINNING_TILE, WINNING_TILE, WINNING_TILE + 3, WINNING_TILE + 6};
 		return createHand(tiles, 4);
 	}
 
 	Hand * createHandChowTheWinningTile() {
-		tile_t tiles[] = {WINNING_TILE+1, WINNING_TILE+2, WINNING_TILE + 3, WINNING_TILE + 6};
+		Tile tiles[] = {WINNING_TILE+1, WINNING_TILE+2, WINNING_TILE + 3, WINNING_TILE + 6};
 		return createHand(tiles, 4);
 	}
 
 	Hand * createHandPongAndWinTheWinningTile() {
-		tile_t tiles[] = {WINNING_TILE, WINNING_TILE, WINNING_TILE + 2, WINNING_TILE + 2};
+		Tile tiles[] = {WINNING_TILE, WINNING_TILE, WINNING_TILE + 2, WINNING_TILE + 2};
 		return createHand(tiles, 4);
 	}
 
 private:
-	Hand * createHand(tile_t * tiles, int count) {
+	Hand * createHand(Tile * tiles, int count) {
 		Hand * hand = new Hand();
 		hand->deal(tiles, count);
 		return hand;
@@ -137,7 +137,7 @@ TEST(UserPerspective, gotOnlyPickEventWhenPickAnIrrelevantTile) {
 	userPerspective->setHand(0, HandDataMother().createAllIrrelevantHand());
 
 	mock().expectOneCall("createPickEvent").withParameter("tile",
-			ANY_TILE).withParameter("distance", 0).andReturnValue(&dummyEvent2);
+			(const char *)ANY_TILE).withParameter("distance", 0).andReturnValue(&dummyEvent2);
 
 	userPerspective->pick(ANY_TILE, 0);
 
@@ -149,7 +149,7 @@ TEST(UserPerspective, gotAlsoWinEventWhenPickAWinningTile) {
 	userPerspective->setHand(0, HandDataMother().createHandWinWithTheWinningTile());
 
 	mock().expectOneCall("createPickEvent").withParameter("tile",
-			WINNING_TILE).withParameter("distance", 0).andReturnValue(&dummyEvent2);
+			(const char *)WINNING_TILE).withParameter("distance", 0).andReturnValue(&dummyEvent2);
 	mock().expectOneCall("createEnableWinEvent").andReturnValue(&dummyEvent3);
 
 	userPerspective->pick(WINNING_TILE, 0);
@@ -161,7 +161,7 @@ TEST(UserPerspective, gotAlsoWinEventWhenPickAWinningTile) {
 
 TEST(UserPerspective, gotDiscardEventWhenDiscard) {
 	mock().expectOneCall("createDiscardEvent").withParameter("tile",
-			WINNING_TILE).withParameter("distance", 0).andReturnValue(&dummyEvent2);
+			(const char *)WINNING_TILE).withParameter("distance", 0).andReturnValue(&dummyEvent2);
 
 	userPerspective->discard(WINNING_TILE, 0);
 
@@ -195,7 +195,7 @@ TEST(UserPerspective, shouldGetEnableEventsWhenOtherPlayerDiscard) {
 	userPerspective->setHand(0, HandDataMother().createHandPongAndWinTheWinningTile());
 
 	mock().expectOneCall("createDiscardEvent").withParameter("tile",
-			WINNING_TILE).withParameter("distance", 1).andReturnValue(&dummyEvent2);
+			(const char *)WINNING_TILE).withParameter("distance", 1).andReturnValue(&dummyEvent2);
 	mock().expectOneCall("createEnableWinEvent").andReturnValue(&dummyEvent3);
 	mock().expectOneCall("createEnablePongEvent").andReturnValue(&dummyEvent3);
 	mock().ignoreOtherCalls();

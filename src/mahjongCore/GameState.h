@@ -13,11 +13,11 @@ public:
 	}
 	virtual void doPick() {
 	}
-	virtual void discard(tile_t& action_tile) {
+	virtual void discard(Tile& action_tile) {
 	}
 	virtual void doPong() {
 	}
-	virtual void doChow(tile_t& action_tile) {
+	virtual void doChow(Tile& action_tile) {
 	}
 protected:
 	MahjongTable * getTable() {
@@ -41,7 +41,7 @@ public:
 			GameState(table) {
 	}
 
-	void discard(tile_t& action_tile);
+	void discard(Tile& action_tile);
 	void doWin();
 };
 
@@ -53,7 +53,7 @@ public:
 	void doPick();
 	void doWin();
 	void doPong();
-	void doChow(tile_t& action_tile);
+	void doChow(Tile& action_tile);
 };
 
 #endif /* GAMESTATE_H_ */

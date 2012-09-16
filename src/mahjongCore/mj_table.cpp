@@ -1,4 +1,5 @@
 #include "Perspective.h"
+#include "Hand.h"
 #include "Wall.h"
 #include "mj_table.h"
 
@@ -23,7 +24,7 @@ int MahjongTable::getPlayerCount() {
 	return this->player_count_;
 }
 
-void MahjongTable::pick(tile_t tile) {
+void MahjongTable::pick(Tile tile) {
 	int i = 0;
 	for (i = 0; i < this->player_count_; i++) {
 		Perspective * perspective = getPlayerOfDistance(i);
@@ -50,7 +51,7 @@ void MahjongTable::win(int score) {
 	changeHost();
 }
 
-void MahjongTable::deal(tile_t tiles[], int n) {
+void MahjongTable::deal(Tile tiles[], int n) {
 	int i = 0;
 	for (i = 0; i < this->player_count_; i++) {
 		Perspective * perspective = getPlayerOfDistance(i);
@@ -59,7 +60,7 @@ void MahjongTable::deal(tile_t tiles[], int n) {
 	changeCurrentPlayer(1);
 }
 
-void MahjongTable::throw_tile(tile_t tile) {
+void MahjongTable::throw_tile(Tile tile) {
 	int i = 0;
 	for (i = 0; i < this->player_count_; i++) {
 		Perspective * perspective = getPlayerOfDistance(i);
@@ -77,7 +78,7 @@ void MahjongTable::pong() {
 	}
 }
 
-int MahjongTable::chow(tile_t with) {
+int MahjongTable::chow(Tile with) {
 	Perspective * perspective = getPlayerOfDistance(0);
 	if (!perspective->chow(last_tile, with, 0))
 		return 0;
@@ -90,7 +91,7 @@ int MahjongTable::chow(tile_t with) {
 
 void MahjongTable::restartGame() {
 	wall_->shuffleAndRebuild();
-	tile_t tiles[MAX_HOLDING_COUNT];
+	Tile tiles[MAX_HOLDING_COUNT];
 	int cnt = getPlayerCount();
 	for (; cnt > 0; cnt--) {
 		for (int i = 0; i < MAX_HOLDING_COUNT; i++) {
@@ -110,7 +111,7 @@ void MahjongTable::restartGameWhenAllPlayersAreReady() {
 	}
 }
 
-void MahjongTable::discard(tile_t& action_tile) {
+void MahjongTable::discard(Tile& action_tile) {
 	throw_tile(action_tile);
 	if (wall_->isEnd()) {
 		win(0);
@@ -135,7 +136,7 @@ void MahjongTable::doPong() {
 	currentState_ = &pickedState_;
 }
 
-void MahjongTable::doChow(tile_t action_tile) {
+void MahjongTable::doChow(Tile action_tile) {
 	if (chow(action_tile)) {
 		currentState_ = &pickedState_;
 	}

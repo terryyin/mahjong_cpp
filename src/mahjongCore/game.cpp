@@ -9,7 +9,6 @@ Game::Game() {
 	table_ = new MahjongTable(wall_);
 	aiPerspective_ = new AIPerspective();
 	userPerspective_ = new UserPerspective();
-	userPerspective_->set_game_flow(table_);
 	table_->addPlayer(userPerspective_);
 	table_->addPlayer(aiPerspective_);
 }

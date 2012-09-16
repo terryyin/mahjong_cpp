@@ -43,8 +43,8 @@ class TileArrayScriptGenerator {
 public:
 	const char * getTilesArrayString(UserView * view, char buffer[], int buffer_size);
 private:
-	void catTilesToString(char buffer[], const tile_t * tiles, int n);
-	void catmeldToString(char buffer[], const meld_t * meld, int n);
+	void catTilesToString(char buffer[], const Tile * tiles, int n);
+	void catmeldToString(char buffer[], const Meld * meld, int n);
 	void catPlayerTilesToString(Hand * player, char buffer[], int buffer_size);
 };
 
@@ -70,16 +70,16 @@ void HTMLMahjongGameRespond::clear() {
 	content_ = "";
 }
 
-void TileArrayScriptGenerator::catTilesToString(char buffer[], const tile_t * tiles, int n) {
+void TileArrayScriptGenerator::catTilesToString(char buffer[], const Tile * tiles, int n) {
 	char tmp_tile[100];
 	int i = 0;
 	for (i = 0; i < n; i++) {
-		sprintf(tmp_tile, "%d,", tiles[i]);
+		sprintf(tmp_tile, "%d,", tiles[i].getID());
 		strcat(buffer, tmp_tile);
 	}
 }
 
-void TileArrayScriptGenerator::catmeldToString(char buffer[], const meld_t * meld, int n) {
+void TileArrayScriptGenerator::catmeldToString(char buffer[], const Meld * meld, int n) {
 	char tmp_tile[100];
 	int i = 0;
 	for (i = 0; i < n; i++) {
@@ -91,13 +91,13 @@ void TileArrayScriptGenerator::catmeldToString(char buffer[], const meld_t * mel
 void TileArrayScriptGenerator::catPlayerTilesToString(Hand * player, char buffer[],
 		int buffer_size) {
 	strcat(buffer, "[");
-	tile_t tiles[MAX_HOLDING_COUNT];
-	meld_t meld[MAX_meld_COUNT];
+	Tile tiles[MAX_HOLDING_COUNT];
+	Meld meld[MAX_MELD_COUNT];
 	int n = player->getHoldings(tiles, MAX_HOLDING_COUNT);
 	catTilesToString(buffer, tiles, n);
 	tiles[0] = player->getCurrentTileAtHand();
 	catTilesToString(buffer, tiles, 1);
-	n = player->getMelds(meld, MAX_meld_COUNT);
+	n = player->getMelds(meld, MAX_MELD_COUNT);
 	catmeldToString(buffer, meld, n);
 	int len = strlen(buffer);
 	if (buffer[len - 1] == ',') {

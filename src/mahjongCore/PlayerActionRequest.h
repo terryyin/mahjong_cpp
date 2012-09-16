@@ -15,7 +15,7 @@ typedef enum {
 class GameState;
 class PlayerActionRequest {
 public:
-	PlayerActionRequest(action_t action, tile_t tile, int a) : action_(action), tile_(tile){}
+	PlayerActionRequest(action_t action, Tile tile, int a) : action_(action), tile_(tile){}
 
 	bool hasAction() {
 		return action_ != NO_ACTION;
@@ -25,7 +25,7 @@ public:
 
 public:
 	action_t action_;
-	tile_t tile_;
+	Tile tile_;
 };
 
 #endif /* PLAYERACTIONREQUEST_H_ */

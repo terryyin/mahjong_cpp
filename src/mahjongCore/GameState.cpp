@@ -12,7 +12,7 @@ void GameStateEndOfGame::restart() {
 	getTable()->restartGameWhenAllPlayersAreReady();
 }
 
-void GameStatePicked::discard(tile_t& action_tile) {
+void GameStatePicked::discard(Tile& action_tile) {
 	getTable()->discard(action_tile);
 }
 
@@ -31,6 +31,6 @@ void GameStatePicking::doWin() {
 void GameStatePicking::doPong() {
 	getTable()->doPong();
 }
-void GameStatePicking::doChow(tile_t& action_tile) {
+void GameStatePicking::doChow(Tile& action_tile) {
 	getTable()->doChow(action_tile);
 }

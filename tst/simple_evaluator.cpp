@@ -8,8 +8,8 @@
 #include "tile.h"
 #include "EvaluatorAdaptor.h"
 
-static tile_t cheapest_tile = NO_TILE;
-void setCheapestTileForSimpleEvaluator(tile_t tile) {
+static Tile cheapest_tile = NO_TILE;
+void setCheapestTileForSimpleEvaluator(Tile tile) {
 	cheapest_tile = tile;
 }
 /*
@@ -19,14 +19,13 @@ void setCheapestTileForSimpleEvaluator(tile_t tile) {
  */
 class evaluator_imp_t : public EvaluatorAdaptor {
 public:
-	virtual int evaluate_array(tile_t tiles[], int array_size){
-		for(int i=0; i < array_size; i++) {
+	virtual int evaluate_array(const TileArray& tiles){
+		for(int i=0; i < tiles.getTileCount(); i++) {
 			if (tiles[i]==cheapest_tile)
 				return 1;
 		}
 		return 2;
 	}
-
 };
 
 EvaluatorAdaptor * createSimpleEvaluator() {

@@ -7,14 +7,14 @@ using namespace std;
 
 class HTMLPickEvent: public UIEvent {
 public:
-	HTMLPickEvent(tile_t tile, int distance) :
+	HTMLPickEvent(Tile tile, int distance) :
 			tile_(tile), distance_(distance) {
 	}
 	virtual ~HTMLPickEvent() {
 	}
 	virtual std::string toString();
 private:
-	tile_t tile_;
+	Tile tile_;
 	int distance_;
 };
 
@@ -25,11 +25,11 @@ public:
 
 class HTMLDiscardEvent: public UIEvent {
 public:
-	HTMLDiscardEvent(tile_t tile, int distance):
+	HTMLDiscardEvent(Tile tile, int distance):
 		tile_(tile), distance_(distance) {}
 	std::string toString();
 private:
-	tile_t tile_;
+	Tile tile_;
 	int distance_;
 };
 
@@ -71,7 +71,7 @@ private:
 
 string HTMLPickEvent::toString() {
 	char tmp[1024];
-	sprintf(tmp, "App.Pick(%d, %d);", distance_, tile_);
+	sprintf(tmp, "App.Pick(%d, %d);", distance_, tile_.getID());
 	if (0 != distance_)
 		strcat(tmp, "|");
 
@@ -80,7 +80,7 @@ string HTMLPickEvent::toString() {
 
 string HTMLDiscardEvent::toString() {
 	char tmp[1024];
-	sprintf(tmp, "App.Throw(%d, %d);", tile_, distance_);
+	sprintf(tmp, "App.Throw(%d, %d);", tile_.getID(), distance_);
 	if (0 == distance_)
 		strcat(tmp, "|");
 
@@ -115,8 +115,8 @@ class TileArrayScriptGenerator {
 public:
 	const char * getTilesArrayString(UserView * view, char buffer[], int buffer_size);
 private:
-	void catTilesToString(char buffer[], const tile_t * tiles, int n);
-	void catmeldToString(char buffer[], const meld_t * meld, int n);
+	void catTilesToString(char buffer[], const Tile * tiles, int n);
+	void catmeldToString(char buffer[], const Meld * meld, int n);
 	void catPlayerTilesToString(Hand * player, char buffer[], int buffer_size);
 };
 
@@ -129,7 +129,7 @@ string HTMLDealEvent::toString() {
 	return buffer;
 }
 
-UIEvent * HTMLEventFactory::createPickEvent(tile_t tile, int distance) {
+UIEvent * HTMLEventFactory::createPickEvent(Tile tile, int distance) {
 	return new HTMLPickEvent(tile, distance);
 }
 
@@ -137,7 +137,7 @@ UIEvent * HTMLEventFactory::createEnableWinEvent() {
 	return new HTMLEnableWinEvent();
 }
 
-UIEvent * HTMLEventFactory::createDiscardEvent(tile_t tile, int distance) {
+UIEvent * HTMLEventFactory::createDiscardEvent(Tile tile, int distance) {
 	return new HTMLDiscardEvent(tile, distance);
 }
 

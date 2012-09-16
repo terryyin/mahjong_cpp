@@ -48,14 +48,14 @@ public:
 
 class MJCommandAction: public MahjongCommand {
 public:
-	MJCommandAction(Game *game, action_t action, tile_t tile) :
+	MJCommandAction(Game *game, action_t action, Tile tile) :
 			game_(game), action_(action), tile_(tile) {
 	}
 	void execute(MahjongGameRespond *respond);
 protected:
 	Game *game_;
 	action_t action_;
-	tile_t tile_;
+	Tile tile_;
 };
 
 class MJCommandRestart: public MJCommandAction {
@@ -74,14 +74,14 @@ public:
 
 class MJCommandDiscard: public MJCommandAction {
 public:
-	MJCommandDiscard(Game *game, tile_t tile) :
+	MJCommandDiscard(Game *game, Tile tile) :
 			MJCommandAction(game, ACTION_DISCARD, tile) {
 	}
 };
 
 class MJCommandChow: public MJCommandAction {
 public:
-	MJCommandChow(Game *game, tile_t tile) :
+	MJCommandChow(Game *game, Tile tile) :
 			MJCommandAction(game, ACTION_CHOW, tile) {
 	}
 };
@@ -95,7 +95,7 @@ public:
 
 class MJCommandKong: public MJCommandAction {
 public:
-	MJCommandKong(Game *game, tile_t tile) :
+	MJCommandKong(Game *game, Tile tile) :
 			MJCommandAction(game, ACTION_KONG, tile) {
 	}
 };

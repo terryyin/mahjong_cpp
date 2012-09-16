@@ -6,38 +6,36 @@ class EvaluatorAdaptor;
 EvaluatorAdaptor * createMockEvaluator(void);
 
 #include "Perspective.h"
-#include "tiles.h"
+#include "TileArray.h"
 class MockPerspective: public Perspective {
 public:
 	virtual void destroy(Perspective *self) {
 		free(self);
 	}
 
-	virtual void deal(tile_t tiles[], int buffer_size, int distance) {
-		char s[100];
+	virtual void deal(Tile tiles[], int buffer_size, int distance) {
 		mock().actualCall("deal").onObject(this).withParameter("distance",
-				distance).withParameter("tiles",
-				tiles_to_string(tiles, buffer_size, s, 100));
+				distance).withParameter("tiles", tiles);
 	}
 
-	virtual void pick(tile_t tile, int distance) {
+	virtual void pick(Tile tile, int distance) {
 		mock().actualCall("pick").onObject(this).withParameter("tile",
-				tile).withParameter("distance", distance);
+				(const char *) tile).withParameter("distance", distance);
 	}
 
 	virtual void win(int score, int distance) {
-		mock().actualCall("win").onObject(this).withParameter("score",
-				score).withParameter("distance", distance);
+		mock().actualCall("win").onObject(this).withParameter("score", score).withParameter(
+				"distance", distance);
 	}
 
-	virtual void discard(tile_t tile, int distance) {
-		mock().actualCall("discard_tile").onObject(this).withParameter(
-				"tile", tile).withParameter("distance", distance);
+	virtual void discard(Tile tile, int distance) {
+		mock().actualCall("discard_tile").onObject(this).withParameter("tile",
+				(const char *) tile).withParameter("distance", distance);
 	}
-	virtual void pong(tile_t tile, int distance) {
+	virtual void pong(Tile tile, int distance) {
 	}
 
-	virtual int chow(tile_t tile, tile_t with, int distance) {
+	virtual int chow(Tile tile, Tile with, int distance) {
 		return 0;
 	}
 
@@ -103,7 +101,8 @@ public:
 class MockGame: public Game {
 public:
 	virtual void nextMove(PlayerActionRequest *request) {
-		mock().actualCall("nextMove").onObject(this).withParameter("request", request);
+		mock().actualCall("nextMove").onObject(this).withParameter("request",
+				request);
 	}
 
 	virtual void setAction(PlayerActionRequest * actionRequest) {
@@ -142,14 +141,14 @@ public:
 	virtual ~MockUIEventFactory() {
 	}
 
-	virtual UIEvent * createPickEvent(tile_t tile, int distance) {
+	virtual UIEvent * createPickEvent(Tile tile, int distance) {
 		return (UIEvent *) mock().actualCall("createPickEvent").withParameter(
-				"tile", tile).withParameter("distance", distance).returnValue().getObjectPointer();
+				"tile", (const char *) tile).withParameter("distance", distance).returnValue().getObjectPointer();
 	}
 
-	virtual UIEvent * createDiscardEvent(tile_t tile, int distance) {
+	virtual UIEvent * createDiscardEvent(Tile tile, int distance) {
 		return (UIEvent *) mock().actualCall("createDiscardEvent").withParameter(
-				"tile", tile).withParameter("distance", distance).returnValue().getObjectPointer();
+				"tile", (const char *) tile).withParameter("distance", distance).returnValue().getObjectPointer();
 	}
 
 	virtual UIEvent * createEnableWinEvent() {

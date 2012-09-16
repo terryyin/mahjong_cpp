@@ -11,9 +11,9 @@ class MockEvaluator: public EvaluatorAdaptor{
 public:
 	MockEvaluator() {}
 	virtual ~MockEvaluator(){}
-	virtual int evaluate_array(tile_t tiles[], int array_size){
+	virtual int evaluate_array(const TileArray& tiles){
 		return mock().actualCall("evaluate_array").onObject(this).withParameter("tiles",
-				tiles).withParameter("array_size", array_size).returnValue().getIntValue();
+				(void*)&tiles).returnValue().getIntValue();
 	}
 };
 EvaluatorAdaptor * createMockEvaluator(void)
@@ -33,8 +33,8 @@ public:
 		return mock().actualCall("isEnd").onObject(this).returnValue().getIntValue();
 	}
 
-	tile_t popATile() {
-		return (tile_t) mock().actualCall("popATile").onObject(this).returnValue().getIntValue();
+	Tile popATile() {
+		return (Tile) mock().actualCall("popATile").onObject(this).returnValue().getIntValue();
 	}
 };
 

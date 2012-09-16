@@ -17,7 +17,7 @@ AIPerspective::~AIPerspective() {
 	delete evaluator;
 }
 
-void AIPerspective::deal(tile_t tiles[], int n, int distance) {
+void AIPerspective::deal(Tile tiles[], int n, int distance) {
 	if (distance == 0) {
 		Hand * player_data = createHand();
 		player_data->deal(tiles, n);
@@ -25,18 +25,18 @@ void AIPerspective::deal(tile_t tiles[], int n, int distance) {
 	}
 }
 
-tile_t AIPerspective::whichToDiscard() {
+Tile AIPerspective::whichToDiscard() {
 	int i;
 	int max = 0;
 	int index_to_throw = 0;
-	tile_t holdings[MAX_HOLDING_COUNT + 1];
-	tile_t tiles[MAX_HOLDING_COUNT + 1];
+	Tile holdings[MAX_HOLDING_COUNT + 1];
+	Tile tiles[MAX_HOLDING_COUNT + 1];
 	int tile_count = player->getHoldings(holdings, MAX_HOLDING_COUNT);
 	holdings[tile_count] = player->getCurrentTileAtHand();
 	for (i = 0; i < tile_count + 1; i++) {
 		player->getHoldings(tiles, MAX_HOLDING_COUNT);
 		tiles[i] = player->getCurrentTileAtHand();
-		int score = evaluator->evaluate_array(tiles, tile_count);
+		int score = evaluator->evaluate_array(TileArray(tiles, tile_count));
 		if (score > max) {
 			max = score;
 			index_to_throw = i;
@@ -45,7 +45,7 @@ tile_t AIPerspective::whichToDiscard() {
 
 	return holdings[index_to_throw];
 }
-void AIPerspective::pick(tile_t tile, int distance) {
+void AIPerspective::pick(Tile tile, int distance) {
 	if (distance == 0) {
 		player->pick(tile);
 		if (player->isAbleToWin(NO_TILE))
@@ -57,10 +57,10 @@ void AIPerspective::pick(tile_t tile, int distance) {
 	}
 }
 
-void AIPerspective::pong(tile_t tile, int distance) {
+void AIPerspective::pong(Tile tile, int distance) {
 }
 
-int AIPerspective::chow(tile_t tile, tile_t with, int distance) {
+int AIPerspective::chow(Tile tile, Tile with, int distance) {
 	return 0;
 }
 
@@ -74,9 +74,9 @@ void AIPerspective::pushActionRequest(PlayerActionRequest *actionRequest) {
 
 }
 
-void AIPerspective::discard(tile_t tile, int distance) {
+void AIPerspective::discard(Tile tile, int distance) {
 	if (distance == 0)
-		player->discard_tile(tile);
+		player->discard(tile);
 	else {
 		if (player->isAbleToWin(tile))
 			currentActionRequest_.action_ = ACTION_WIN;

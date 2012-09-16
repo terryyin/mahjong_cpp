@@ -8,6 +8,7 @@ extern "C" {
 extern tile_hash_t g_hash;
 }
 #define FT 0.001
+
 TEST_GROUP(tiles_pattern)
 {
 	tiles_pattern_t pattern;

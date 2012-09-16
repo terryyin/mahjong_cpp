@@ -1,17 +1,17 @@
 #ifndef GAME__H
 #define GAME__H
 
-#include "tiles.h"
+#include "tile.h"
 
 #define MAX_TILE_COUNT 500
 
 class Wall {
 public:
-	Wall(const tile_t * tileTypes, int tileTypeCount, int maxPicks);
+	Wall(const Tile * tileTypes, int tileTypeCount, int maxPicks);
 	virtual ~Wall();
 	virtual void shuffleAndRebuild();
 	virtual bool isEnd();
-	virtual tile_t popATile();
+	virtual Tile popATile();
 
 private:
 	void initializePool();
@@ -20,8 +20,8 @@ private:
 	int randomIndex();
 
 private:
-	tile_t tilePool_[MAX_TILE_COUNT];
-	const tile_t *tileTypes_;
+	Tile tilePool_[MAX_TILE_COUNT];
+	const Tile *tileTypes_;
 	int tileTypeCount_;
 	int picksCount_;
 	int maxPicks_;

@@ -59,8 +59,8 @@ TEST(HTMLUIEvent, EnableChewEvent) {
 }
 
 TEST(HTMLUIEvent, dealEvent) {
-	tile_t tiles1[] = { 1 };
-	tile_t tiles2[] = { 2, 3 };
+	Tile tiles1[] = { 1 };
+	Tile tiles2[] = { 2, 3 };
 	Hand playerData1, playerData2;
 	playerData1.deal(tiles1, 1);
 	playerData2.deal(tiles2, 2);

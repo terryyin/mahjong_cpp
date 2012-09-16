@@ -6,10 +6,11 @@
 
 #include "HTMLMahjongGameServer.h"
 #include "Wall.h"
+#include "TileArray.h"
 #include "EvaluatorAdaptor.h"
 
 EvaluatorAdaptor * createSimpleEvaluator();
-void setCheapestTileForSimpleEvaluator(tile_t tile);
+void setCheapestTileForSimpleEvaluator(Tile tile);
 
 #include "mocks.h"
 
@@ -19,8 +20,10 @@ public:
 			Wall(NULL, 0, 0), currentTile_(1), wallEnd_(false) {
 	}
 
-	tile_t popATile() {
-		return currentTile_++;
+	Tile popATile() {
+		Tile tileToReturn = currentTile_;
+		currentTile_ = currentTile_.nextTile();
+		return tileToReturn;
 	}
 
 	bool isEnd() {
@@ -38,7 +41,7 @@ public:
 		currentTile_ = t;
 	}
 private:
-	tile_t currentTile_;
+	Tile currentTile_;
 	bool wallEnd_;
 }*lastCreatedEverIncreasingWall = NULL;
 

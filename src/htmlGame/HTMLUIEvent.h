@@ -6,8 +6,8 @@
 
 class HTMLEventFactory : public UIEventFactory{
 public:
-	UIEvent * createPickEvent(tile_t tile, int distance);
-	UIEvent * createDiscardEvent(tile_t tile, int distance);
+	UIEvent * createPickEvent(Tile tile, int distance);
+	UIEvent * createDiscardEvent(Tile tile, int distance);
 	UIEvent * createEnableWinEvent();
 	UIEvent * createWinEvent(int distance, int score);
 	UIEvent * createMessageEvent(const char * message);

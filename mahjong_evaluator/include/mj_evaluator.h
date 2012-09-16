@@ -1,13 +1,12 @@
 #ifndef MJ_mahjong_evaluator_handle_t_H_
 #define MJ_mahjong_evaluator_handle_t_H_
 
-#include "tile.h"
-
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
+typedef char tile_t;
 typedef int mahjong_evaluator_handle_t;
 
 mahjong_evaluator_handle_t LIB_create_evaluator(void);

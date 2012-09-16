@@ -2,13 +2,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "tiles.h"
+#include "TileArray.h"
 
-TEST_GROUP(tiles_is_able_to_chow) {
+TEST_GROUP(TileArrayIsAbleToChow) {
 
 };
 
-IGNORE_TEST(tiles_is_able_to_chow, start_here)
+IGNORE_TEST(TileArrayIsAbleToChow, start_here)
 {
 	FAIL("START HERE");
 }

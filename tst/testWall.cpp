@@ -15,19 +15,19 @@ TEST_GROUP(wall) {
 };
 
 TEST(wall, wallIsNotEndWhenCreated) {
-	tile_t tileTypes[] = {C(1)};
+	Tile tileTypes[] = {C(1)};
 	wall = new Wall(tileTypes, 1, maxPops);
 	CHECK(!wall->isEnd());
 }
 
 TEST(wall, popFromwallThatIsNotEnd) {
-	tile_t tileTypes[] = {C(1)};
+	Tile tileTypes[] = {C(1)};
 	wall = new Wall(tileTypes, 1, maxPops);
 	CHECK_EQUAL(C(1), wall->popATile());
 }
 
 TEST(wall, wallBecomesEmptyWhenPopTheMaxTimes) {
-	tile_t tileTypes[] = {C(1)};
+	Tile tileTypes[] = {C(1)};
 	int maxPops = 2;
 	wall = new Wall(tileTypes, 1, maxPops);
 	wall->popATile();
@@ -36,14 +36,14 @@ TEST(wall, wallBecomesEmptyWhenPopTheMaxTimes) {
 }
 
 TEST(wall, popRightTilesAfterShuffle) {
-	tile_t tileTypes[] = {C(1), C(2)};
+	Tile tileTypes[] = {C(1), C(2)};
 	int maxPops = 8;
 	wall = new Wall(tileTypes, 2, maxPops);
 
 	wall->shuffleAndRebuild();
 
 	while (!wall->isEnd()) {
-		tile_t tile = wall->popATile();
+		Tile tile = wall->popATile();
 		CHECK(tile == C(1) || tile == C(2));
 	}
 }
@@ -53,7 +53,7 @@ TEST(wall, randomnessAfterShuffle) {
 	// get the same set of random number every time.
 	srand(100);
 
-	tile_t tileTypes[] = {C(1), C(2)};
+	Tile tileTypes[] = {C(1), C(2)};
 	int maxPops = 8;
 	wall = new Wall(tileTypes, 2, maxPops);
 
@@ -61,7 +61,7 @@ TEST(wall, randomnessAfterShuffle) {
 
 	bool hasC1 = false, hasC2 = false;
 	for(int i = 0; i < 4; i++) {
-		tile_t tile = wall->popATile();
+		Tile tile = wall->popATile();
 		hasC1 |= (tile == C(1));
 		hasC2 |=(tile == C(2));
 	}

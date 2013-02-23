@@ -6,7 +6,7 @@
 
 class Wall;
 class Hand;
-class Perspective;
+class Player;
 class PlayerActionRequest;
 
 class MahjongTable{
@@ -17,10 +17,10 @@ public:
 
 	void nextMove();
 
-	void addPlayer(Perspective * player);
+	void addPlayer(Player * player);
 
 private:
-	Perspective * getPlayerOfDistance( int i);
+	Player * getPlayerOfDistance( int i);
 	int getPlayerCount();
 	void pick( Tile tile);
 	void changeHost();
@@ -40,7 +40,7 @@ private:
 	void doChow(Tile action_tile);
 
 	Wall *wall_;
-	Perspective * players[MAX_NUMBER_OF_PLAYER];
+	Player * players[MAX_NUMBER_OF_PLAYER];
 	int player_count_;
 	int current_player;
 	int host;

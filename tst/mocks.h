@@ -1,15 +1,32 @@
 #ifndef MOCKS_H_
 #define MOCKS_H_
 
-class Perspective;
+class Player;
 class EvaluatorAdaptor;
 EvaluatorAdaptor * createMockEvaluator(void);
 
+#include "Tile.h"
+#include "PlayerActionRequest.h"
+class MockPlayerActionRequest : public PlayerActionRequest {
+public:
+	MockPlayerActionRequest() :PlayerActionRequest(NO_ACTION, 0, 0){}
+	virtual ~MockPlayerActionRequest(){}
+
+	virtual bool hasAction() {
+		return mock().actualCall("hasAction").onObject(this).returnValue().getIntValue();
+	}
+
+	virtual void doPlayerAction(GameState *state) {
+		mock().actualCall("doPlayerAction").onObject(this).withParameter("state", state);
+	}
+
+};
+
 #include "Perspective.h"
 #include "TileArray.h"
-class MockPerspective: public Perspective {
+class MockPlayer: public Player {
 public:
-	virtual void destroy(Perspective *self) {
+	virtual void destroy(Player *self) {
 		free(self);
 	}
 
@@ -41,11 +58,17 @@ public:
 
 	virtual void pushActionRequest(PlayerActionRequest *actionRequest) {
 	}
+
+	virtual PlayerActionRequest * takeActionRequest1(){
+		mock().actualCall("takeActionRequest").onObject(this);
+		return (PlayerActionRequest *)mock().returnValue().getObjectPointer();
+	}
 };
 
 #include "HTMLMahjongGameRespond.h"
 class MockHTMLMahjongGameRespond: public HTMLMahjongGameRespond {
 public:
+	virtual ~MockHTMLMahjongGameRespond(){}
 	void newGame(int gameID) {
 		mock().actualCall("newHTMLFrame").onObject(this).withParameter("gameID",
 				gameID);

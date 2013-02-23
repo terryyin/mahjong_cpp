@@ -12,11 +12,11 @@ MahjongTable::MahjongTable(Wall *wall) :
 MahjongTable::~MahjongTable() {
 }
 
-Perspective * MahjongTable::getPlayerOfDistance(int i) {
+Player * MahjongTable::getPlayerOfDistance(int i) {
 	return this->players[(this->current_player + i) % this->player_count_];
 }
 
-void MahjongTable::addPlayer(Perspective * player) {
+void MahjongTable::addPlayer(Player * player) {
 	this->players[this->player_count_++] = player;
 }
 
@@ -27,7 +27,7 @@ int MahjongTable::getPlayerCount() {
 void MahjongTable::pick(Tile tile) {
 	int i = 0;
 	for (i = 0; i < this->player_count_; i++) {
-		Perspective * perspective = getPlayerOfDistance(i);
+		Player * perspective = getPlayerOfDistance(i);
 		perspective->pick(tile, i);
 	}
 }
@@ -45,7 +45,7 @@ void MahjongTable::changeCurrentPlayer(int distance) {
 void MahjongTable::win(int score) {
 	int i = 0;
 	for (i = 0; i < this->player_count_; i++) {
-		Perspective * perspective = getPlayerOfDistance(i);
+		Player * perspective = getPlayerOfDistance(i);
 		perspective->win(score, i);
 	}
 	changeHost();
@@ -54,7 +54,7 @@ void MahjongTable::win(int score) {
 void MahjongTable::deal(Tile tiles[], int n) {
 	int i = 0;
 	for (i = 0; i < this->player_count_; i++) {
-		Perspective * perspective = getPlayerOfDistance(i);
+		Player * perspective = getPlayerOfDistance(i);
 		perspective->deal(tiles, n, i);
 	}
 	changeCurrentPlayer(1);
@@ -63,7 +63,7 @@ void MahjongTable::deal(Tile tiles[], int n) {
 void MahjongTable::throw_tile(Tile tile) {
 	int i = 0;
 	for (i = 0; i < this->player_count_; i++) {
-		Perspective * perspective = getPlayerOfDistance(i);
+		Player * perspective = getPlayerOfDistance(i);
 		perspective->discard(tile, i);
 	}
 	this->last_tile = tile;
@@ -73,13 +73,13 @@ void MahjongTable::throw_tile(Tile tile) {
 void MahjongTable::pong() {
 	int i = 0;
 	for (i = 0; i < this->player_count_; i++) {
-		Perspective * perspective = getPlayerOfDistance(i);
+		Player * perspective = getPlayerOfDistance(i);
 		perspective->pong(this->last_tile, i);
 	}
 }
 
 int MahjongTable::chow(Tile with) {
-	Perspective * perspective = getPlayerOfDistance(0);
+	Player * perspective = getPlayerOfDistance(0);
 	if (!perspective->chow(last_tile, with, 0))
 		return 0;
 	for (int i = 1; i < player_count_; i++) {
@@ -143,8 +143,8 @@ void MahjongTable::doChow(Tile action_tile) {
 }
 
 PlayerActionRequest MahjongTable::popActionRequest() {
-	Perspective* perspective = getPlayerOfDistance(0);
-	return perspective->popActionRequest();
+	Player* perspective = getPlayerOfDistance(0);
+	return perspective->takeActionRequest();
 }
 
 void MahjongTable::nextMove() {

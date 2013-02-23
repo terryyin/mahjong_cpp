@@ -1,0 +1,5 @@
+todo:
+
+* Change perspective into PlayerNotifier and PlayerCommandSource
+* move table into game
+* link html ui with players rather than games

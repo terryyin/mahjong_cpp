@@ -17,11 +17,11 @@ class PlayerActionRequest {
 public:
 	PlayerActionRequest(action_t action, Tile tile, int a) : action_(action), tile_(tile){}
 
-	bool hasAction() {
+	virtual bool hasAction() {
 		return action_ != NO_ACTION;
 	}
 
-	void doPlayerAction(GameState *state) ;
+	virtual void doPlayerAction(GameState *state) ;
 
 public:
 	action_t action_;

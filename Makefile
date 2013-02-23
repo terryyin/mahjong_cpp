@@ -26,6 +26,7 @@ TEST_SRC_DIRS = \
 INCLUDE_DIRS =\
   .\
   include\
+  tst\
   $(SRC_DIRS)\
   $(EVALUATOR)/include\
   $(CPPUTEST_HOME)/include

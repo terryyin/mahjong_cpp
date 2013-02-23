@@ -18,10 +18,19 @@ public:
 
 	virtual void nextMove(PlayerActionRequest *request);
 
+	void addPlayer(Player * player);
+
+	void tick();
+
+private:
+	PlayerActionRequest * popActionRequest();
+	Player * getPlayerOfDistance(int i);
+
 private:
 	Wall * wall_;
 	MahjongTable * table_;
-	Perspective * aiPerspective_;
+	Player * aiPerspective_;
+	Player * player_;
 	UserPerspective * userPerspective_;
 };
 

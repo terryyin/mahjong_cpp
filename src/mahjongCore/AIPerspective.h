@@ -4,7 +4,7 @@
 #include "Perspective.h"
 class Hand;
 class EvaluatorAdaptor;
-class AIPerspective: public Perspective{
+class AIPerspective: public Player{
 public:
 	AIPerspective();
 	virtual ~AIPerspective();

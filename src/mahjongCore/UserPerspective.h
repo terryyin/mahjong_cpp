@@ -18,7 +18,7 @@ public:
 	virtual Hand *getHand(int distance) = 0;
 };
 
-class UserPerspective: public Perspective, public UserView {
+class UserPerspective: public Player, public UserView {
 public:
 	UserPerspective(UIEventFactory *eventFactory = NULL);
 	virtual ~UserPerspective();

@@ -11,6 +11,7 @@ Game::Game() {
 	userPerspective_ = new UserPerspective();
 	table_->addPlayer(userPerspective_);
 	table_->addPlayer(aiPerspective_);
+	player_ = NULL;
 }
 
 Game::~Game() {
@@ -18,6 +19,11 @@ Game::~Game() {
 	delete table_;
 	delete userPerspective_;
 	delete aiPerspective_;
+	delete player_;
+}
+
+void Game::addPlayer(Player * player) {
+	player_ = player;
 }
 
 UserView *Game::getUserView() {
@@ -29,3 +35,20 @@ void Game::nextMove(PlayerActionRequest *request){
 	table_->nextMove();
 }
 
+Player * Game::getPlayerOfDistance(int i) {
+	return player_;
+}
+
+PlayerActionRequest * Game::popActionRequest() {
+	Player* perspective = getPlayerOfDistance(0);
+	return perspective->takeActionRequest1();
+}
+
+void Game::tick() {
+	while (true) {
+		PlayerActionRequest *actionRequest = popActionRequest();
+		if (!actionRequest->hasAction())
+			break;
+		actionRequest->doPlayerAction(NULL);
+	}
+}

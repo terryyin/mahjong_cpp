@@ -93,7 +93,7 @@ TEST_GROUP(UserPerspective) {
 	DummyUIEvent dummyEvent3;
 
 	void setup() {
-		MockUIEventFactory *eventFactory = new MockUIEventFactory;
+		MockUIEventFactory *eventFactory = new MockUIEventFactory();
 		userPerspective = new UserPerspective(eventFactory);
 	}
 
@@ -208,13 +208,13 @@ TEST(UserPerspective, shouldGetEnableEventsWhenOtherPlayerDiscard) {
 }
 
 TEST(UserPerspective, action_get_empty) {
-	LONGS_EQUAL(NO_ACTION, userPerspective->popActionRequest().action_);
+	LONGS_EQUAL(NO_ACTION, userPerspective->takeActionRequest().action_);
 }
 
 TEST(UserPerspective, action_set_and_get) {
 	PlayerActionRequest request(ACTION_DISCARD, MJ_EAST, 1);
 	userPerspective->pushActionRequest(&request);
 
-	LONGS_EQUAL(ACTION_DISCARD, userPerspective->popActionRequest().action_);
+	LONGS_EQUAL(ACTION_DISCARD, userPerspective->takeActionRequest().action_);
 }
 

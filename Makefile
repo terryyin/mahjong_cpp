@@ -1,5 +1,8 @@
 PRODUCT := mahjong
 CPPUTEST_HOME := cpputest
+CPPUTEST_USE_REAL_GMOCK=Y
+GMOCK_HOME=gmock
+
 EVALUATOR = mahjong_evaluator
 EVALUATOR_LIB = $(EVALUATOR)/lib/lib$(EVALUATOR).a
 CPPUTEST_WARNINGFLAGS =  -Wall
@@ -36,7 +39,9 @@ PRDUCT_MAIN_OBJ = src/main.o
 include $(CPPUTEST_HOME)/build/MakefileWorker.mk
 
 $(CPPUTEST_LIB) :
-	make -C cpputest all extensions
+	cd $(GMOCK_HOME);./configure;make
+	make -C cpputest all extensions CPPUTEST_USE_REAL_GMOCK=$(CPPUTEST_USE_REAL_GMOCK) GMOCK_HOME=../$(GMOCK_HOME)
+	
 $(EVALUATOR_LIB) :
 	make -C $(EVALUATOR)
 	

@@ -366,7 +366,7 @@ TEST(JUnitOutputTest, messageWithNewLine)
 	runTests();
 }
 
-TEST(JUnitOutputTest, crmeldormalFilename)
+TEST(JUnitOutputTest, createNormalFilename)
 {
 	STRCMP_EQUAL("cpputest_group.xml", output->createFileName("group").asCharString());
 }

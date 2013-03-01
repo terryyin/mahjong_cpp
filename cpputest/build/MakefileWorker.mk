@@ -305,7 +305,7 @@ $(error CPPUTEST_USE_REAL_GMOCK defined, but GMOCK_HOME not, so can't use real g
 	GTEST_HOME = $(GMOCK_HOME)/gtest
 	CPPUTEST_USE_REAL_GTEST = Y
 	CPPUTEST_CPPFLAGS += -I$(GMOCK_HOME)/include
-	GMOCK_LIBRARY = $(GMOCK_HOME)/lib/.libs/libgmock.a
+	GMOCK_LIBRARY = $(GMOCK_HOME)/lib/.libs/libgmock.a -lpthread
 	LD_LIBRARIES += $(GMOCK_LIBRARY)
 	CPPUTEST_CPPFLAGS += -DCPPUTEST_USE_REAL_GMOCK
 else

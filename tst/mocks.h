@@ -5,7 +5,7 @@ class Player;
 class EvaluatorAdaptor;
 EvaluatorAdaptor * createMockEvaluator(void);
 
-#include "tile.h"
+#include "Tile.h"
 #include "PlayerActionRequest.h"
 class MockPlayerActionRequest : public PlayerActionRequest {
 public:

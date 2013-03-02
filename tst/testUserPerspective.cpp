@@ -212,7 +212,7 @@ TEST(UserPerspective, action_get_empty) {
 }
 
 TEST(UserPerspective, action_set_and_get) {
-	PlayerActionRequest request(ACTION_DISCARD, MJ_EAST, 1);
+	PlayerActionRequest request(ACTION_DISCARD, MJ_EAST);
 	userPerspective->pushActionRequest(&request);
 
 	LONGS_EQUAL(ACTION_DISCARD, userPerspective->takeActionRequest().action_);

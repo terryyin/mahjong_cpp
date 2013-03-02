@@ -15,8 +15,10 @@ typedef enum {
 class GameState;
 class PlayerActionRequest {
 public:
-	PlayerActionRequest(action_t action, Tile tile, int a) : action_(action), tile_(tile){}
+	PlayerActionRequest(action_t action, Tile tile) : action_(action), tile_(tile){
+	}
 
+	virtual ~PlayerActionRequest(){}
 	virtual bool hasAction() {
 		return action_ != NO_ACTION;
 	}

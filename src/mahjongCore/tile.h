@@ -5,6 +5,8 @@
 #define NULL 0
 #endif
 
+#define UNUSED(x) (void)(x)
+
 #define MAX_NUMBER_OF_PLAYER 4
 
 #define	NO_TILE  Tile(0)
@@ -36,7 +38,7 @@ public:
 
 	Tile operator + (int number) const{
 		Tile tile;
-		tile.tileNumber_ = tileNumber_+ number;
+		tile.tileNumber_ = tileNumber_+ (char)number;
 		return tile;
 	}
 

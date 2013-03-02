@@ -2,10 +2,12 @@
 #include "CppUTest/TestPlugin.h"
 #include "CppUTest/TestRegistry.h"
 #include "CppUTestExt/MockSupportPlugin.h"
-#include "stdio.h"
-#include "string.h"
+#include "CppUTestExt/GTestConvertor.h"
 
 int main(int ac, char** av) {
+	GTestConvertor convertor;
+	convertor.addAllGTestToTestRegistry();
+
 	MockSupportPlugin mockPlugin;
 	TestRegistry::getCurrentRegistry()->installPlugin(&mockPlugin);
 	int res = CommandLineTestRunner::RunAllTests(ac, av);

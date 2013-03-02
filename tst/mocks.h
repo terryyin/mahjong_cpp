@@ -9,7 +9,7 @@ EvaluatorAdaptor * createMockEvaluator(void);
 #include "PlayerActionRequest.h"
 class MockPlayerActionRequest : public PlayerActionRequest {
 public:
-	MockPlayerActionRequest() :PlayerActionRequest(NO_ACTION, 0, 0){}
+	MockPlayerActionRequest() :PlayerActionRequest(NO_ACTION, 0){}
 	virtual ~MockPlayerActionRequest(){}
 
 	virtual bool hasAction() {
@@ -31,6 +31,7 @@ public:
 	}
 
 	virtual void deal(Tile tiles[], int buffer_size, int distance) {
+		UNUSED(buffer_size);
 		mock().actualCall("deal").onObject(this).withParameter("distance",
 				distance).withParameter("tiles", tiles);
 	}
@@ -50,13 +51,16 @@ public:
 				(const char *) tile).withParameter("distance", distance);
 	}
 	virtual void pong(Tile tile, int distance) {
+		UNUSED(tile), UNUSED(distance);
 	}
 
 	virtual int chow(Tile tile, Tile with, int distance) {
+		UNUSED(tile), UNUSED(with), UNUSED(distance);
 		return 0;
 	}
 
 	virtual void pushActionRequest(PlayerActionRequest *actionRequest) {
+		UNUSED(actionRequest);
 	}
 
 	virtual PlayerActionRequest * takeActionRequest1(){
@@ -124,11 +128,13 @@ public:
 class MockGame: public Game {
 public:
 	virtual void nextMove(PlayerActionRequest *request) {
+		UNUSED(request);
 		mock().actualCall("nextMove").onObject(this).withParameter("request",
 				request);
 	}
 
 	virtual void setAction(PlayerActionRequest * actionRequest) {
+		UNUSED(actionRequest);
 		mock().actualCall("set_action").onObject(this);
 	}
 
@@ -146,6 +152,7 @@ public:
 	}
 
 	const char * get_tiles_array_string(char buffer[], int buffer_size) {
+		UNUSED(buffer), UNUSED(buffer_size);
 		return "<tile list>";
 	}
 
@@ -154,7 +161,8 @@ public:
 	}
 
 	Hand *getHand(int distance) {
-		return (Hand *) mock().actualCall("getPlayerData").onObject(this).returnValue().getObjectPointer();
+		UNUSED(distance);
+		return (Hand *) mock().actualCall("getHand").onObject(this).returnValue().getObjectPointer();
 	}
 };
 

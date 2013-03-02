@@ -23,7 +23,7 @@ void MJCommandDoesNotExist::execute(MahjongGameRespond *respond) {
 }
 
 void MJCommandAction::execute(MahjongGameRespond *respond) {
-	PlayerActionRequest request(action_, tile_, 1);
+	PlayerActionRequest request(action_, tile_);
 	game_->nextMove(&request);
 	respond->updateUIEvent(game_->getUserView());
 }

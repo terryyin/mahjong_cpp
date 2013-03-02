@@ -1,11 +1,12 @@
 PRODUCT := mahjong
 CPPUTEST_HOME := cpputest
+CPPUTEST_USE_REAL_GTEST=Y
 CPPUTEST_USE_REAL_GMOCK=Y
 GMOCK_HOME=gmock
 
 EVALUATOR = mahjong_evaluator
 EVALUATOR_LIB = $(EVALUATOR)/lib/lib$(EVALUATOR).a
-CPPUTEST_WARNINGFLAGS =  -Wall
+#CPPUTEST_WARNINGFLAGS :=  -Wall
 #Set this to @ to keep the makefile quiet
 ifndef SILENCE
 	SILENCE = @

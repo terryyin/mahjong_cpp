@@ -14,10 +14,12 @@ public:
 	virtual void doPick() {
 	}
 	virtual void discard(Tile& action_tile) {
+		UNUSED(action_tile);
 	}
 	virtual void doPong() {
 	}
 	virtual void doChow(Tile& action_tile) {
+		UNUSED(action_tile);
 	}
 protected:
 	MahjongTable * getTable() {

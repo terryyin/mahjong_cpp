@@ -36,6 +36,7 @@ void Game::nextMove(PlayerActionRequest *request){
 }
 
 Player * Game::getPlayerOfDistance(int i) {
+	UNUSED(i);
 	return player_;
 }
 

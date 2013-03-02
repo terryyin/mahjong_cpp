@@ -6,7 +6,7 @@
 
 class Player {
 public:
-	Player() : currentActionRequest_(NO_ACTION, NO_TILE, 1){}
+	Player() : currentActionRequest_(NO_ACTION, NO_TILE){}
 	virtual ~Player(){}
 
 	virtual void deal(Tile tiles[], int n, int distance)=0;

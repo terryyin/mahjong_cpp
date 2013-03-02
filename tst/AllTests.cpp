@@ -1,3 +1,17 @@
+#include <assert.h>
+
+void testFactorial()
+{
+	assert(0);
+}
+
+#if 1
+int main(int ac, char** av) {
+	testFactorial();
+	return 0;
+}
+
+#else
 #include "CppUTest/CommandLineTestRunner.h"
 #include "CppUTest/TestPlugin.h"
 #include "CppUTest/TestRegistry.h"
@@ -14,3 +28,5 @@ int main(int ac, char** av) {
 	TestRegistry::getCurrentRegistry()->resetPlugins();
 	return res;
 }
+
+#endif

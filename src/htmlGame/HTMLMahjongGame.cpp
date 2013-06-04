@@ -1,7 +1,7 @@
 #include "HTMLMahjongGame.h"
 #include "HTMLMahjongGameServer.h"
 #include "HTMLMahjongGameRespond.h"
-#include <memory>
+#include <string.h>
 HTMLMahjongGame::HTMLMahjongGame(MahjongGameServer *server) :
 		server_(server) {
 

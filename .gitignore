@@ -3,7 +3,9 @@
 /mahjong_tests
 *.o
 *.lo
+*.zip
+*.a
 mahjong
-gmock/
+gmock*/
 cpputest/
 .DS_Store

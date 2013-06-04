@@ -6,7 +6,7 @@
 #include <typeinfo>
 #include "mocks.h"
 
-class GMockHTMLMahjongGameServer: public HTMLMahjongGameServer {
+class GMockHTMLMahjongGameServer: public MahjongGameServer {
 public:
 	MOCK_METHOD0(startNewGamem, GameID ());
 	MOCK_METHOD1(killGame, void (GameID));

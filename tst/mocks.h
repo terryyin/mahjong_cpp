@@ -102,7 +102,7 @@ public:
 
 };
 
-class MockHTMLMahjongGameServer: public HTMLMahjongGameServer {
+class MockHTMLMahjongGameServer: public MahjongGameServer {
 public:
 	GameID startNewGame() {
 		return mock().actualCall("startNewGame").onObject(this).returnValue().getIntValue();

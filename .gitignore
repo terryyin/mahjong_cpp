@@ -1,3 +1,9 @@
 /lib
 /objs
 /mahjong_tests
+*.o
+*.lo
+mahjong
+gmock/
+cpputest/
+.DS_Store

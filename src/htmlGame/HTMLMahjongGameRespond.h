@@ -9,6 +9,7 @@ class Hand;
 
 class HTMLMahjongGameRespond : public MahjongGameRespond{
 public:
+	virtual ~HTMLMahjongGameRespond(){}
 	virtual void newGame(GameID gameID);
 
 	virtual void bye();

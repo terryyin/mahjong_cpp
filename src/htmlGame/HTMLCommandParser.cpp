@@ -4,7 +4,7 @@
 #include "string.h"
 
 
-HTMLCommandParser::HTMLCommandParser(HTMLMahjongGameServer * server) :
+HTMLCommandParser::HTMLCommandParser(MahjongGameServer * server) :
 		server_(server) {
 }
 

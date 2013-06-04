@@ -43,6 +43,8 @@ typedef int socklen_t;
 
 #define SERVER_STRING "Server: jdbhttpd/0.1.0\r\n"
 
+SimpleHTMLService *service_;
+
 void accept_request(int);
 void bad_request(int);
 void cat(int, FILE *);
@@ -186,7 +188,6 @@ void error_die(const char *sc) {
 	perror(sc);
 	exit(1);
 }
-game_callback game_callback_ptr = NULL;
 
 int execute_game(int client, const char *path, const char *method,
 		const char *query_string) {
@@ -197,7 +198,7 @@ int execute_game(int client, const char *path, const char *method,
 	int numchars = 1;
 	int content_length = -1;
 
-	if (!game_callback_ptr)
+	if (!service_)
 		return 0;
 	buf[0] = 'A';
 	buf[1] = '\0';
@@ -219,7 +220,7 @@ int execute_game(int client, const char *path, const char *method,
 		}
 	}
 
-	game_callback_ptr(path, query_string, big_buffer, big_buffer_size);
+	service_->callback(path, query_string, big_buffer, big_buffer_size);
 	strcpy(buf, "HTTP/1.0 200 OK\r\n");
 	send(client, buf, strlen(buf), 0);
 	strcpy(buf, "Pragma: no-cache\r\n"
@@ -431,7 +432,8 @@ void set_shutdown_flag() {
 	shutdown_flag = 1;
 }
 /**********************************************************************/
-int server_main(void) {
+int server_main(SimpleHTMLService *service) {
+	service_ = service;
 	int server_sock = -1;
 	u_short port = 8888;
 	int client_sock = -1;

@@ -1,53 +1,56 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <memory>
 
 #include "mahjong_game.h"
 #include "HTMLMahjongGameServer.h"
 #include "MahjongCommand.h"
 #include "HTMLCommandParser.h"
 #include "HTMLMahjongGameRespond.h"
+#include "MahjongGameFactory.h"
 
-HTMLMahjongGameServer::HTMLMahjongGameServer(
+MahjongGameServer::MahjongGameServer(MahjongGameFactory * factory,
 		FpShutdownCallback shutdownCallback, HTMLCommandParser *parser) :
-		shutdownCallback_(shutdownCallback), lastGameID_(0) {
+		factory_(factory), shutdownCallback_(shutdownCallback), lastGameID_(0) {
 	gamePool_ = new GameIDMap();
 	commandParser_ = parser;
 	if (commandParser_ == NULL)
 		commandParser_ = new HTMLCommandParser(this);
 }
 
-HTMLMahjongGameServer::~HTMLMahjongGameServer() {
+MahjongGameServer::~MahjongGameServer() {
 	delete gamePool_;
 	delete commandParser_;
 }
 
-GameID HTMLMahjongGameServer::startNewGame() {
+GameID MahjongGameServer::startNewGame() {
 	Game * game = new Game;
 	lastGameID_ = gamePool_->addGameAndGetID(game);
 	return lastGameID_;
 }
 
-void HTMLMahjongGameServer::killGame(GameID gameID) {
+void MahjongGameServer::killGame(GameID gameID) {
 	gamePool_->removeAndDeleteGame(gameID);
 }
 
-void HTMLMahjongGameServer::executeGameCommand(const char * command,
-		const char *parameters, HTMLMahjongGameRespond *respond) {
-	MahjongCommand * mjCommand = commandParser_->parse(command, parameters);
+MahjongGameRespond * MahjongGameServer::executeGameCommand(const char * command,
+		const char *parameters) {
+	MahjongGameRespond *respond = factory_->createMahjongGameRespond();
+	std::auto_ptr<MahjongCommand> mjCommand (commandParser_->parse(command, parameters));
 	mjCommand->execute(respond);
-	delete mjCommand;
+	return respond;
 }
 
-void HTMLMahjongGameServer::shutdown() {
+void MahjongGameServer::shutdown() {
 	if (shutdownCallback_ != NULL)
 		shutdownCallback_();
 }
 
-GameID HTMLMahjongGameServer::getLastGameID() {
+GameID MahjongGameServer::getLastGameID() {
 	return lastGameID_;
 }
 
-Game * HTMLMahjongGameServer::getGameByID(GameID gameID) {
+Game * MahjongGameServer::getGameByID(GameID gameID) {
 	return gamePool_->getGameByID(gameID);
 }

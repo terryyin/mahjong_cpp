@@ -3,6 +3,7 @@
 #include "HTMLMahjongGameServer.h"
 #include "HTMLCommandParser.h"
 #include "MahjongCommand.h"
+#include "MahjongGameFactory.h"
 #include "mocks.h"
 
 static void shutdown_callback() {
@@ -29,24 +30,32 @@ public:
 	}
 };
 
-TEST_GROUP(HTMLMahjongGameServer) {
-	HTMLMahjongGameServer *server;
+struct MahjongGameFactorForMocks : public MahjongGameFactory {
+	MahjongGameRespond * createMahjongGameRespond() {
+		return &respond;
+	}
+	MockHTMLMahjongGameRespond respond;
+};
+
+TEST_GROUP(MahjongGameServer) {
+	MahjongGameServer *server;
 	MockHTMLCommandParser *parser;
+	MahjongGameFactorForMocks factory;
 	void setup() {
 		parser = new MockHTMLCommandParser;
-		server = new HTMLMahjongGameServer(shutdown_callback, parser);
+		server = new MahjongGameServer(&factory, shutdown_callback, parser);
 	}
 	void teardown() {
 		delete server;
 	}
 };
 
-TEST(HTMLMahjongGameServer, callback_should_be_call_when_shutdown) {
+TEST(MahjongGameServer, callback_should_be_call_when_shutdown) {
 	mock().expectOneCall("shutdown_callback");
 	server->shutdown();
 }
 
-TEST(HTMLMahjongGameServer, execute_command) {
+TEST(MahjongGameServer, execute_command) {
 	MockMahjongCommand *command = new MockMahjongCommand;
 	MockHTMLMahjongGameRespond respond;
 
@@ -54,7 +63,7 @@ TEST(HTMLMahjongGameServer, execute_command) {
 			"command").withParameter("parameters", "parameters").andReturnValue(
 			(void*) command);
 	mock().expectOneCall("execute").onObject(command).withParameter("respond",
-			&respond);
+			&factory.respond);
 
-	server->executeGameCommand("command", "parameters", &respond);
+	server->executeGameCommand("command", "parameters");
 }

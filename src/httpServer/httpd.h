@@ -1,10 +1,13 @@
 #ifndef HTTPD__H
 #define HTTPD__H
 
-int server_main(void);
-void set_shutdown_flag(void);
 
-typedef void (*game_callback)(const char *path, const char *query_string, char * buffer, int buffer_size);
-extern game_callback game_callback_ptr;
+struct SimpleHTMLService {
+	virtual ~SimpleHTMLService(){}
+	virtual void callback(const char * command, const char *parameters, char * buffer, int buffer_size) = 0;
+};
+
+int server_main(SimpleHTMLService *service);
+void set_shutdown_flag(void);
 
 #endif

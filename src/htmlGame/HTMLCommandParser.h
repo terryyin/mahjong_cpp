@@ -8,14 +8,14 @@ class MahjongCommand;
 
 class HTMLCommandParser {
 public:
-	HTMLCommandParser(HTMLMahjongGameServer * server = NULL);
+	HTMLCommandParser(MahjongGameServer * server = NULL);
 
 	virtual ~HTMLCommandParser();
 
 	virtual MahjongCommand * parse(const char * command,
 			const char *parameters);
 private:
-	HTMLMahjongGameServer *server_;
+	MahjongGameServer *server_;
 	void parse_parameter(const char* parameters, GameID& gameID, Tile& tile);
 	MahjongCommand * parseWithExtractedParameters(const char * cmd,
 			GameID gameID, Tile tile);

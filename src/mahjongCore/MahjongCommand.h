@@ -13,32 +13,32 @@ public:
 
 class MJCommandStartNew: public MahjongCommand {
 public:
-	MJCommandStartNew(HTMLMahjongGameServer* server) :
+	MJCommandStartNew(MahjongGameServer* server) :
 			server_(server) {
 	}
 	void execute(MahjongGameRespond *respond);
 private:
-	HTMLMahjongGameServer* server_;
+	MahjongGameServer* server_;
 };
 
 class MJCommandQuitGame: public MahjongCommand {
 public:
-	MJCommandQuitGame(HTMLMahjongGameServer* server, GameID gameID) :
+	MJCommandQuitGame(MahjongGameServer* server, GameID gameID) :
 			server_(server), gameID_(gameID) {
 	}
 	void execute(MahjongGameRespond *respond);
 private:
-	HTMLMahjongGameServer* server_;
+	MahjongGameServer* server_;
 	GameID gameID_;
 };
 
 class MJCommandShutdownServer: public MahjongCommand {
 public:
-	MJCommandShutdownServer(HTMLMahjongGameServer* server):
+	MJCommandShutdownServer(MahjongGameServer* server):
 		server_(server) {}
 	void execute(MahjongGameRespond *respond);
 private:
-	HTMLMahjongGameServer* server_;
+	MahjongGameServer* server_;
 };
 
 class MJCommandDoesNotExist: public MahjongCommand {

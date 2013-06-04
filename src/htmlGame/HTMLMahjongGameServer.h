@@ -6,18 +6,19 @@
 class Wall;
 class GameIDMap;
 class HTMLCommandParser;
-class HTMLMahjongGameRespond;
+class MahjongGameRespond;
+class MahjongGameFactory;
 
 typedef void (*FpShutdownCallback)(void);
 
-class HTMLMahjongGameServer {
+class MahjongGameServer {
 public:
-	HTMLMahjongGameServer(FpShutdownCallback shutdownCallback = NULL,
+	MahjongGameServer(MahjongGameFactory* factory = NULL, FpShutdownCallback shutdownCallback = NULL,
 			HTMLCommandParser *parser = NULL);
 
-	virtual ~HTMLMahjongGameServer();
+	virtual ~MahjongGameServer();
 
-	void executeGameCommand(const char * command, const char *parameters, HTMLMahjongGameRespond *respond);
+	MahjongGameRespond * executeGameCommand(const char * command, const char *parameters);
 
 	virtual GameID startNewGame();
 
@@ -34,6 +35,7 @@ private:
 	HTMLCommandParser *commandParser_;
 	FpShutdownCallback shutdownCallback_;
 	GameID lastGameID_;
+	MahjongGameFactory * factory_;
 };
 
 #endif /* HTML_GAME_H_ */

@@ -3,4 +3,5 @@ compiler:
   - clang
   - gcc
 script:
+  - make dependency
   - make

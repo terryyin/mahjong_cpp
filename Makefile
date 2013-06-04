@@ -51,8 +51,7 @@ $(PRODUCT): $(PRDUCT_MAIN_OBJ) $(TARGET_LIB) $(EVALUATOR_LIB) $(CPPUTEST_LIB)
 	$(CC) -o $@ -g $^ $(LD_LIBRARIES)
 	@echo 'Running the game. Go to your browser to play at http://localhst:8888'
 
-dependency: $(CPPUTEST_LIB)
-$(CPPUTEST_LIB):$(GMOCK_HOME).zip master.zip
+dependency:$(GMOCK_HOME).zip master.zip
 	cd $(GMOCK_HOME) && ./configure && make && cd ..
 	export GMOCK_HOME=../../$(GMOCK_HOME)	&& cd cpputest/lib && ../configure --enable-gmock && make
 $(GMOCK_HOME).zip:

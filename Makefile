@@ -6,7 +6,7 @@ GMOCK_HOME=gmock-1.6.0
 
 EVALUATOR = mahjong_evaluator
 EVALUATOR_LIB = $(EVALUATOR)/lib/lib$(EVALUATOR).a
-CPPUTEST_LDFLAGS=-lpthread
+LD_LIBRARIES += -lpthread
 #CPPUTEST_WARNINGFLAGS :=  -Wall
 #Set this to @ to keep the makefile quiet
 ifndef SILENCE

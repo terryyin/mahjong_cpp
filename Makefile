@@ -45,7 +45,6 @@ $(EVALUATOR_LIB) :
 	
 .PHONY: all product dependency
 product : $(PRODUCT)
-	./$(PRODUCT)
 	
 $(PRODUCT): $(PRDUCT_MAIN_OBJ) $(TARGET_LIB) $(EVALUATOR_LIB) $(CPPUTEST_LIB)
 	@echo 'Building target: $@'

@@ -9,4 +9,5 @@ before_install:
 script:
   - make dependency
   - make
+  - make product
   - bundle exec rake

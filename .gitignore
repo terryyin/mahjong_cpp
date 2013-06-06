@@ -9,3 +9,4 @@ mahjong
 gmock*/
 cpputest/
 .DS_Store
+Gemfile.lock

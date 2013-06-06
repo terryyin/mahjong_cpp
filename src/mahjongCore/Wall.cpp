@@ -3,7 +3,7 @@
 #define SHUFFLE_TIMES 1000
 
 /*
- * SIMPLIFIED_MAHJONG is for people who cannot recognize Chinese characters.
+ * SIMPLIFIED_MAHJONG is for people who cannot read Chinese.
  */
 #ifndef SIMPLIFIED_MAHJONG
 static const Tile all_tile_types[] = { C(1), C(2), C(3), C(4), C(5), C(6), C(7),

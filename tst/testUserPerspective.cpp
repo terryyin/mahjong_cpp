@@ -116,7 +116,7 @@ TEST(UserPerspective, gotDealEventWhenDealToSelf) {
 
 	userPerspective->deal(defaultTilesPongTheWinningTileAndChowWinningTilePlusOne, 4, 0);
 
-	CHECK_EQUAL(&dummyEvent1, userPerspective->popEvent());
+	POINTERS_EQUAL(&dummyEvent1, userPerspective->popEvent());
 }
 
 TEST(UserPerspective, noEventWhenDealToOthers) {

@@ -5,8 +5,8 @@
 #include "CppUTestExt/GTestConvertor.h"
 
 int main(int ac, char** av) {
-	GTestConvertor convertor;
-	convertor.addAllGTestToTestRegistry();
+//	GTestConvertor convertor;
+//	convertor.addAllGTestToTestRegistry();
 
 	MockSupportPlugin mockPlugin;
 	TestRegistry::getCurrentRegistry()->installPlugin(&mockPlugin);

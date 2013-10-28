@@ -53,7 +53,7 @@ $(PRODUCT): $(PRDUCT_MAIN_OBJ) $(TARGET_LIB) $(EVALUATOR_LIB) $(CPPUTEST_LIB)
 
 dependency:$(GMOCK_HOME).zip master.zip
 	cd $(GMOCK_HOME) && ./configure && make && cd ..
-	export GMOCK_HOME=../$(GMOCK_HOME)	&& cd cpputest/lib && ./configure --enable-gmock && make
+	export GMOCK_HOME=../$(GMOCK_HOME)	&& cd cpputest && ./configure --enable-gmock && make
 $(GMOCK_HOME).zip:
 	wget https://googlemock.googlecode.com/files/$(GMOCK_HOME).zip
 	unzip $(GMOCK_HOME).zip

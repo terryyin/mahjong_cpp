@@ -2,7 +2,7 @@
 #include "CppUTest/TestPlugin.h"
 #include "CppUTest/TestRegistry.h"
 #include "CppUTestExt/MockSupportPlugin.h"
-#include "CppUTestExt/GTestConvertor.h"
+//#include "CppUTestExt/GTestConvertor.h"
 
 int main(int ac, char** av) {
 //	GTestConvertor convertor;

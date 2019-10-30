@@ -1,3 +1,6 @@
+#undef new
+#include <map>
+#include "CppUTest/MemoryLeakDetectorNewMacros.h"
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
 #include <string.h>

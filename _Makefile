@@ -7,7 +7,7 @@ GMOCK_HOME=gmock-1.7.0
 EVALUATOR = mahjong_evaluator
 EVALUATOR_LIB = $(EVALUATOR)/lib/lib$(EVALUATOR).a
 LD_LIBRARIES += -lpthread
-#CPPUTEST_WARNINGFLAGS :=  -Wall
+CPPUTEST_WARNINGFLAGS := -Wall # -Wno-reserved-id-macro -Wno-keyword-macro
 #Set this to @ to keep the makefile quiet
 ifndef SILENCE
 	SILENCE = @
@@ -52,12 +52,13 @@ $(PRODUCT): $(PRDUCT_MAIN_OBJ) $(TARGET_LIB) $(EVALUATOR_LIB) $(CPPUTEST_LIB)
 	@echo 'Running the game. Go to your browser to play at http://localhst:8888'
 
 dependency:$(GMOCK_HOME).zip master.zip
-	cd $(GMOCK_HOME) && ./configure && make && cd ..
+	#cd $(GMOCK_HOME) && ./configure && make && cd ..
 	export GMOCK_HOME=../$(GMOCK_HOME)	&& cd cpputest && ./configure && make
+
 $(GMOCK_HOME).zip:
-	wget https://googlemock.googlecode.com/files/$(GMOCK_HOME).zip
-	unzip $(GMOCK_HOME).zip
+	#wget https://googlemock.googlecode.com/files/$(GMOCK_HOME).zip
+	#unzip $(GMOCK_HOME).zip
 master.zip:
-	wget https://github.com/cpputest/cpputest/archive/master.zip
-	unzip master.zip
-	mv cpputest-master cpputest
+	#wget https://github.com/cpputest/cpputest/archive/master.zip
+	#unzip master.zip
+	#mv cpputest-master cpputest

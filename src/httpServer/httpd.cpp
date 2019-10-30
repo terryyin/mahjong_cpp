@@ -435,7 +435,7 @@ void set_shutdown_flag() {
 int server_main(SimpleHTMLService *service) {
 	service_ = service;
 	int server_sock = -1;
-	u_short port = 8888;
+	u_short port = 8889;
 	int client_sock = -1;
 	struct sockaddr_in client_name;
 	socklen_t client_name_len = sizeof(client_name);

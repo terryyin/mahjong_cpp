@@ -8,5 +8,7 @@
 mahjong
 gmock*/
 cpputest/
+build/
+.vscode/
 .DS_Store
 Gemfile.lock

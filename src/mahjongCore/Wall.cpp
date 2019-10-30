@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "Wall.h"
 
 #define SHUFFLE_TIMES 1000

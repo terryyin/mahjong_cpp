@@ -1,3 +1,4 @@
+#include <queue>
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
 #include <string.h>
@@ -5,7 +6,7 @@
 #include <stdio.h>
 #include "game.h"
 #include "aiGame.h"
-#include "mocks.h"
+#include "../mocks.h"
 
 TEST_GROUP(game) {
 	Game * game;
@@ -18,7 +19,7 @@ TEST(game, gameShouldTakeActionRequestFromPlayerWhenTick) {
 	game->addPlayer(player);
 
 	mock().expectOneCall("takeActionRequest").onObject(player).andReturnValue(&action);
-	mock().expectOneCall("hasAction").onObject(&action).andReturnValue(false);
+	mock().expectOneCall("hasAction").onObject(&action).andReturnValue(0);
 
 	game->tick();
 
@@ -32,10 +33,10 @@ TEST(game, gameShouldTakeActionRequestAndDoItWhenTick) {
 	game->addPlayer(player);
 
 	mock().expectOneCall("takeActionRequest").onObject(player).andReturnValue(&action);
-	mock().expectOneCall("hasAction").onObject(&action).andReturnValue(true);
+	mock().expectOneCall("hasAction").onObject(&action).andReturnValue(1);
 	mock().expectOneCall("doPlayerAction").onObject(&action).ignoreOtherParameters();
 	mock().expectOneCall("takeActionRequest").onObject(player).andReturnValue(&action);
-	mock().expectOneCall("hasAction").onObject(&action).andReturnValue(false);
+	mock().expectOneCall("hasAction").onObject(&action).andReturnValue(0);
 
 	game->tick();
 

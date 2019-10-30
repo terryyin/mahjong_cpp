@@ -1,8 +1,9 @@
-#include "CppUTest/TestHarness.h"
+#include <queue>
 #include "CppUTestExt/MockSupport.h"
 #include "mocks.h"
 #include "HTMLUIEvent.h"
 #include "Hand.h"
+#include "CppUTest/TestHarness.h"
 
 TEST_GROUP(HTMLUIEvent) {
 	HTMLEventFactory factory;

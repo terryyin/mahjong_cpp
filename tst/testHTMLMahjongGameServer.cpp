@@ -1,10 +1,10 @@
-#include "CppUTest/TestHarness.h"
-#include "CppUTestExt/MockSupport.h"
 #include "HTMLMahjongGameServer.h"
 #include "HTMLCommandParser.h"
 #include "MahjongCommand.h"
 #include "MahjongGameFactory.h"
+#include "CppUTestExt/MockSupport.h"
 #include "mocks.h"
+#include "CppUTest/TestHarness.h"
 
 static void shutdown_callback() {
 	mock().actualCall("shutdown_callback");

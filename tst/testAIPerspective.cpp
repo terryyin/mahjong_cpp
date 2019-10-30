@@ -1,10 +1,11 @@
-#include "CppUTest/TestHarness.h"
+#include <queue>
 #include "CppUTestExt/MockSupport.h"
+#include "mocks.h"
 
 #include "TileArray.h"
 #include "AIPerspective.h"
 
-#include "mocks.h"
+#include "CppUTest/TestHarness.h"
 
 TEST_GROUP(ai_perspective)
 {
@@ -25,7 +26,7 @@ TEST_GROUP(ai_perspective)
 
 TEST(ai_perspective, player_creation)
 {
-	LONGS_EQUAL(ACTION_RESTART + 1, perspective->takeActionRequest().action_);
+	LONGS_EQUAL(ACTION_RESTART, perspective->takeActionRequest().action_);
 }
 
 TEST(ai_perspective, player_pick_when_winning)

@@ -1,9 +1,8 @@
 #ifndef GAMEIDMAP_H_
 #define GAMEIDMAP_H_
+#include "GameID.h"
 #include <map>
 class Game;
-
-typedef int GameID;
 
 class GameIDMap {
 public:

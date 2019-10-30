@@ -35,7 +35,5 @@ set(Main_SRCS
       Wall.cpp
       Wall.h)
 
-include_directories(${PROJECT_SOURCE_DIR}/mahjong_evaluator/include)
-
 add_library(mahjongCore ${Main_SRCS})
 

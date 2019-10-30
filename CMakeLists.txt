@@ -3,3 +3,4 @@ project(mahjong)
 
 add_subdirectory(mahjong_evaluator)
 add_subdirectory(src)
+add_subdirectory(tst)

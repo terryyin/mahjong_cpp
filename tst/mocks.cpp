@@ -1,11 +1,12 @@
-#include "CppUTest/TestHarness.h"
+#include <queue>
 #include "CppUTestExt/MockSupport.h"
+#include "mocks.h"
 
 #include "Wall.h"
 #include "Hand.h"
 #include "Perspective.h"
 #include "EvaluatorAdaptor.h"
-#include "mocks.h"
+#include "CppUTest/TestHarness.h"
 
 class MockEvaluator: public EvaluatorAdaptor{
 public:

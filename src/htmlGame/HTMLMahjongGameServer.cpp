@@ -9,6 +9,7 @@
 #include "HTMLCommandParser.h"
 #include "HTMLMahjongGameRespond.h"
 #include "MahjongGameFactory.h"
+#include "GameIDMap.h"
 
 MahjongGameServer::MahjongGameServer(MahjongGameFactory * factory,
 		FpShutdownCallback shutdownCallback, HTMLCommandParser *parser) :

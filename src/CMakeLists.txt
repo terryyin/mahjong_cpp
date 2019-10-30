@@ -1,6 +1,8 @@
 include_directories(${PROJECT_SOURCE_DIR}/src/httpServer)
 include_directories(${PROJECT_SOURCE_DIR}/src/htmlGame)
 include_directories(${PROJECT_SOURCE_DIR}/src/mahjongCore)
+include_directories(${PROJECT_SOURCE_DIR}/mahjong_evaluator/include)
+
 add_executable(game main.cpp)
 
 add_subdirectory(httpServer)

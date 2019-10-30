@@ -2,8 +2,9 @@
 #define HTML_GAME_H_
 
 #include "Perspective.h"
-#include "GameIDMap.h"
+#include "GameID.h"
 class Wall;
+class Game;
 class GameIDMap;
 class HTMLCommandParser;
 class MahjongGameRespond;
